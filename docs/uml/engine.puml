@@ -1,0 +1,92 @@
+﻿@startuml
+title Abstract Engine (Part 1) - Unified UML
+
+skinparam packageStyle rectangle
+
+package "com.example.app.engine" {
+  interface Engine
+  class EngineConfig
+  class EngineContext
+  class EngineImpl
+}
+
+package "com.example.app.engine.scene" {
+  interface Scene
+  abstract class BaseScene
+  interface SceneManager
+  class StackSceneManager
+}
+
+package "com.example.app.engine.entity" {
+  class Entity
+  interface EntityManager
+  class DefaultEntityManager
+  class EntityIdGenerator
+}
+
+package "com.example.app.engine.components" {
+  interface Component
+  interface ComponentAccess
+  class Components
+  class MissingComponentException
+}
+
+package "com.example.app.engine.movement" {
+  interface MovementManager
+  class SimpleMovementManager
+  class TransformComponent
+  class VelocityComponent
+  class AccelerationComponent
+}
+
+package "com.example.app.engine.collision" {
+  interface CollisionManager
+  class SimpleCollisionManager
+  class ColliderComponent
+  class CollisionEvent
+  class CollisionPair
+  class CollisionManifold
+  interface CollisionListener
+  interface CollisionResolver
+}
+
+package "com.example.app.engine.io" {
+  enum InputAction
+  class InputBindings
+  class InputState
+  interface InputManager
+  class LibGdxInputManager
+  interface OutputManager
+  class GdxOutputManager
+}
+
+package "com.example.app.engine.util" {
+  class EngineException
+  class Preconditions
+  class Mathf
+  class EventBus
+}
+
+' --- key relationships ---
+EngineImpl ..|> Engine
+EngineImpl --> EngineContext
+
+EngineContext --> SceneManager
+EngineContext --> EntityManager
+EngineContext --> MovementManager
+EngineContext --> CollisionManager
+EngineContext --> InputManager
+EngineContext --> OutputManager
+
+StackSceneManager ..|> SceneManager
+BaseScene ..|> Scene
+
+DefaultEntityManager ..|> EntityManager
+Entity --> ComponentAccess
+
+SimpleMovementManager ..|> MovementManager
+SimpleCollisionManager ..|> CollisionManager
+
+LibGdxInputManager ..|> InputManager
+GdxOutputManager ..|> OutputManager
+@enduml
