@@ -1,63 +1,161 @@
 # OOP_project — Abstract Engine Demo (INF1009 Part 1)
 
-This project is a libGDX desktop application that demonstrates a **non-contextual abstract engine** with:
-Scene management, Entity management, Movement, Collision, and Input/Output management.
+This project is a **libGDX desktop application** that demonstrates a **non-contextual Abstract Engine** built using Object-Oriented Programming principles.
 
-The demo is intentionally simple (shapes + basic interactions) so the engine can be reused for other simulations without rewriting core systems.
+The engine provides reusable core systems such as:
+- Scene Management  
+- Entity Management  
+- Movement Management  
+- Collision Management  
+- Input / Output Management  
 
-## How to run
+The included demo simulation is **intentionally simple** (basic shapes and interactions).  
+Its sole purpose is to showcase how the engine can be reused for other simulations **without modifying the engine code**.
+
+---
+
+## 1. How to Run
 
 ### Desktop (LWJGL3)
-From the project root:
 
-- Windows:
-  - `.\gradlew.bat lwjgl3:run`
-- macOS/Linux:
-  - `./gradlew lwjgl3:run`
+From the project root directory:
 
-This is the standard libGDX way to run the desktop module via Gradle. [web:98]
+**Windows**
+```bash
+.\gradlew.bat lwjgl3:run
+```
 
-## Required assets
+**macOS / Linux**
+```bash
+./gradlew lwjgl3:run
+```
 
-Place this file in the assets folder (same folder as `libgdx.png`):
+This uses the standard libGDX Gradle task for running the desktop module.
 
-- `assets/hit.wav` — sound played when the NPC collides with the player.
+> Note: The Gradle task will remain in the `EXECUTING` state until the game window is closed. This is normal behavior.
 
-If `hit.wav` is missing, the demo will still run, but collision sound is disabled.
+---
 
-## Controls
+## 2. Required Assets
 
-- Move player: `WASD` or Arrow keys
-- Spawn an obstacle: `Space`
-- Start / Confirm (menu): `Enter`
-- Pause/resume: `P`
-- Quit: `Esc`
+Place the following file in the `assets/` folder (same directory as `libgdx.png`):
 
-## What to look for (engine features)
+- `hit.wav` — sound played when the NPC collides with the player.
 
-- **Scene management**: Starts in a Menu scene, transitions into a Sandbox scene.
-- **Entity management**: Entities are created centrally and updated each frame.
-- **Movement management**: Player movement is controlled by input; NPC/obstacles can also move.
-- **Collision management**: Collision events occur between entities and trigger interactions (sound/log/bounce).
-- **Input/Output management**: Key presses are mapped to actions; output is logged to the console.
+If `hit.wav` is missing:
+- The demo will still run normally
+- Collision sound effects will simply be disabled
 
-## Project structure (important files)
+---
 
-### Engine (non-contextual)
-- `core/src/main/java/com/example/app/engine/`
-  - `EngineImpl`, `EngineContext`, managers, components, utilities.
+## 3. Controls
 
-### Demo / Simulation layer (contextual)
-- `core/src/main/java/com/example/app/demo/scenes/`
-  - `MenuScene.java` — choose spawn count / start demo.
-  - `TransitionScene.java` — simple transition between scenes.
-  - `SandboxScene.java` — spawns entities, handles interactions, and submits render commands.
+| Action | Key |
+|------|----|
+| Move Player | `W A S D` or Arrow Keys |
+| Spawn Obstacle | `Space` |
+| Start / Confirm (Menu) | `Enter` |
+| Pause / Resume | `P` |
+| Quit Application | `Esc` |
 
-### libGDX adapter
-- `core/src/main/java/com/example/app/Main.java`
-  - Creates the engine and draws the engine’s render queue + UI instructions.
+Key bindings are defined in the **demo layer**, not inside the engine.
 
-## Notes
+---
 
-- The Gradle task `lwjgl3:run` will show “EXECUTING” until you close the game window (that is normal).
-- The abstract engine is designed to keep simulation-specific logic out of the engine package so it can be reused.
+## 4. What to Look For (Engine Features)
+
+### Scene Management
+- Application starts in a **Menu Scene**
+- Transitions into a **Sandbox Scene**
+- Demonstrates scene loading, unloading, and transitions
+
+### Entity Management
+- Entities are created and destroyed through a central manager
+- Entity lifecycle is handled consistently by the engine
+
+### Movement Management
+- Player movement is driven by input
+- Other entities (NPCs / obstacles) may move independently
+
+### Collision Management
+- Collision detection and resolution handled by the engine
+- Collision results are published as events
+- Demo reacts to collisions without tightly coupling to engine internals
+
+### Input / Output Management
+- Key presses are mapped to abstract input actions
+- Output is logged to the console or visualized in the demo
+
+---
+
+## 5. Project Structure (Important Files)
+
+### Abstract Engine (Non-Contextual)
+```
+core/src/main/java/com/example/app/engine/
+```
+Includes:
+- `EngineImpl`
+- `EngineContext`
+- Scene, Entity, Collision, Movement, and IO managers
+- Shared utilities and abstractions
+
+This package contains **no simulation-specific logic**.
+
+---
+
+### Demo / Simulation Layer (Contextual)
+```
+core/src/main/java/com/example/app/demo/scenes/
+```
+
+Key files:
+- `MenuScene.java` — Menu and configuration entry point
+- `TransitionScene.java` — Simple scene transition logic
+- `SandboxScene.java` — Demonstrates entity creation, movement, and collisions
+
+All demo-specific behavior lives here.
+
+---
+
+### libGDX Adapter / Entry Point
+```
+core/src/main/java/com/example/app/Main.java
+```
+
+Responsibilities:
+- Initializes the engine
+- Binds input actions
+- Renders engine output and on-screen instructions
+
+---
+
+## 6. Design Intent
+
+- The **engine** is reusable and extensible
+- The **demo** is replaceable and disposable
+- You can delete the entire `demo` package and reuse the engine unchanged
+- New simulations can be built by:
+  - Creating new scenes
+  - Defining new entities
+  - Subscribing to engine events
+  - Binding inputs externally
+
+---
+
+## 7. Notes
+
+- Rendering and visuals are intentionally minimal
+- Focus is on engine design, abstraction, and extensibility
+- Physics and collision logic are simplified for clarity
+- The project prioritizes clean separation of concerns over visual complexity
+
+---
+
+## 8. Summary
+
+This project demonstrates:
+- Strong application of Object-Oriented Programming concepts
+- Clean separation between abstract engine and simulation logic
+- Reusable, scalable, and extensible engine architecture
+- A working demo that validates engine functionality without polluting core systems
