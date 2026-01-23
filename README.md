@@ -1,33 +1,63 @@
-# OOP_project
+# OOP_project — Abstract Engine Demo (INF1009 Part 1)
 
-A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
+This project is a libGDX desktop application that demonstrates a **non-contextual abstract engine** with:
+Scene management, Entity management, Movement, Collision, and Input/Output management.
 
-This project was generated with a template including simple application launchers and an `ApplicationAdapter` extension that draws libGDX logo.
+The demo is intentionally simple (shapes + basic interactions) so the engine can be reused for other simulations without rewriting core systems.
 
-## Platforms
+## How to run
 
-- `core`: Main module with the application logic shared by all platforms.
-- `lwjgl3`: Primary desktop platform using LWJGL3; was called 'desktop' in older docs.
+### Desktop (LWJGL3)
+From the project root:
 
-## Gradle
+- Windows:
+  - `.\gradlew.bat lwjgl3:run`
+- macOS/Linux:
+  - `./gradlew lwjgl3:run`
 
-This project uses [Gradle](https://gradle.org/) to manage dependencies.
-The Gradle wrapper was included, so you can run Gradle tasks using `gradlew.bat` or `./gradlew` commands.
-Useful Gradle tasks and flags:
+This is the standard libGDX way to run the desktop module via Gradle. [web:98]
 
-- `--continue`: when using this flag, errors will not stop the tasks from running.
-- `--daemon`: thanks to this flag, Gradle daemon will be used to run chosen tasks.
-- `--offline`: when using this flag, cached dependency archives will be used.
-- `--refresh-dependencies`: this flag forces validation of all dependencies. Useful for snapshot versions.
-- `build`: builds sources and archives of every project.
-- `cleanEclipse`: removes Eclipse project data.
-- `cleanIdea`: removes IntelliJ project data.
-- `clean`: removes `build` folders, which store compiled classes and built archives.
-- `eclipse`: generates Eclipse project data.
-- `idea`: generates IntelliJ project data.
-- `lwjgl3:jar`: builds application's runnable jar, which can be found at `lwjgl3/build/libs`.
-- `lwjgl3:run`: starts the application.
-- `test`: runs unit tests (if any).
+## Required assets
 
-Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
-For example, `core:clean` removes `build` folder only from the `core` project.
+Place this file in the assets folder (same folder as `libgdx.png`):
+
+- `assets/hit.wav` — sound played when the NPC collides with the player.
+
+If `hit.wav` is missing, the demo will still run, but collision sound is disabled.
+
+## Controls
+
+- Move player: `WASD` or Arrow keys
+- Spawn an obstacle: `Space`
+- Start / Confirm (menu): `Enter`
+- Pause/resume: `P`
+- Quit: `Esc`
+
+## What to look for (engine features)
+
+- **Scene management**: Starts in a Menu scene, transitions into a Sandbox scene.
+- **Entity management**: Entities are created centrally and updated each frame.
+- **Movement management**: Player movement is controlled by input; NPC/obstacles can also move.
+- **Collision management**: Collision events occur between entities and trigger interactions (sound/log/bounce).
+- **Input/Output management**: Key presses are mapped to actions; output is logged to the console.
+
+## Project structure (important files)
+
+### Engine (non-contextual)
+- `core/src/main/java/com/example/app/engine/`
+  - `EngineImpl`, `EngineContext`, managers, components, utilities.
+
+### Demo / Simulation layer (contextual)
+- `core/src/main/java/com/example/app/demo/scenes/`
+  - `MenuScene.java` — choose spawn count / start demo.
+  - `TransitionScene.java` — simple transition between scenes.
+  - `SandboxScene.java` — spawns entities, handles interactions, and submits render commands.
+
+### libGDX adapter
+- `core/src/main/java/com/example/app/Main.java`
+  - Creates the engine and draws the engine’s render queue + UI instructions.
+
+## Notes
+
+- The Gradle task `lwjgl3:run` will show “EXECUTING” until you close the game window (that is normal).
+- The abstract engine is designed to keep simulation-specific logic out of the engine package so it can be reused.

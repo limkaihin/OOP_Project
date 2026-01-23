@@ -11,8 +11,16 @@ public final class SimpleCollisionManager implements CollisionManager {
     private final List<CollisionListener> listeners = new ArrayList<>();
     private CollisionResolver resolver; // optional
 
-    // Broadphase grid (cellSize tuned for demo)
-    private final SpatialHashGrid grid = new SpatialHashGrid(64f);
+    // Broadphase grid (cell size configured via EngineConfig)
+    private final SpatialHashGrid grid;
+
+    public SimpleCollisionManager() {
+        this(64f);
+    }
+
+    public SimpleCollisionManager(float cellSize) {
+        this.grid = new SpatialHashGrid(cellSize);
+    }
 
     public void addListener(CollisionListener listener) {
         if (listener != null) listeners.add(listener);

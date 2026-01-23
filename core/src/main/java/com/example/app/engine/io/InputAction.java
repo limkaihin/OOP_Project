@@ -13,10 +13,6 @@ public enum InputAction {
     MOVE_RIGHT,
     MOVE_UP,
     MOVE_DOWN,
-
-    // NEW:
-    SPAWN,
-
     ACTION_1,
     ACTION_2
 }

@@ -6,7 +6,6 @@ import com.badlogic.gdx.audio.Sound;
 import com.example.app.engine.EngineContext;
 import com.example.app.engine.collision.ColliderComponent;
 import com.example.app.engine.collision.CollisionEvent;
-import com.example.app.engine.collision.SimpleCollisionManager;
 import com.example.app.engine.entity.Entity;
 import com.example.app.engine.io.InputAction;
 import com.example.app.engine.io.InputState;
@@ -67,8 +66,8 @@ public final class SandboxScene extends BaseScene {
             );
         }
 
-        // Collision listener
-        ((SimpleCollisionManager) ctx.collisionManager).addListener(this::onCollision);
+        // Collision events (decoupled via engine event bus)
+        ctx.collisionEvents.subscribe(this::onCollision);
 
         ctx.outputManager.log("SandboxScene", "Loaded (initial obstacles=" + initialSpawnCount + ")");
     }
@@ -89,8 +88,8 @@ public final class SandboxScene extends BaseScene {
         if (in.isPressed(InputAction.MOVE_UP))    pv.vy += speed;
         if (in.isPressed(InputAction.MOVE_DOWN))  pv.vy -= speed;
 
-        // Space spawns a new obstacle near the player
-        if (in.isJustPressed(InputAction.SPAWN)) {
+        // Space (ACTION_1) spawns a new obstacle near the player
+        if (in.isJustPressed(InputAction.ACTION_1)) {
             TransformComponent pt = player.getComponent(TransformComponent.class);
 
             float ox = pt.x + (rng.nextFloat() - 0.5f) * 120f;

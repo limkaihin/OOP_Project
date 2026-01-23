@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Simple entity manager suitable for Part 1 demos.
@@ -13,7 +15,7 @@ public final class DefaultEntityManager implements EntityManager {
 
     private final EntityIdGenerator idGen = new EntityIdGenerator();
     private final List<Entity> entities = new ArrayList<>();
-    private final List<Integer> pendingDestroyIds = new ArrayList<>();
+    private final Set<Integer> pendingDestroyIds = new HashSet<>();
 
     @Override
     public Entity create() {

@@ -44,7 +44,16 @@ public final class EngineImpl implements Engine {
             if (current != null) current.update(dt);
 
             ctx.movementManager.update(dt, ctx.entityManager.getAll());
-            ctx.collisionManager.update(dt, ctx.entityManager.getAll());
+
+            // Collect collisions and publish to engine event bus for decoupled handling.
+            java.util.List<com.example.app.engine.collision.CollisionEvent> collisions =
+                    ctx.collisionManager.update(dt, ctx.entityManager.getAll());
+            if (collisions != null && ctx.collisionEvents != null) {
+                for (com.example.app.engine.collision.CollisionEvent e : collisions) {
+                    ctx.collisionEvents.publish(e);
+                }
+            }
+
             ctx.entityManager.update(dt);
         }
     }

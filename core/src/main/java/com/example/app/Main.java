@@ -41,10 +41,12 @@ public class Main extends ApplicationAdapter {
         font.setColor(Color.WHITE);
         shapes = new ShapeRenderer();
 
+
+        EngineConfig config = new EngineConfig(640, 480, "OOP_project");
         StackSceneManager sceneManager = new StackSceneManager();
         DefaultEntityManager entityManager = new DefaultEntityManager();
         SimpleMovementManager movementManager = new SimpleMovementManager();
-        SimpleCollisionManager collisionManager = new SimpleCollisionManager();
+        SimpleCollisionManager collisionManager = new SimpleCollisionManager(config.collisionCellSize);
 
         InputBindings bindings = new InputBindings();
         // Arrow keys (already present)
@@ -58,7 +60,7 @@ public class Main extends ApplicationAdapter {
         bindings.bind(Input.Keys.W, InputAction.MOVE_UP);
         bindings.bind(Input.Keys.S, InputAction.MOVE_DOWN);
         // Space to spawn
-        bindings.bind(Input.Keys.SPACE, InputAction.SPAWN);
+        bindings.bind(Input.Keys.SPACE, InputAction.ACTION_1); // demo: spawn obstacle
 
         bindings.bind(Input.Keys.ENTER, InputAction.CONFIRM);
         bindings.bind(Input.Keys.ESCAPE, InputAction.BACK);
@@ -66,8 +68,6 @@ public class Main extends ApplicationAdapter {
 
         LibGdxInputManager inputManager = new LibGdxInputManager(bindings);
         GdxOutputManager outputManager = new GdxOutputManager();
-
-        EngineConfig config = new EngineConfig(640, 480, "OOP_project");
         ctx = new EngineContext(config, sceneManager, entityManager, movementManager, collisionManager, inputManager, outputManager);
         engine = new EngineImpl(ctx);
 

@@ -18,18 +18,6 @@ public final class LibGdxInputManager implements InputManager {
         this.bindings = (bindings == null) ? new InputBindings() : bindings;
 
         for (InputAction a : InputAction.values()) lastPressed.put(a, false);
-
-        // Optional defaults (demo can override)
-        if (this.bindings.viewBindings().isEmpty()) {
-            this.bindings.bind(Input.Keys.ENTER, InputAction.CONFIRM);
-            this.bindings.bind(Input.Keys.ESCAPE, InputAction.BACK);
-            this.bindings.bind(Input.Keys.P, InputAction.PAUSE);
-
-            this.bindings.bind(Input.Keys.W, InputAction.MOVE_UP);
-            this.bindings.bind(Input.Keys.S, InputAction.MOVE_DOWN);
-            this.bindings.bind(Input.Keys.A, InputAction.MOVE_LEFT);
-            this.bindings.bind(Input.Keys.D, InputAction.MOVE_RIGHT);
-        }
     }
 
     @Override
