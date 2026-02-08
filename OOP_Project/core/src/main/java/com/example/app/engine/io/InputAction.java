@@ -8,6 +8,10 @@ public enum InputAction {
     CONFIRM,
     BACK,
     PAUSE,
+    VOLUME_UP,
+    VOLUME_DOWN,
+    STOP,
+    PLAY,
 
     MOVE_LEFT,
     MOVE_RIGHT,

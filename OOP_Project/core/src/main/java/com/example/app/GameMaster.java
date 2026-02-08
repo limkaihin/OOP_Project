@@ -44,10 +44,10 @@ public class GameMaster extends ApplicationAdapter {
 
         // Input bindings
         InputBinding bindings = new InputBinding();
-        bindings.bind(Input.Keys.LEFT, InputAction.MOVE_LEFT);
-        bindings.bind(Input.Keys.RIGHT, InputAction.MOVE_RIGHT);
-        bindings.bind(Input.Keys.UP, InputAction.MOVE_UP);
-        bindings.bind(Input.Keys.DOWN, InputAction.MOVE_DOWN);
+        bindings.bind(Input.Keys.LEFT, InputAction.STOP);
+        bindings.bind(Input.Keys.RIGHT, InputAction.PLAY);
+        bindings.bind(Input.Keys.UP, InputAction.VOLUME_UP);
+        bindings.bind(Input.Keys.DOWN, InputAction.VOLUME_DOWN);
 
         // ALSO allow WASD
         bindings.bind(Input.Keys.A, InputAction.MOVE_LEFT);
@@ -107,12 +107,28 @@ public class GameMaster extends ApplicationAdapter {
         float y = Gdx.graphics.getHeight() - 10f;
 
         font.draw(batch, "Controls:", x, y);
-        font.draw(batch, "WASD / Arrow keys: move", x, y - 18f);
-        font.draw(batch, "Space: spawn obstacle", x, y - 36f);
-        font.draw(batch, "Enter: start / (if paused) step 1 frame", x, y - 54f);
-        font.draw(batch, "P: pause/resume  |  Esc: quit", x, y - 72f);
+        font.draw(batch, "WASD: move", x, y - 18f);
+        font.draw(batch, "Left/Right: Stop/Play", x, y - 36f);
+        font.draw(batch, "Up/Down: Volume +-", x, y - 54f);
+        font.draw(batch, "Volume: " + ctx.ioManager.getOutputHandler().getAudioPlayer().getVolumePercentage() + "%", x,
+                y - 72f);
+        font.draw(batch, "Space: spawn obstacle", x, y - 90f);
+        font.draw(batch, "Enter: start / (if paused) step 1 frame", x, y - 108f);
+        font.draw(batch, "P: pause/resume  |  Esc: quit", x, y - 126f);
 
         batch.end();
+        if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.PLAY)) {
+            ctx.ioManager.getOutputHandler().playMusic("background.mp3");
+        }
+        if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.STOP)) {
+            ctx.ioManager.getOutputHandler().stopMusic();
+        }
+        if (ctx.ioManager.getInputHandler().getState().isPressed(InputAction.VOLUME_UP)) {
+            ctx.ioManager.getOutputHandler().getAudioPlayer().increaseVolume(0.1f * Gdx.graphics.getDeltaTime());
+        }
+        if (ctx.ioManager.getInputHandler().getState().isPressed(InputAction.VOLUME_DOWN)) {
+            ctx.ioManager.getOutputHandler().getAudioPlayer().decreaseVolume(0.1f * Gdx.graphics.getDeltaTime());
+        }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();

@@ -21,16 +21,7 @@ public final class MenuScene extends AbstractBaseScene {
 
     @Override
     public void update(float dt) {
-        // UI overlay (text is drawn in Main; here we only draw a subtle background)
-        ctx.renderQueue.submit(RenderCommand.fullscreenFade(0f, 0f, 0f, 0.25f));
-
-        if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.MOVE_LEFT))
-            spawnCount = 50;
-        if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.MOVE_UP))
-            spawnCount = 200;
-        if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.MOVE_RIGHT))
-            spawnCount = 400;
-
+        ctx.renderQueue.submit(RenderCommand.fullscreenFade(0.4f, 0.6f, 0.9f, 0.25f));
         if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.CONFIRM)) {
             ctx.sceneManager.switchTo(new TransitionScene(ctx, new SandboxScene(ctx, spawnCount), 0.6f));
         }

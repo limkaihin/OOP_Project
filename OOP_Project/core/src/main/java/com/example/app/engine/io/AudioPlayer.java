@@ -1,13 +1,17 @@
 package com.example.app.engine.io;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Simple audio manager (UML-aligned).
  * Uses {@link Sound} as a minimal wrapper.
  */
 public class AudioPlayer {
 
-    private float masterVolume = 1f;
+    private float masterVolume = 0.5f;
     private Sound currentMusic;
+    private final List<Sound> activeSounds = new ArrayList<>();
 
     public AudioPlayer() {
     }
@@ -18,8 +22,15 @@ public class AudioPlayer {
 
     public void setMasterVolume(float masterVolume) {
         this.masterVolume = Math.max(0f, Math.min(1f, masterVolume));
+
+        // Update current music
         if (currentMusic != null)
             currentMusic.setVolume(this.masterVolume);
+
+        // Update ALL active sounds
+        for (Sound sound : activeSounds) {
+            sound.setVolume(this.masterVolume);
+        }
     }
 
     public void playMusic(String filePath) {
@@ -39,7 +50,18 @@ public class AudioPlayer {
         if (sound != null) {
             sound.setVolume(masterVolume);
             sound.play();
+            activeSounds.add(sound);
+
+            // Remove sound when done (simplified - in real app you'd need to check if
+            // playing)
+            // For now, we'll clean up old sounds periodically
+            cleanupFinishedSounds();
         }
+    }
+
+    private void cleanupFinishedSounds() {
+        // Remove sounds that are no longer playing
+        activeSounds.removeIf(sound -> !sound.isPlaying());
     }
 
     public void stopMusic() {
@@ -49,23 +71,23 @@ public class AudioPlayer {
         }
     }
 
-    public void addSoundPath(String path) {
-        // Optional extension point; no-op for now.
+    public void increaseVolume(float amount) {
+        setMasterVolume(masterVolume + amount);
     }
 
-    public boolean hasSound(String soundId) {
-        return false;
+    public void decreaseVolume(float amount) {
+        setMasterVolume(masterVolume - amount);
     }
 
-    public Sound getCurrentMusic() {
-        return currentMusic;
+    public int getVolumePercentage() {
+        return (int) (masterVolume * 100);
     }
 
-    public void pauseAll() {
-        // Not supported in this minimal wrapper.
-    }
-
-    public void resumeAll() {
-        // Not supported in this minimal wrapper.
+    public void dispose() {
+        stopMusic();
+        for (Sound sound : activeSounds) {
+            sound.dispose();
+        }
+        activeSounds.clear();
     }
 }
