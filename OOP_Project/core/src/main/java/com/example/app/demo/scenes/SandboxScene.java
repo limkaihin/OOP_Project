@@ -149,7 +149,7 @@ public final class SandboxScene extends AbstractBaseScene {
     }
 
     private boolean isObstacle(Entity e) {
-        return e != null && e.getComponent(ObstacleTag.class) != null;
+        return e != null && e.getComponent(ColliderComponent.class) != null;
     }
 
     private boolean isPair(Entity a, Entity b, Entity x, Entity y) {
@@ -172,7 +172,6 @@ public final class SandboxScene extends AbstractBaseScene {
         float radius = 12f + rng.nextInt(10);
 
         Entity e = ctx.entityManager.create();
-        e.addComponent(ObstacleTag.class, new ObstacleTag());
 
         e.addComponent(TransformComponent.class, new TransformComponent(x, y));
 
