@@ -124,10 +124,10 @@ public class GameMaster extends ApplicationAdapter {
             ctx.ioManager.getOutputHandler().stopMusic();
         }
         if (ctx.ioManager.getInputHandler().getState().isPressed(InputAction.VOLUME_UP)) {
-            ctx.ioManager.getOutputHandler().getAudioPlayer().increaseVolume(0.1f);
+            ctx.ioManager.getOutputHandler().getAudioPlayer().increaseVolume(0.1f * Gdx.graphics.getDeltaTime());
         }
         if (ctx.ioManager.getInputHandler().getState().isPressed(InputAction.VOLUME_DOWN)) {
-            ctx.ioManager.getOutputHandler().getAudioPlayer().decreaseVolume(0.1f);
+            ctx.ioManager.getOutputHandler().getAudioPlayer().decreaseVolume(0.1f * Gdx.graphics.getDeltaTime());
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
