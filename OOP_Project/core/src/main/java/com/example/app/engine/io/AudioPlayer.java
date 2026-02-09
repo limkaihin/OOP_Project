@@ -11,6 +11,7 @@ public class AudioPlayer {
 
     private float masterVolume = 0.5f;
     private Sound currentMusic;
+    private String lastMusicFilePath;
     private final List<Sound> activeSounds = new ArrayList<>();
 
     public AudioPlayer() {
@@ -35,6 +36,7 @@ public class AudioPlayer {
 
     public void playMusic(String filePath) {
         stopMusic();
+        this.lastMusicFilePath = filePath;
 
         // Create and play the sound
         currentMusic = new Sound(filePath);
@@ -42,6 +44,10 @@ public class AudioPlayer {
             currentMusic.setVolume(masterVolume);
             currentMusic.play();
         }
+    }
+
+    public String getLastMusicFilePath() {
+        return lastMusicFilePath;
     }
 
     // Also add this convenience method
@@ -81,6 +87,13 @@ public class AudioPlayer {
 
     public int getVolumePercentage() {
         return (int) (masterVolume * 100);
+    }
+
+    public Sound getCurrentMusic() {
+        if (currentMusic == null) {
+            return null;
+        }
+        return currentMusic;
     }
 
     public void dispose() {

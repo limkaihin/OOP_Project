@@ -12,6 +12,9 @@ public enum InputAction {
     VOLUME_DOWN,
     STOP,
     PLAY,
+    SONG1,
+    SONG2,
+    SONG3,
 
     MOVE_LEFT,
     MOVE_RIGHT,

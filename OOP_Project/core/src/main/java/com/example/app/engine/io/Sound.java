@@ -42,13 +42,10 @@ public class Sound {
     }
 
     public void stop() {
-        if (gdxSound == null)
+        if (gdxSound == null || soundId == -1)
             return;
-        if (soundId != -1) {
-            gdxSound.stop(soundId);
-        }
+        gdxSound.stop(soundId);
         playing = false;
-        soundId = -1;
     }
 
     public void setVolume(float volume) {

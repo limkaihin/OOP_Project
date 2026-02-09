@@ -38,8 +38,7 @@ public final class EngineContext {
             EntityManager entityManager,
             MovementManager movementManager,
             CollisionManager collisionManager,
-            IOManager ioManager
-    ) {
+            IOManager ioManager) {
         this.config = config;
         this.sceneManager = sceneManager;
         this.entityManager = entityManager;
@@ -76,13 +75,15 @@ public final class EngineContext {
 
         for (int i = 0; i < steps; i++) {
             Scene current = sceneManager.current();
-            if (current != null) current.update(dt);
+            if (current != null)
+                current.update(dt);
 
             movementManager.update(dt, entityManager.getAll());
 
             List<CollisionEvent> collisions = collisionManager.update(dt, entityManager.getAll());
             if (collisions != null) {
-                for (CollisionEvent e : collisions) collisionEvents.publish(e);
+                for (CollisionEvent e : collisions)
+                    collisionEvents.publish(e);
             }
 
             entityManager.update(dt);
@@ -90,7 +91,8 @@ public final class EngineContext {
     }
 
     public void dispose() {
-        while (sceneManager.size() > 0) sceneManager.pop();
+        while (sceneManager.size() > 0)
+            sceneManager.pop();
         ioManager.dispose();
         ioManager.log("Engine", "Disposed");
     }

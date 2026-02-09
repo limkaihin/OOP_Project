@@ -44,6 +44,9 @@ public class GameMaster extends ApplicationAdapter {
 
         // Input bindings
         InputBinding bindings = new InputBinding();
+        bindings.bind(Input.Keys.NUM_1, InputAction.SONG1);
+        bindings.bind(Input.Keys.NUM_2, InputAction.SONG2);
+        bindings.bind(Input.Keys.NUM_3, InputAction.SONG3);
         bindings.bind(Input.Keys.LEFT, InputAction.STOP);
         bindings.bind(Input.Keys.RIGHT, InputAction.PLAY);
         bindings.bind(Input.Keys.UP, InputAction.VOLUME_UP);
@@ -70,8 +73,7 @@ public class GameMaster extends ApplicationAdapter {
         OutputHandler outputHandler = new OutputHandler(audioPlayer, errorLogger);
 
         IOManager ioManager = new IOManager(inputHandler, outputHandler);
-        ioManager.playMusic("background.mp3");
-        ioManager.log("Audio", "Background music started via engine");
+
         ctx = new EngineContext(config, sceneManager, entityManager, movementManager, collisionManager, ioManager);
 
         // Start at menu
@@ -108,17 +110,38 @@ public class GameMaster extends ApplicationAdapter {
 
         font.draw(batch, "Controls:", x, y);
         font.draw(batch, "WASD: move", x, y - 18f);
-        font.draw(batch, "Left/Right: Stop/Play", x, y - 36f);
-        font.draw(batch, "Up/Down: Volume +-", x, y - 54f);
+        font.draw(batch, "1 : hit effect music", x, y - 36f);
+        font.draw(batch, "2 : kahoot music", x, y - 54f);
+        font.draw(batch, "3 : crazy frog music", x, y - 72f);
+        font.draw(batch, "Left/Right: Stop/Play", x, y - 90f);
+        font.draw(batch, "Up/Down: Volume +-", x, y - 108f);
         font.draw(batch, "Volume: " + ctx.ioManager.getOutputHandler().getAudioPlayer().getVolumePercentage() + "%", x,
-                y - 72f);
-        font.draw(batch, "Space: spawn obstacle", x, y - 90f);
-        font.draw(batch, "Enter: start / (if paused) step 1 frame", x, y - 108f);
-        font.draw(batch, "P: pause/resume  |  Esc: quit", x, y - 126f);
+                y - 126f);
+        font.draw(batch, "Space: spawn obstacle", x, y - 144f);
+        font.draw(batch, "Enter: start / (if paused) step 1 frame", x, y - 162f);
+        font.draw(batch, "P: pause/resume  |  Esc: quit", x, y - 180f);
 
         batch.end();
+
+        if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.SONG1)) {
+            ctx.ioManager.getOutputHandler().stopMusic();
+            ctx.ioManager.getOutputHandler().playMusic("hit.wav");
+        }
+        if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.SONG2)) {
+            ctx.ioManager.getOutputHandler().stopMusic();
+            ctx.ioManager.getOutputHandler().playMusic("music1.mp3");
+        }
+        if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.SONG3)) {
+            ctx.ioManager.getOutputHandler().stopMusic();
+            ctx.ioManager.getOutputHandler().playMusic("music2.mp3");
+        }
         if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.PLAY)) {
-            ctx.ioManager.getOutputHandler().playMusic("background.mp3");
+            String lastMusicFilePath = ctx.ioManager.getOutputHandler().getAudioPlayer().getLastMusicFilePath();
+            if (lastMusicFilePath != null) {
+                ctx.ioManager.getOutputHandler().playMusic(lastMusicFilePath);
+            } else {
+                ctx.ioManager.log("Audio", "No current music to play");
+            }
         }
         if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.STOP)) {
             ctx.ioManager.getOutputHandler().stopMusic();
