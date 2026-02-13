@@ -1,0 +1,265 @@
+@startuml uml
+skinparam classAttributeIconSize 0
+skinparam style strictuml
+
+' =========================
+' APPLICATION LAYER
+' =========================
+class GameMaster {
+    - context : EngineContext
+    + start()
+    + stop()
+}
+
+' =========================
+' ENGINE CORE
+' =========================
+class EngineContext {
+    - entityManager : EntityManager
+    - sceneManager : SceneManager
+    - movementManager : MovementManager
+    - collisionManager : CollisionManager
+    - renderQueue : RenderQueue
+    - ioManager : IOManager
+    - eventBus : EventBus
+    - clock : EngineClock
+}
+
+GameMaster --> EngineContext
+
+EngineContext *-- EntityManager
+EngineContext *-- SceneManager
+EngineContext *-- MovementManager
+EngineContext *-- CollisionManager
+EngineContext *-- RenderQueue
+EngineContext *-- IOManager
+EngineContext *-- EventBus
+EngineContext *-- EngineClock
+
+
+' =========================
+' ECS - ENTITY LAYER
+' =========================
+class Entity {
+    - id : int
+    - components : Map<Class, Component>
+    + addComponent(c:Component)
+    + getComponent(type:Class)
+}
+
+class EntityManager {
+    - entities : Map<int, Entity>
+    - idGenerator : EntityIdGenerator
+    + createEntity()
+    + removeEntity(id:int)
+}
+
+class EntityIdGenerator {
+    - currentId : int
+    + nextId() : int
+}
+
+EntityManager --> Entity
+EntityManager --> EntityIdGenerator
+Entity "1" o-- "*" Component
+
+
+' =========================
+' COMPONENTS
+' =========================
+interface Component
+
+class TransformComponent {
+    + x : float
+    + y : float
+    + rotation : float
+}
+
+class VelocityComponent {
+    + vx : float
+    + vy : float
+}
+
+class AccelerationComponent {
+    + ax : float
+    + ay : float
+}
+
+class ColliderComponent {
+    + width : float
+    + height : float
+    + isStatic : boolean
+}
+
+class RenderableComponent {
+    + shape : RenderShape
+    + width : float
+    + height : float
+}
+
+Component <|-- TransformComponent
+Component <|-- VelocityComponent
+Component <|-- AccelerationComponent
+Component <|-- ColliderComponent
+Component <|-- RenderableComponent
+
+
+' =========================
+' MOVEMENT SYSTEM
+' =========================
+class MovementManager {
+    + update(deltaTime:float)
+}
+
+MovementManager --> EntityManager
+MovementManager --> TransformComponent
+MovementManager --> VelocityComponent
+MovementManager --> AccelerationComponent
+MovementManager --> EventBus
+
+
+' =========================
+' COLLISION SYSTEM
+' =========================
+interface CollisionManager {
+    + detectCollisions()
+    + resolveCollisions()
+}
+
+class SimpleCollisionManager {
+    - spatialGrid : SpatialHashGrid
+    + detectCollisions()
+    + resolveCollisions()
+}
+
+class CollisionPair
+class CollisionManifold
+class CollisionResolver
+class CollisionEvent
+
+interface CollisionListener {
+    + onCollision(event:CollisionEvent)
+}
+
+class SpatialHashGrid
+
+CollisionManager <|-- SimpleCollisionManager
+SimpleCollisionManager --> SpatialHashGrid
+CollisionManager --> ColliderComponent
+CollisionManager --> CollisionResolver
+CollisionManager --> CollisionListener
+CollisionManager --> CollisionEvent
+CollisionResolver --> CollisionManifold
+CollisionManifold --> CollisionPair
+CollisionManager --> EventBus
+
+
+' =========================
+' RENDER SYSTEM
+' =========================
+class RenderQueue {
+    - commands : List<RenderCommand>
+    + submit(cmd:RenderCommand)
+    + flush()
+}
+
+class RenderCommand {
+    + x : float
+    + y : float
+    + width : float
+    + height : float
+    + shapeType : ShapeType
+}
+
+enum ShapeType {
+    RECTANGLE
+    CIRCLE
+}
+
+enum RenderShape {
+    RECTANGLE
+    CIRCLE
+}
+
+RenderQueue o-- RenderCommand
+RenderableComponent --> RenderShape
+RenderCommand --> ShapeType
+
+
+' =========================
+' SCENE MANAGEMENT
+' =========================
+interface Scene {
+    + onEnter()
+    + update()
+    + onExit()
+}
+
+abstract class AbstractBaseScene {
+    - context : EngineContext
+}
+
+class MenuScene
+class SandboxScene
+class TransitionScene
+
+class SceneManager {
+    - currentScene : Scene
+    + changeScene(scene:Scene)
+    + update()
+}
+
+Scene <|.. AbstractBaseScene
+AbstractBaseScene <|-- MenuScene
+AbstractBaseScene <|-- SandboxScene
+AbstractBaseScene <|-- TransitionScene
+SceneManager --> Scene
+SceneManager --> EventBus
+
+
+' =========================
+' IO SYSTEM
+' =========================
+class IOManager {
+    - inputHandler : InputHandler
+    - outputHandler : OutputHandler
+    - audioPlayer : AudioPlayer
+    - errorLogger : ErrorLogger
+}
+
+class InputHandler
+class OutputHandler
+class AudioPlayer
+class ErrorLogger
+
+class InputAction
+class InputBinding
+class InputState
+
+IOManager *-- InputHandler
+IOManager *-- OutputHandler
+IOManager *-- AudioPlayer
+IOManager *-- ErrorLogger
+
+InputHandler --> InputAction
+InputHandler --> InputBinding
+InputHandler --> InputState
+
+
+' =========================
+' UTILITIES
+' =========================
+class EngineClock {
+    + deltaTime() : float
+}
+
+class EventBus {
+    + publish(event:Object)
+    + subscribe(listener:Object)
+}
+
+class Preconditions
+class PairKey
+class Mathf
+
+@enduml

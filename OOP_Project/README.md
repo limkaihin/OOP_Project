@@ -39,7 +39,9 @@ From the project root directory:
 
 | Action | Key |
 |------|----|
-| Move Player | `W A S D` or Arrow Keys |
+| Move Player | `W A S D` |
+|increase reduce volume | `Up` `Down` |
+|Play or stop music | `Right` `Left` |
 | Spawn Obstacle | `Space` |
 | Start / Confirm (Menu) | `Enter` |
 | Pause / Resume | `P` |
