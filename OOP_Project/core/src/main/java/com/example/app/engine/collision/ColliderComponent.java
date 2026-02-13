@@ -1,10 +1,10 @@
 package com.example.app.engine.collision;
-
+import com.example.app.engine.components.Component;
 /**
  * Generic collider component (non-contextual).
  * Supports Circle and AABB shapes.
  */
-public final class ColliderComponent {
+public final class ColliderComponent implements Component{
 
     public enum ShapeType { CIRCLE, AABB }
 

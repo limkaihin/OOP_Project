@@ -1,5 +1,5 @@
 package com.example.app.engine.movement;
-
+import com.example.app.engine.components.Component;
 import com.example.app.engine.entity.Entity;
 import com.example.app.engine.entity.EntityManager;
 
@@ -14,7 +14,7 @@ import com.example.app.engine.entity.EntityManager;
  *
  * Also supports simple global gravity and a max speed clamp.
  */
-public class MovementManager {
+public class MovementManager implements Component {
 
     private float gravity = 0f;      // units/sec^2 applied to vy
     private float maxSpeed = 0f;     // 0 = no clamp

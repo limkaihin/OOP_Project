@@ -1,9 +1,9 @@
 package com.example.app.engine.render;
-
+import com.example.app.engine.components.Component;
 /**
  * Non-contextual render description.
  */
-public final class RenderableComponent {
+public final class RenderableComponent implements Component {
 
     public enum RenderShape { RECT, CIRCLE }
 

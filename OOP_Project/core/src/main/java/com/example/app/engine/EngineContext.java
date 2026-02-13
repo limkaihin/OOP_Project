@@ -75,9 +75,9 @@ public final class EngineContext {
 
         for (int i = 0; i < steps; i++) {
             Scene current = sceneManager.current();
-            if (current != null)
+            if (current != null){
                 current.update(dt);
-
+            }
             movementManager.update(dt, entityManager.getAll());
 
             List<CollisionEvent> collisions = collisionManager.update(dt, entityManager.getAll());
