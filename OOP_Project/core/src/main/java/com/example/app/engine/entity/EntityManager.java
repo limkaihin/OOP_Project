@@ -6,7 +6,6 @@ public class EntityManager {
     private final EntityIdGenerator idGen = new EntityIdGenerator();
     private final List<Entity> entities = new ArrayList<>();
     private final Set<Integer> pendingDestroyIds = new HashSet<>();
-    private int nextIncrement = 0;
 
     public EntityManager() {}
 
@@ -49,9 +48,5 @@ public class EntityManager {
             }
         }
         return null;
-    }
-
-    public int increment() { 
-        return ++nextIncrement; 
     }
 }
