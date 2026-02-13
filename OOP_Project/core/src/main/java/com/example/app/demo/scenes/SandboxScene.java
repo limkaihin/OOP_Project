@@ -97,7 +97,11 @@ public final class SandboxScene extends AbstractBaseScene {
             if (e != null)
                 keepInsideWindowBounce(e);
         }
+    }
 
+    @Override
+    public void render() {
+        ctx.renderQueue.clear();
         // Submit render commands (draw everything)
         for (Entity e : ctx.entityManager.getAll()) {
             TransformComponent t = e.getComponent(TransformComponent.class);
@@ -129,9 +133,6 @@ public final class SandboxScene extends AbstractBaseScene {
                 npcHitCooldown = 0.15f;
             }
 
-            bounceEntity(player);
-            bounceEntity(npc);
-
             ctx.ioManager.log("Collision", "NPC hit player!");
             return;
         }
@@ -139,11 +140,6 @@ public final class SandboxScene extends AbstractBaseScene {
         // Player hits any obstacle (including newly spawned ones) => bounce player +
         // nudge obstacle
         if (isInPair(a, b, player) && (isObstacle(a) || isObstacle(b))) {
-            Entity obstacle = isObstacle(a) ? a : b;
-
-            bounceEntity(player);
-            bounceEntity(obstacle);
-
             ctx.ioManager.log("Collision", "Player hit obstacle!");
         }
     }
@@ -160,13 +156,13 @@ public final class SandboxScene extends AbstractBaseScene {
         return a == x || b == x;
     }
 
-    private void bounceEntity(Entity e) {
-        VelocityComponent v = e.getComponent(VelocityComponent.class);
-        if (v != null) {
-            v.vx = -v.vx;
-            v.vy = -v.vy;
-        }
-    }
+    // private void bounceEntity(Entity e) {
+    // VelocityComponent v = e.getComponent(VelocityComponent.class);
+    // if (v != null) {
+    // v.vx = -v.vx;
+    // v.vy = -v.vy;
+    // }
+    // }
 
     private void spawnObstacle(float x, float y) {
         float radius = 12f + rng.nextInt(10);

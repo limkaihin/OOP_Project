@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -17,6 +18,7 @@ import com.example.app.engine.io.*;
 import com.example.app.engine.movement.MovementManager;
 import com.example.app.engine.render.RenderCommand;
 import com.example.app.engine.scene.SceneManager;
+import com.example.app.engine.scene.Scene;
 
 /**
  * GameMaster: libGDX ApplicationAdapter entry point (UML-aligned).
@@ -86,7 +88,13 @@ public class GameMaster extends ApplicationAdapter {
         float realDt = Gdx.graphics.getDeltaTime();
         ctx.update(realDt);
 
+        // CLEAR ONCE — at the top
         ScreenUtils.clear(0.10f, 0.10f, 0.14f, 1f);
+
+        Scene current = ctx.sceneManager.current();
+        if (current != null) {
+            current.render();
+        }
 
         // Draw shapes from engine RenderQueue
         shapes.begin(ShapeRenderer.ShapeType.Filled);

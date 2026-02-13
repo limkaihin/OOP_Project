@@ -56,7 +56,7 @@ public final class EngineContext {
      */
     public void update(float realDt) {
         // Clear render queue each frame; scenes submit draw commands.
-        renderQueue.clear();
+        // renderQueue.clear();
 
         // IO updates on real time
         ioManager.update(realDt);
@@ -75,7 +75,7 @@ public final class EngineContext {
 
         for (int i = 0; i < steps; i++) {
             Scene current = sceneManager.current();
-            if (current != null){
+            if (current != null) {
                 current.update(dt);
             }
             movementManager.update(dt, entityManager.getAll());

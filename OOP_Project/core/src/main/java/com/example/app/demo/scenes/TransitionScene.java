@@ -26,11 +26,14 @@ public final class TransitionScene extends AbstractBaseScene {
     @Override
     public void update(float dt) {
         t += dt;
-        float alpha = Math.min(1f, t / duration);
-        ctx.renderQueue.submit(RenderCommand.fullscreenFade(0f, 0f, 0f, alpha));
-
         if (t >= duration) {
             ctx.sceneManager.switchTo(next);
         }
+    }
+
+    @Override
+    public void render() {
+        float alpha = Math.min(1f, t / duration);
+        ctx.renderQueue.submit(RenderCommand.fullscreenFade(0f, 0f, 0f, alpha));
     }
 }

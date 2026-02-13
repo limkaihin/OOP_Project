@@ -21,10 +21,15 @@ public final class MenuScene extends AbstractBaseScene {
 
     @Override
     public void update(float dt) {
-        ctx.renderQueue.submit(RenderCommand.fullscreenFade(0.4f, 0.6f, 0.9f, 0.25f));
         if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.CONFIRM)) {
             ctx.sceneManager.switchTo(new TransitionScene(ctx, new SandboxScene(ctx, spawnCount), 0.6f));
         }
+    }
+
+    @Override
+    public void render() {
+        ctx.renderQueue.clear();
+        ctx.renderQueue.submit(RenderCommand.fullscreenFade(0.4f, 0.6f, 0.9f, 0.25f));
     }
 
     public int getSpawnCount() {

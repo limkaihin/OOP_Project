@@ -2,7 +2,8 @@ package com.example.app.engine.scene;
 
 /**
  * Non-contextual scene lifecycle.
- * Scenes may manage their own entities/managers, but should not hardcode engine internals.
+ * Scenes may manage their own entities/managers, but should not hardcode engine
+ * internals.
  */
 public interface Scene {
     /** Allocate/prepare resources (called once when first loaded). */
@@ -20,6 +21,10 @@ public interface Scene {
     /** Free resources (called once when permanently removed/unloaded). */
     void onUnload();
 
+    void render();
+
     /** Convenience: scene name for debugging/logging. */
-    default String name() { return getClass().getSimpleName(); }
+    default String name() {
+        return getClass().getSimpleName();
+    }
 }

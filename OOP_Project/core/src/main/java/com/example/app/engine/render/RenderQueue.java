@@ -11,7 +11,17 @@ import java.util.List;
 public final class RenderQueue {
     private final List<RenderCommand> commands = new ArrayList<>();
 
-    public void clear() { commands.clear(); }
-    public void submit(RenderCommand cmd) { if (cmd != null) commands.add(cmd); }
-    public List<RenderCommand> view() { return Collections.unmodifiableList(commands); }
+    public void clear() {
+        commands.clear();
+    }
+
+    public void submit(RenderCommand cmd) {
+        if (cmd != null) {
+            commands.add(cmd);
+        }
+    }
+
+    public List<RenderCommand> view() {
+        return Collections.unmodifiableList(commands);
+    }
 }
