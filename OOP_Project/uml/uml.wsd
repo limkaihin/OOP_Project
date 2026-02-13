@@ -220,30 +220,181 @@ SceneManager --> EventBus
 ' =========================
 ' IO SYSTEM
 ' =========================
-class IOManager {
-    - inputHandler : InputHandler
-    - outputHandler : OutputHandler
-    - audioPlayer : AudioPlayer
-    - errorLogger : ErrorLogger
-}
-
-class InputHandler
-class OutputHandler
-class AudioPlayer
-class ErrorLogger
-
-class InputAction
-class InputBinding
-class InputState
-
-IOManager *-- InputHandler
-IOManager *-- OutputHandler
-IOManager *-- AudioPlayer
-IOManager *-- ErrorLogger
-
-InputHandler --> InputAction
-InputHandler --> InputBinding
-InputHandler --> InputState
+    
+    ' ============= Enumerations =============
+    enum InputAction {
+        CONFIRM
+        BACK
+        PAUSE
+        VOLUME_UP
+        VOLUME_DOWN
+        STOP
+        PLAY
+        SONG1
+        SONG2
+        SONG3
+        MOVE_LEFT
+        MOVE_RIGHT
+        MOVE_UP
+        MOVE_DOWN
+        ACTION_1
+        ACTION_2
+    }
+    
+    ' ============= Input Classes =============
+    class InputState {
+        - currentState: EnumMap<InputAction, Boolean>
+        - previousState: EnumMap<InputAction, Boolean>
+        + InputState()
+        + processInput(action: InputAction, isDown: boolean): void
+        + nextFrame(): void
+        + isPressed(a: InputAction): boolean
+        + isJustPressed(a: InputAction): boolean
+        + set(a: InputAction, isPressedNow: boolean, wasPressedLastFrame: boolean): void
+    }
+    
+    class InputBinding {
+        - keyToAction: Map<Integer, InputAction>
+        + bind(keyCode: int, action: InputAction): void
+        + unbind(keyCode: int): void
+        + getAction(keyCode: int): InputAction
+        + viewBindings(): Map<Integer, InputAction>
+        + clear(): void
+    }
+    
+    class InputHandler {
+        - bindings: InputBinding
+        - state: InputState
+        + InputHandler(bindings: InputBinding)
+        + update(deltaTime: float): void
+        + getState(): InputState
+        + setKeyState(keyCode: int, isPressed: boolean): void
+        - isAnyKeyDownForAction(action: InputAction): boolean
+    }
+    
+    ' ============= Audio Classes =============
+    class Sound {
+        - filePath: String
+        - volume: float
+        - playing: boolean
+        - soundId: long
+        - gdxSound: com.badlogic.gdx.audio.Sound
+        + Sound(filePath: String)
+        + getFilePath(): String
+        + play(): void
+        + stop(): void
+        + setVolume(volume: float): void
+        + getVolume(): float
+        + isPlaying(): boolean
+        + dispose(): void
+    }
+    
+    class AudioPlayer {
+        - masterVolume: float
+        - currentMusic: Sound
+        - lastMusicFilePath: String
+        - activeSounds: List<Sound>
+        + AudioPlayer()
+        + getMasterVolume(): float
+        + setMasterVolume(masterVolume: float): void
+        + playMusic(filePath: String): void
+        + getLastMusicFilePath(): String
+        + playSound(filePath: String): void
+        + stopMusic(): void
+        + increaseVolume(amount: float): void
+        + decreaseVolume(amount: float): void
+        + getVolumePercentage(): int
+        + getCurrentMusic(): Sound
+        + dispose(): void
+        - cleanupFinishedSounds(): void
+    }
+    
+    ' ============= Logging Classes =============
+    class ErrorEntry {
+        - timestamp: long
+        - tag: String
+        - message: String
+        + ErrorEntry(tag: String, message: String)
+        + getTimestamp(): long
+        + getTag(): String
+        + getMessage(): String
+        + formattedTimeStamp(): String
+        + toString(): String
+    }
+    
+    class ErrorLogger {
+        - errorLogs: List<ErrorEntry>
+        - maxErrors: int
+        + ErrorLogger()
+        + ErrorLogger(maxErrors: int)
+        + log(tag: String, message: String): void
+        + error(tag: String, message: String): void
+        + error(tag: String, message: String, throwable: Throwable): void
+        + getErrors(): List<ErrorEntry>
+        + setMaxErrors(maxErrors: int): void
+        + exportToFile(filePath: String): void
+        - add(entry: ErrorEntry): void
+    }
+    
+    ' ============= Output Classes =============
+    class OutputHandler {
+        - audioPlayer: AudioPlayer
+        - errorLogger: ErrorLogger
+        + OutputHandler(audioPlayer: AudioPlayer, errorLogger: ErrorLogger)
+        + log(tag: String, message: String): void
+        + error(tag: String, message: String): void
+        + error(tag: String, message: String, throwable: Throwable): void
+        + playMusic(filePath: String): void
+        + playSound(filePath: String): void
+        + stopMusic(): void
+        + setVolume(volume: float): void
+        + getAudioPlayer(): AudioPlayer
+        + getErrorLogger(): ErrorLogger
+        + dispose(): void
+    }
+    
+    ' ============= Facade/Manager =============
+    class IOManager {
+        - inputHandler: InputHandler
+        - outputHandler: OutputHandler
+        + IOManager(inputHandler: InputHandler, outputHandler: OutputHandler)
+        + getInputHandler(): InputHandler
+        + getOutputHandler(): OutputHandler
+        + update(deltaTime: float): void
+        + log(tag: String, message: String): void
+        + error(tag: String, message: String): void
+        + error(tag: String, message: String, throwable: Throwable): void
+        + playMusic(filePath: String): void
+        + playSound(filePath: String): void
+        + stopMusic(): void
+        + dispose(): void
+    }
+    
+    ' ============= Relationships =============
+    
+    ' InputHandler relationships
+    InputHandler *-- InputBinding : "has"
+    InputHandler *-- InputState : "has"
+    InputHandler ..> InputAction : "uses"
+    InputBinding ..> InputAction : "maps to"
+    InputState ..> InputAction : "tracks"
+    
+    ' Audio relationships
+    AudioPlayer o-- Sound : "contains current music"
+    AudioPlayer o-- Sound : "contains active sounds"
+    
+    ' Logging relationships
+    ErrorLogger o-- ErrorEntry : "contains"
+    OutputHandler *-- AudioPlayer : "has"
+    OutputHandler *-- ErrorLogger : "has"
+    
+    ' IOManager relationships (composition)
+    IOManager *-- InputHandler : "owns"
+    IOManager *-- OutputHandler : "owns"
+    
+    ' Method parameter/return type dependencies
+    InputState --> InputAction : "uses as parameter"
+    InputBinding --> InputAction : "uses as parameter"
 
 
 ' =========================
