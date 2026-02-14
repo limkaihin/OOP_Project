@@ -26,7 +26,7 @@ public final class SpatialHashGrid {
         float px = t.x + c.offsetX;
         float py = t.y + c.offsetY;
 
-        if (c.type == ColliderComponent.ShapeType.CIRCLE) {
+        if (c.type == ColliderComponent.ColShapeType.CIRCLE) {
             minX = px - c.radius; maxX = px + c.radius;
             minY = py - c.radius; maxY = py + c.radius;
         } else { // AABB

@@ -94,19 +94,19 @@ public final class SimpleCollisionManager implements CollisionManager {
         float bx = tb.x + cb.offsetX;
         float by = tb.y + cb.offsetY;
 
-        if (ca.type == ColliderComponent.ShapeType.CIRCLE && cb.type == ColliderComponent.ShapeType.CIRCLE) {
+        if (ca.type == ColliderComponent.ColShapeType.CIRCLE && cb.type == ColliderComponent.ColShapeType.CIRCLE) {
             return circleCircle(ax, ay, ca.radius, bx, by, cb.radius);
         }
 
-        if (ca.type == ColliderComponent.ShapeType.AABB && cb.type == ColliderComponent.ShapeType.AABB) {
+        if (ca.type == ColliderComponent.ColShapeType.AABB && cb.type == ColliderComponent.ColShapeType.AABB) {
             return aabbAabb(ax, ay, ca.halfWidth, ca.halfHeight, bx, by, cb.halfWidth, cb.halfHeight);
         }
 
-        if (ca.type == ColliderComponent.ShapeType.CIRCLE && cb.type == ColliderComponent.ShapeType.AABB) {
+        if (ca.type == ColliderComponent.ColShapeType.CIRCLE && cb.type == ColliderComponent.ColShapeType.AABB) {
             return circleAabb(ax, ay, ca.radius, bx, by, cb.halfWidth, cb.halfHeight);
         }
 
-        if (ca.type == ColliderComponent.ShapeType.AABB && cb.type == ColliderComponent.ShapeType.CIRCLE) {
+        if (ca.type == ColliderComponent.ColShapeType.AABB && cb.type == ColliderComponent.ColShapeType.CIRCLE) {
             CollisionManifold m = circleAabb(bx, by, cb.radius, ax, ay, ca.halfWidth, ca.halfHeight);
             if (m == null) return null;
             return new CollisionManifold(-m.normalX, -m.normalY, m.penetration);

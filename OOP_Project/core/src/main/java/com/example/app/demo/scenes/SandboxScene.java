@@ -192,7 +192,7 @@ public final class SandboxScene extends AbstractBaseScene {
             return;
 
         float minX, minY, maxX, maxY;
-        if (c.type == ColliderComponent.ShapeType.CIRCLE) {
+        if (c.type == ColliderComponent.ColShapeType.CIRCLE) {
             minX = c.radius;
             maxX = ctx.config.width - c.radius;
             minY = c.radius;

@@ -6,7 +6,7 @@ import com.example.app.engine.components.Component;
  */
 public final class ColliderComponent implements Component{
 
-    public enum ShapeType { CIRCLE, AABB }
+    public enum ColShapeType { CIRCLE, AABB }
 
     // Collision filtering (generic)
     public int layer = 1;          // "I am in these layers"
