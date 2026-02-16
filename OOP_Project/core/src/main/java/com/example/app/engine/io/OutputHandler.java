@@ -29,6 +29,10 @@ public class OutputHandler {
         audioPlayer.playMusic(filePath);
     }
 
+    public void playSound(String filePath) {
+        audioPlayer.playSound(filePath);
+    }
+
     public void stopMusic() {
         audioPlayer.stopMusic();
     }

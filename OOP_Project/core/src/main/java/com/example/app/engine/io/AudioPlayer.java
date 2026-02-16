@@ -46,6 +46,14 @@ public class AudioPlayer {
         }
     }
 
+    public void playSound(String filePath) {
+        Sound sound = new Sound(filePath);
+        if (sound != null) {
+            sound.setVolume(masterVolume);
+            sound.play();
+        }
+    }
+
     public String getLastMusicFilePath() {
         return lastMusicFilePath;
     }
