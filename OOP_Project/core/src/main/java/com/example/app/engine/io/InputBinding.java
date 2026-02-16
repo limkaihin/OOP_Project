@@ -4,10 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Maps key codes to {@link InputAction}s.
- * (UML: InputBinding)
- */
 public class InputBinding {
     private final Map<Integer, InputAction> keyToAction = new HashMap<>();
 
@@ -24,7 +20,7 @@ public class InputBinding {
         return keyToAction.get(keyCode);
     }
 
-    /** Read-only view for debugging. */
+    // Read-only view for debugging
     public Map<Integer, InputAction> viewBindings() {
         return Collections.unmodifiableMap(keyToAction);
     }

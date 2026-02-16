@@ -3,10 +3,6 @@ package com.example.app.engine.scene;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * SceneManager (UML-aligned concrete class).
- * Uses a simple stack model: push/pop, and switchTo (replace top).
- */
 public class SceneManager {
 
     private final List<Scene> scenes = new ArrayList<>();

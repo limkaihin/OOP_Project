@@ -2,11 +2,9 @@ package com.example.app.demo.scenes;
 
 import com.example.app.engine.EngineContext;
 import com.example.app.engine.io.InputAction;
-import com.example.app.engine.render.RenderCommand;
 import com.example.app.engine.scene.AbstractBaseScene;
 
 public final class MenuScene extends AbstractBaseScene {
-
     private final EngineContext ctx;
     private int spawnCount = 1;
 
@@ -28,8 +26,7 @@ public final class MenuScene extends AbstractBaseScene {
 
     @Override
     public void render() {
-        ctx.renderQueue.clear();
-        ctx.renderQueue.submit(RenderCommand.fullscreenFade(0.4f, 0.6f, 0.9f, 0.25f));
+        ctx.renderer.draw("MENU", 0, 0, 0, 0, 0);
     }
 
     public int getSpawnCount() {

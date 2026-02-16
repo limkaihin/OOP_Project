@@ -2,16 +2,12 @@ package com.example.app.engine.io;
 
 import com.badlogic.gdx.Gdx;
 
-/**
- * Lightweight sound wrapper (UML-aligned).
- *
- * If the file cannot be loaded (missing asset), calls become no-ops.
- */
 public class Sound {
     private final String filePath;
     private float volume = 1f;
     private boolean playing = false;
-    private long soundId = -1; // Track playing sound instance
+    // Track playing sound instance
+    private long soundId = -1;
 
     private com.badlogic.gdx.audio.Sound gdxSound;
 
@@ -22,7 +18,7 @@ public class Sound {
                 this.gdxSound = Gdx.audio.newSound(Gdx.files.internal(filePath));
             }
         } catch (Throwable t) {
-            // asset missing or audio init issue; keep as null
+            // Asset missing or audio init issue; keep as null
             this.gdxSound = null;
         }
     }
@@ -35,7 +31,8 @@ public class Sound {
         if (gdxSound == null)
             return;
         if (playing) {
-            stop(); // Stop previous instance if playing
+            // Stop previous instance if playing
+            stop();
         }
         soundId = gdxSound.play(volume);
         playing = true;

@@ -1,5 +1,6 @@
 package com.example.app.engine.render;
 
+// Bridge between engine and application
 public interface IRenderer {
     void begin();
     void end();

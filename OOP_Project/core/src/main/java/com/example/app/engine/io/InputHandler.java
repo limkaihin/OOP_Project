@@ -1,13 +1,8 @@
 package com.example.app.engine.io;
 
 import com.badlogic.gdx.Gdx;
-
 import java.util.Map;
 
-/**
- * InputHandler (UML-aligned).
- * Polls libGDX keys each frame using an {@link InputBinding} map.
- */
 public class InputHandler {
 
     private final InputBinding bindings;
@@ -18,7 +13,7 @@ public class InputHandler {
     }
 
     public void update(float deltaTime) {
-        // Advance edge-detection history at the start of the frame.
+        // Edge-detection history at start of the frame
         state.nextFrame();
 
         // Process all bound keys
@@ -26,14 +21,13 @@ public class InputHandler {
             int keyCode = e.getKey();
             InputAction action = e.getValue();
             boolean down = Gdx.input.isKeyPressed(keyCode);
-            // Multiple keys may map to the same action: OR them together.
+            // Multiple keys may map to the same action
             if (down) {
                 state.processInput(action, true);
             }
         }
 
-        // Ensure actions with no active bound key are false
-        // (we only ever set true above).
+        // Ensure actions with no active bound key are false, we only ever set true above
         for (InputAction a : InputAction.values()) {
             boolean anyDown = isAnyKeyDownForAction(a);
             state.processInput(a, anyDown);
@@ -51,9 +45,7 @@ public class InputHandler {
         return state;
     }
 
-    /**
-     * Optional hook for tests or platforms without polling.
-     */
+    // Optional hook for tests or platforms without polling
     public void setKeyState(int keyCode, boolean isPressed) {
         InputAction action = bindings.getAction(keyCode);
         if (action != null) {

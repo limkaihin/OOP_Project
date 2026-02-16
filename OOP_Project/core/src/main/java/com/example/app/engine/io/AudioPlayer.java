@@ -3,12 +3,7 @@ package com.example.app.engine.io;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Simple audio manager (UML-aligned).
- * Uses {@link Sound} as a minimal wrapper.
- */
 public class AudioPlayer {
-
     private float masterVolume = 0.5f;
     private Sound currentMusic;
     private String lastMusicFilePath;
@@ -28,7 +23,7 @@ public class AudioPlayer {
         if (currentMusic != null)
             currentMusic.setVolume(this.masterVolume);
 
-        // Update ALL active sounds
+        // Update all active sounds
         for (Sound sound : activeSounds) {
             sound.setVolume(this.masterVolume);
         }

@@ -1,8 +1,5 @@
 package com.example.app.engine.io;
 
-/**
- * IOManager (UML-aligned): owns input + output subsystems.
- */
 public class IOManager {
 
     private final InputHandler inputHandler;

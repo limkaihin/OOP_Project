@@ -1,8 +1,5 @@
 package com.example.app.engine.io;
 
-/**
- * One logged error entry.
- */
 public class ErrorEntry {
     private final long timestamp;
     private final String tag;

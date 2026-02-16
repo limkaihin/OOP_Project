@@ -6,11 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Collects logs/errors for debugging (UML-aligned).
- */
 public class ErrorLogger {
-
     private final List<ErrorEntry> errorLogs = new ArrayList<>();
     private int maxErrors = 1000;
 
@@ -21,8 +17,8 @@ public class ErrorLogger {
     }
 
     public void log(String tag, String message) {
-        // For now, treat log entries as non-fatal; keep a smaller in-memory record.
-        // (You can extend this to store info logs too if desired.)
+        // Treat log entries as non-fatal; keep a smaller in-memory record
+        // Can extend this to store info logs
         System.out.println("[LOG][" + tag + "] " + message);
     }
 

@@ -1,8 +1,5 @@
 package com.example.app.engine.util;
 
-/**
- * Fixed-timestep + pause/step controller (engine-level, non-contextual).
- */
 public final class EngineClock {
     private final float fixedDt;
     private float accumulator = 0f;
@@ -20,10 +17,10 @@ public final class EngineClock {
     public void requestStep() { stepRequested = true; }
 
     /**
-     * Returns how many fixed updates to run this frame.
-     * - If not paused: accumulates real dt and returns floor(accumulator/fixedDt).
-     * - If paused: returns 1 only when stepRequested is true.
-     */
+        Returns how many fixed updates to run this frame.
+        If not paused: accumulates real dt and returns floor(accumulator/fixedDt).
+        If paused: returns 1 only when stepRequested is true.
+    **/
     public int consumeSteps(float realDt, int maxSteps) {
         if (paused) {
             if (stepRequested) {

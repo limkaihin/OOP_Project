@@ -7,7 +7,6 @@ import com.example.app.engine.io.IOManager;
 import com.example.app.engine.io.InputAction;
 import com.example.app.engine.movement.MovementManager;
 import com.example.app.engine.render.IRenderer;
-import com.example.app.engine.render.RenderQueue;
 import com.example.app.engine.scene.Scene;
 import com.example.app.engine.scene.SceneManager;
 import com.example.app.engine.util.EngineClock;
@@ -15,9 +14,6 @@ import com.example.app.engine.util.EventBus;
 
 import java.util.List;
 
-/**
- * EngineContext: central registry for engine subsystems (UML-aligned).
- */
 public final class EngineContext {
 
     public final EngineConfig config;
@@ -27,12 +23,11 @@ public final class EngineContext {
     public final MovementManager movementManager;
     public final CollisionManager collisionManager;
     public final IOManager ioManager;
+    public IRenderer renderer;
 
     // Internal helpers (kept from the original engine to preserve behavior)
-    public final RenderQueue renderQueue;
     public final EngineClock clock;
     public final EventBus<CollisionEvent> collisionEvents;
-    public IRenderer renderer;
 
     public EngineContext(
             EngineConfig config,
@@ -50,22 +45,16 @@ public final class EngineContext {
         this.ioManager = ioManager;
 
         this.renderer = renderer;
-        this.renderQueue = new RenderQueue();
         this.clock = new EngineClock(config.fixedDt);
         this.collisionEvents = new EventBus<>();
     }
 
-    /**
-     * Performs one engine tick (previously EngineImpl.update).
-     */
+    // Performs one engine tick
     public void update(float realDt) {
-        // Clear render queue each frame; scenes submit draw commands.
-        // renderQueue.clear();
-
         // IO updates on real time
         ioManager.update(realDt);
 
-        // Engine-level pause/step controls (generic)
+        // Engine-level pause/step controls
         if (ioManager.getInputHandler().getState().isJustPressed(InputAction.PAUSE)) {
             clock.togglePause();
             ioManager.log("Engine", clock.isPaused() ? "Paused" : "Resumed");

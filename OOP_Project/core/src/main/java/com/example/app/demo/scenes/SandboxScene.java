@@ -8,22 +8,17 @@ import com.example.app.engine.io.InputAction;
 import com.example.app.engine.io.InputState;
 import com.example.app.engine.movement.TransformComponent;
 import com.example.app.engine.movement.VelocityComponent;
-import com.example.app.engine.render.RenderCommand;
 import com.example.app.engine.render.RenderableComponent;
 import com.example.app.engine.scene.AbstractBaseScene;
 
 import java.util.Random;
 
 public final class SandboxScene extends AbstractBaseScene {
-
     private final EngineContext ctx;
     private final int initialSpawnCount;
-
     private Entity player;
     private Entity npc;
-
     private final Random rng = new Random();
-
     private float npcHitCooldown = 0f;
 
     public SandboxScene(EngineContext ctx, int initialSpawnCount) {
@@ -101,8 +96,7 @@ public final class SandboxScene extends AbstractBaseScene {
 
     @Override
     public void render() {
-        ctx.renderQueue.clear();
-        // Submit render commands (draw everything)
+        // Draw everything
         for (Entity e : ctx.entityManager.getAll()) {
             TransformComponent t = e.getComponent(TransformComponent.class);
             RenderableComponent r = e.getComponent(RenderableComponent.class);
@@ -115,16 +109,6 @@ public final class SandboxScene extends AbstractBaseScene {
             float h = (c != null) ? c.halfWidth * 2 : 0;
 
             ctx.renderer.draw(r.renderKey, t.x, t.y, radius, w, h);
-
-            /*if (r.shape == RenderableComponent.RenderShape.RECT) {
-                ctx.renderQueue.submit(RenderCommand.rect(
-                        t.x - r.w / 2f, t.y - r.h / 2f, r.w, r.h,
-                        r.r, r.g, r.b, r.a));
-            } else {
-                ctx.renderQueue.submit(RenderCommand.circle(
-                        t.x, t.y, r.radius,
-                        r.r, r.g, r.b, r.a));
-            }*/
         }
     }
 
@@ -163,12 +147,13 @@ public final class SandboxScene extends AbstractBaseScene {
         return a == x || b == x;
     }
 
+    // Collision Logic
     // private void bounceEntity(Entity e) {
-    // VelocityComponent v = e.getComponent(VelocityComponent.class);
-    // if (v != null) {
-    // v.vx = -v.vx;
-    // v.vy = -v.vy;
-    // }
+        // VelocityComponent v = e.getComponent(VelocityComponent.class);
+        // if (v != null) {
+        // v.vx = -v.vx;
+        // v.vy = -v.vy;
+        // }
     // }
 
     private void spawnObstacle(float x, float y) {
@@ -214,11 +199,11 @@ public final class SandboxScene extends AbstractBaseScene {
         float oldX = t.x;
         float oldY = t.y;
 
-        // clamp
+        // Clamp
         t.x = Math.max(minX, Math.min(maxX, t.x));
         t.y = Math.max(minY, Math.min(maxY, t.y));
 
-        // bounce on impact
+        // Bounce on impact
         if (v != null) {
             if (t.x != oldX)
                 v.vx = -v.vx;

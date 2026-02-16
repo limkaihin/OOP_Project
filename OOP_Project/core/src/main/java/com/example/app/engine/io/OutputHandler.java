@@ -1,8 +1,5 @@
 package com.example.app.engine.io;
 
-/**
- * OutputHandler (UML-aligned): logging + audio + renderer lifecycle.
- */
 public class OutputHandler {
 
     private final AudioPlayer audioPlayer;

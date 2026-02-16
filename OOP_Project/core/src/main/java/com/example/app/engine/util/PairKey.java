@@ -1,8 +1,6 @@
 package com.example.app.engine.util;
 
-/**
- * Hashable pair key for deduping candidate collision pairs.
- */
+// Hashable pair key for deduping candidate collision pairs
 public final class PairKey {
     public final int a;
     public final int b;

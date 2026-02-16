@@ -1,4 +1,5 @@
 package com.example.app.engine.entity;
+
 import com.example.app.engine.components.Component;
 import java.util.Collections;
 import java.util.HashMap;

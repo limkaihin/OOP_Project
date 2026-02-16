@@ -1,8 +1,5 @@
 package com.example.app.engine.util;
 
-/**
- * Minimal float math helpers (avoid extra dependencies).
- */
 public final class Mathf {
     private Mathf() { }
 
