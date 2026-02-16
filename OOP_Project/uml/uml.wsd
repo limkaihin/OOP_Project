@@ -1,10 +1,13 @@
-@startuml OOP_Project
+@startuml OOP_Project_Complete
 skinparam classAttributeIconSize 0
 skinparam style strictuml
+skinparam backgroundColor #FEFEFE
+skinparam arrowColor #333333
 
 ' =========================
 ' APPLICATION LAYER
 ' =========================
+
 class GameMaster {
     - batch : SpriteBatch
     - font : BitmapFont
@@ -15,22 +18,15 @@ class GameMaster {
     + display() : void
 }
 
-package "engine" {
-    class EngineContext {
-        - config : EngineConfig
-        - sceneManager : SceneManager
-        - entityManager : EntityManager
-        - movementManager : MovementManager
-        - collisionManager : CollisionManager
-        - ioManager :IOManager
-        - renderQueue : RenderQueue
-        - clock : EngineClock
-        - collisionEvents : EventBus<CollisionEvent>
-        + EngineContext()
-        + update(realDt : float): void
-        + dispose() : void
-    }
+' =========================
+' ENGINE PACKAGE
+' =========================
 
+package "engine" {
+    ' =============================
+    ' Core Engine Configuration
+    ' =============================
+    
     class EngineConfig {
         + width : int
         + height : int
@@ -43,6 +39,35 @@ package "engine" {
         + EngineConfig(width : int, height : int, title : String)
         + EngineConfig(width : int, height : int, title : String, vsync : boolean, targetFps : int, fixedDt : float, maxSubSteps : int, collisionCellSize : float)
     }
+
+    class EngineContext {
+        + config : EngineConfig
+        + sceneManager : SceneManager
+        + entityManager : EntityManager
+        + movementManager : MovementManager
+        + collisionManager : CollisionManager
+        + ioManager : IOManager
+        + renderer : IRenderer
+        + clock : EngineClock
+        + collisionEvents : EventBus<CollisionEvent>
+        + EngineContext(config : EngineConfig, sceneManager : SceneManager, entityManager : EntityManager, movementManager : MovementManager, collisionManager : CollisionManager, ioManager : IOManager, renderer : IRenderer)
+        + update(realDt : float) : void
+        + dispose() : void
+    }
+
+    EngineContext --> EngineConfig : uses
+    EngineContext --> SceneManager : manages
+    EngineContext --> EntityManager : manages
+    EngineContext --> MovementManager : uses
+    EngineContext --> CollisionManager : uses
+    EngineContext --> IOManager : uses
+    EngineContext --> IRenderer : uses
+    EngineContext --> EngineClock : uses
+    EngineContext --> "EventBus<CollisionEvent>" : contains
+
+    ' =============================
+    ' Entity Package
+    ' =============================
     
     package "entity" {
         class Entity {
@@ -57,6 +82,7 @@ package "engine" {
             + removeComponent<T : Component>(type : Class<T>) : void
             + updateComponent<T : Component>(type : Class<T>, component : T) : void
             + toString() : String
+
         }
 
         class EntityManager {
@@ -75,115 +101,31 @@ package "engine" {
             - next : AtomicInteger
             + nextId() : int
         }
+
+        EntityManager --> EntityIdGenerator : uses
+        EntityManager --> Entity : manages
+        Entity --> Component : contains
     }
 
+    ' =============================
+    ' Components Package
+    ' =============================
+    
     package "components" {
         interface Component {
-            validate() : void
+            {abstract} + validate() : void
+        }
+        
+        class MissingComponentException {
+            + MissingComponentException(message : String)
         }
     }
 
-    package "collision" {
-        class ColliderComponent {
-            + ShapeType : enum
-            + layer : int
-            + mask : int
-            + isTrigger : boolean
-            + offsetX : float
-            + offsetY : boolean
-            + type : ShapeType
-            + radius : float
-            + halfWidth : float
-            + halfHeight : float
-            - ColliderComponent(type : ShapeType)
-            + circle(radius : float) : ColliderComponent
-            + aabb(halfWidth : float, halfHeight : float) : ColliderComponent
-        }
-
-        enum ColShapeType {
-            CIRCLE
-            AABB
-        }
-
-        interface CollisionManager {
-            update(dt : float, entities : Iterable<Entity>) : List<CollisionEvent>
-        }
-
-        class SimpleCollisionManager {
-            - listeners : List<CollisionListener>
-            - resolver : CollisionResolver
-            - grid : SpatialHashGrid
-            + SimpleCollisionManager()
-            + SimpleCollisionManager(cellSize : float)
-            + addListener(listener : CollisionListener)
-            + setResolver(resolver : CollisionResolver)
-            + update(dt : float, entities : Iterable<Entity>) : List<CollisionEvent>
-            - passesFilter(a : ColliderComponent, b : ColliderComponent) : boolean
-            - intersect(ta : TransformComponent, ca : ColliderComponent, tb : TransformComponent, cb : ColliderComponent) : CollisionManifold
-            - circleCircle(ax : float, ay : float, ar : float, bx : float, by : float, br : float) : CollisionManifold
-            - aabbAabb(ax : float, ay : float, ahw : float, ahh : float, bx : float, by : float, bhw : float, bhh : float) : CollisionManifold
-            - circleAabb(cx : float, cy : float, cr : float, bx : float, by : float, bhw : float, bhh : float) : CollisionManifold
-            - clamp(v : float, min : float, max : float) : float
-        }
-
-        class CollisionPair {
-            - a : Entity
-            - b : Entity
-            + CollisionPair(a : Entity, b : Entity)
-            + getA() : Entity
-            + getB() : Entity
-        }
-
-        class CollisionManifold {
-            + normalX : float
-            + normalY : float
-            + penetration : float
-            + CollisionManifold(normalX : float, normalY : float, penetration : float)
-        }
-
-        interface CollisionResolver {
-            resolve(a : Entity, b : Entity, manifold : CollisionManifold) : void
-        }
-
-        class CollisionEvent {
-            - pair : CollisionPair
-            - manifold : CollisionManifold
-            + CollisionEvent(pair : CollisionPair, manifold : CollisionManifold)
-            + getPair() : CollisionPair
-            + getManifold() : CollisionManifold
-        }
-
-        interface CollisionListener {
-            onCollision(event : CollisionEvent) : void
-        }
-
-        class SpatialHashGrid {
-            - cellSize : float
-            - buckets : Map<Long, List<Entity>>
-            + SpatialHashGrid(cellSize : float)
-            + clear() : void
-            + insert(e : Entity, t : TransformComponent, c : ColliderComponent) : void
-            + computeCandidatePairs() : Set<PairKey>
-            - worldToCell(v : float) : int
-            - pack(x : int, y : int) : long
-        }
-    }
-
+    ' =============================
+    ' Movement Package
+    ' =============================
+    
     package "movement" {
-        class MovementManager {
-            - gravity : float
-            - maxSpeed : float
-            + MovementManager()
-            + MovementManager(gravity : float, maxSpeed : float)
-            + getGravity() : float
-            + setGravity(gravity : float) : void
-            + getMaxSpeed() : float
-            + setMaxSpeed(maxSpeed : float) : void
-            + update(dt : float, entities : Iterable<Entity>) : void
-            + moveEntity(dt : float, e : Entity) : void
-            + movePhysics(dt : float, e : Entity, t : TransformComponent, v : VelocityComponent) : void
-        }
-
         class TransformComponent {
             + x : float
             + y : float
@@ -202,75 +144,145 @@ package "engine" {
             + ay : float
             + AccelerationComponent(ax : float, ay : float)
         }
+
+        class MovementManager {
+            - gravity : float
+            - maxSpeed : float
+            + MovementManager()
+            + MovementManager(gravity : float, maxSpeed : float)
+            + getGravity() : float
+            + setGravity(gravity : float) : void
+            + getMaxSpeed() : float
+            + setMaxSpeed(maxSpeed : float) : void
+            + update(dt : float, entities : Iterable<Entity>) : void
+            + update(dt : float, entityManager : EntityManager) : void
+            + moveEntity(dt : float, e : Entity) : void
+            + movePhysics(dt : float, e : Entity, t : TransformComponent, v : VelocityComponent) : void
+        }
+
+        TransformComponent --|> Component
+        VelocityComponent --|> Component
+        AccelerationComponent --|> Component
+        MovementManager --> Entity : updates
+        MovementManager --> TransformComponent : uses
+        MovementManager --> VelocityComponent : uses
+        MovementManager --> AccelerationComponent : uses
     }
 
-    package "render" {
-        class RenderableComponent {
-            + shape : RenderShape
-            + r : float
-            + g : float
-            + b : float
-            + a : float
-            + w : float
-            + h : float
+    ' =============================
+    ' Collision Package
+    ' =============================
+    
+    package "collision" {
+        class ColliderComponent {
+            + {static} enum ColShapeType
+            + layer : int
+            + mask : int
+            + isTrigger : boolean
+            + offsetX : float
+            + offsetY : float
+            + type : ColShapeType
             + radius : float
-            + rect(w : float, h : float, r : float, g : float, b : float, a : float) : RenderableComponent
-            + circle(radius : float, r : float, g : float, b : float, a : float) : RenderableComponent
+            + halfWidth : float
+            + halfHeight : float
+            - ColliderComponent(type : ColShapeType)
+            + {static} circle(radius : float) : ColliderComponent
+            + {static} aabb(halfWidth : float, halfHeight : float) : ColliderComponent
         }
 
-        enum RenderShape {
-            RECT
-            CIRCLE
+        interface CollisionManager {
+            {abstract} + update(dt : float, entities : Iterable<Entity>) : List<CollisionEvent>
         }
 
-        class RenderQueue {
-            - commands : List<RenderCommand>
+        class SimpleCollisionManager {
+            - listeners : List<CollisionListener>
+            - resolver : CollisionResolver
+            - grid : SpatialHashGrid
+            + SimpleCollisionManager()
+            + SimpleCollisionManager(cellSize : float)
+            + addListener(listener : CollisionListener) : void
+            + setResolver(resolver : CollisionResolver) : void
+            + update(dt : float, entities : Iterable<Entity>) : List<CollisionEvent>
+            - passesFilter(a : ColliderComponent, b : ColliderComponent) : boolean
+            - intersect(ta : TransformComponent, ca : ColliderComponent, tb : TransformComponent, cb : ColliderComponent) : CollisionManifold
+        }
+
+        class SpatialHashGrid {
+            - cellSize : float
+            - buckets : Map<Long, List<Entity>>
+            + SpatialHashGrid(cellSize : float)
             + clear() : void
-            + submit(cmd : RenderCommand) : void
-            + view() : List<RenderCommand>
+            + insert(e : Entity, t : TransformComponent, c : ColliderComponent) : void
+            + computeCandidatePairs() : Set<PairKey>
+            - worldToCell(v : float) : int
+            - pack(x : int, y : int) : long
         }
 
-        class RenderCommand {
-            + type : ShapeType
-            -- Common --
-            + r : float
-            + g : float
-            + b : float
-            + a : float 
-            -- Rect --
-            + x : float
-            + y : float
-            + w : float
-            + h : float
-            -- Circle --
-            + cx : float
-            + cy : float
-            + radius : float
-            - RenderCommand(type : ShapeType, r : float, g : float, b : float, a : float, x : float, y : float, w : float, h : float, cx : float, cy : float, radius : float)  
-            + rect(x : float, y : float, w : float, h : float, r : float, g : float, b : float, a : float) : RenderCommand
-            + circle(cx : float, cy : float, radius : float, r : float, g : float, b : float, a : float) : RenderCommand
-            + fullscreenFade(r : float, g : float, b : float, a : float) : RenderCommand
+        class CollisionEvent {
+            - pair : CollisionPair
+            - manifold : CollisionManifold
+            + CollisionEvent(pair : CollisionPair, manifold : CollisionManifold)
+            + getPair() : CollisionPair
+            + getManifold() : CollisionManifold
         }
 
-        enum ShapeType {
-            RECT 
-            CIRCLE
-            FULLSCREEN_FADE
+        class CollisionPair {
+            - a : Entity
+            - b : Entity
+            + CollisionPair(a : Entity, b : Entity)
+            + getA() : Entity
+            + getB() : Entity
         }
+
+        class CollisionManifold {
+            + normalX : float
+            + normalY : float
+            + penetration : float
+            + CollisionManifold(normalX : float, normalY : float, penetration : float)
+        }
+
+        interface CollisionListener {
+            {abstract} + onCollision(event : CollisionEvent) : void
+        }
+
+        interface CollisionResolver {
+            {abstract} + resolve(a : Entity, b : Entity, manifold : CollisionManifold) : void
+        }
+
+        ColliderComponent --|> Component
+        SimpleCollisionManager --|> CollisionManager
+        SimpleCollisionManager --> SpatialHashGrid : uses
+        SimpleCollisionManager --> CollisionListener : notifies
+        SimpleCollisionManager --> CollisionResolver : uses
+        SimpleCollisionManager --> CollisionEvent : generates
+        SpatialHashGrid --> Entity : contains
+        SpatialHashGrid --> TransformComponent : uses
+        SpatialHashGrid --> ColliderComponent : uses
+        SpatialHashGrid --> "PairKey" : generates
+        CollisionEvent --> CollisionPair : contains
+        CollisionEvent --> CollisionManifold : contains
+        CollisionPair --> Entity : references
+        CollisionListener --> CollisionEvent : receives
+        CollisionResolver --> Entity : resolves between
+        CollisionResolver --> CollisionManifold : uses
     }
 
+    ' =============================
+    ' Scene Package
+    ' =============================
+    
     package "scene" {
         interface Scene {
-            onLoad() : void
-            onEnter() : void
-            update(dt : float) : void
-            onExit() : void
-            onUnload() : void
-            render() : void
-            name() : String
+            {abstract} + onLoad() : void
+            {abstract} + onEnter() : void
+            {abstract} + update(dt : float) : void
+            {abstract} + onExit() : void
+            {abstract} + onUnload() : void
+            {abstract} + render() : void
+            + name() : String
         }
 
-        class AbstractBaseScene {
+        abstract class AbstractBaseScene {
             + onLoad() : void
             + onEnter() : void
             + onExit() : void
@@ -279,21 +291,49 @@ package "engine" {
 
         class SceneManager {
             - scenes : List<Scene>
-            + getScenes() : List<Scene> 
+            + SceneManager()
+            + getScenes() : List<Scene>
             + current() : Scene
             + switchTo(scene : Scene) : void
             + push(scene : Scene) : void
             + pop() : void
             + size() : int
         }
+
+        AbstractBaseScene --|> Scene
+        SceneManager --> Scene : manages
     }
 
+    ' =============================
+    ' Render Package
+    ' =============================
+    
+    package "render" {
+        interface IRenderer {
+            {abstract} + begin() : void
+            {abstract} + end() : void
+            {abstract} + draw(key : String, x : float, y : float, radius : float, width : float, height : float) : void
+        }
+
+        class RenderableComponent {
+            + renderKey : String
+            + RenderableComponent(key : String)
+        }
+
+        RenderableComponent --|> Component
+        IRenderer --> RenderableComponent : uses
+    }
+
+    ' =============================
+    ' IO Package
+    ' =============================
+    
     package "io" {
         enum InputAction {
             CONFIRM
-            BACK
+            BACK 
             PAUSE
-            VOLUME_UP
+            VOLUME_UP 
             VOLUME_DOWN
             STOP
             PLAY
@@ -304,11 +344,20 @@ package "engine" {
             MOVE_RIGHT
             MOVE_UP
             MOVE_DOWN
-            ACTION_1
+            ACTION_1 
             ACTION_2
         }
 
-        ' ============= Input Classes =============
+        class InputBinding {
+            - keyToAction : Map<Integer, InputAction>
+            + InputBinding()
+            + bind(keyCode : int, action : InputAction) : void
+            + unbind(keyCode : int) : void
+            + getAction(keyCode : int) : InputAction
+            + viewBindings() : Map<Integer, InputAction>
+            + clear() : void
+        }
+
         class InputState {
             - currentState : EnumMap<InputAction, Boolean>
             - previousState : EnumMap<InputAction, Boolean>
@@ -320,40 +369,13 @@ package "engine" {
             + set(a : InputAction, isPressedNow : boolean, wasPressedLastFrame : boolean) : void
         }
 
-        class InputBinding {
-            - keyToAction : Map<Integer, InputAction>
-            + bind(keyCode : int, action : InputAction) : void
-            + unbind(keyCode : int) : void
-            + getAction(keyCode : int) : InputAction
-            + viewBindings() : Map<Integer, InputAction>
-            + clear() : void
-        }
-
         class InputHandler {
             - bindings : InputBinding
             - state : InputState
             + InputHandler(bindings : InputBinding)
             + update(deltaTime : float) : void
-            - isAnyKeyDownForAction(action : InputAction) : boolean
             + getState() : InputState
             + setKeyState(keyCode : int, isPressed : boolean) : void
-        }
-
-        ' ============= Audio Classes =============
-        class Sound {
-            - filePath : String
-            - volume : float
-            - playing : boolean
-            - soundId : long
-            - gdxSound : com.badlogic.gdx.audio.Sound
-            + Sound(filePath : String)
-            + getFilePath() : String
-            + play() : void
-            + stop() : void
-            + setVolume(volume : float) : void
-            + getVolume() : float
-            + isPlaying() : boolean
-            + dispose() : void
         }
 
         class AudioPlayer {
@@ -375,7 +397,36 @@ package "engine" {
             + dispose() : void
         }
 
-        ' ============= Logging Classes =============
+        class Sound {
+            - filePath : String
+            - volume : float
+            - playing : boolean
+            - soundId : long
+            - gdxSound : com.badlogic.gdx.audio.Sound
+            + Sound(filePath : String)
+            + getFilePath() : String
+            + play() : void
+            + stop() : void
+            + setVolume(volume : float) : void
+            + getVolume() : float
+            + isPlaying() : boolean
+            + dispose() : void
+        }
+
+        class ErrorLogger {
+            - errorLogs : List<ErrorEntry>
+            - maxErrors : int
+            + ErrorLogger()
+            + ErrorLogger(maxErrors : int)
+            + log(tag : String, message : String) : void
+            + error(tag : String, message : String) : void
+            + error(tag : String, message : String, throwable : Throwable) : void
+            - add(entry : ErrorEntry) : void
+            + getErrors() : List<ErrorEntry>
+            + setMaxErrors(maxErrors : int) : void
+            + exportToFile(filePath : String) : void
+        }
+
         class ErrorEntry {
             - timestamp : long
             - tag : String
@@ -388,21 +439,6 @@ package "engine" {
             + toString() : String
         }
 
-        class ErrorLogger {
-            - errorLogs : List<ErrorEntry>
-            - maxErrors : int
-            + ErrorLogger()
-            + ErrorLogger(maxErrors : int)
-            + log(tag : String, message : String) : void
-            + error(tag : String, message : String) : void
-            + error(tag : String, message : String, throwable : Throwable) : void
-            - add(entry : ErrorEntry): void
-            + getErrors() : List<ErrorEntry>
-            + setMaxErrors(maxErrors : int) : void
-            + exportToFile(filePath : String) : void
-        }
-
-        ' ============= Output Classes =============
         class OutputHandler {
             - audioPlayer : AudioPlayer
             - errorLogger : ErrorLogger
@@ -419,7 +455,6 @@ package "engine" {
             + dispose() : void
         }
 
-        ' ============= Facade/Manager =============
         class IOManager {
             - inputHandler : InputHandler
             - outputHandler : OutputHandler
@@ -427,16 +462,31 @@ package "engine" {
             + getInputHandler() : InputHandler
             + getOutputHandler() : OutputHandler
             + update(deltaTime : float) : void
-            + log(tag : String, message : String): void
-            + error(tag : String, message : String): void
+            + log(tag : String, message : String) : void
+            + error(tag : String, message : String) : void
             + error(tag : String, message : String, throwable : Throwable) : void
             + playMusic(filePath : String) : void
             + playSound(filePath : String) : void
             + stopMusic() : void
             + dispose() : void
         }
+
+        InputHandler --> InputBinding : uses
+        InputHandler --> InputState : uses
+        InputState --> InputAction : uses
+        AudioPlayer --> Sound : manages
+        OutputHandler --> AudioPlayer : uses
+        OutputHandler --> ErrorLogger : uses
+        OutputHandler --> Sound : uses
+        ErrorLogger --> ErrorEntry : contains
+        IOManager --> InputHandler : delegates to
+        IOManager --> OutputHandler : delegates to
     }
 
+    ' =============================
+    ' Util Package
+    ' =============================
+    
     package "util" {
         class EngineClock {
             - fixedDt : float
@@ -451,127 +501,147 @@ package "engine" {
             + fixedDt() : float
         }
 
-        class EventBus {
-            - listeners: List<Consumer<T>>
+        class "EventBus<T>" {
+            - listeners : List<Consumer<T>>
+            + EventBus()
             + subscribe(listener : Consumer<T>) : void
             + publish(event : T) : void
             + listenerCount() : int
         }
 
-        class Preconditions {
-            - Preconditions()
-            + notNull<T>(value : T, name : String) : T
-            + check(condtion : boolean, message : String)
-        }
-
         class PairKey {
-            - a : int
-            - b : int
+            + a : int
+            + b : int
             + PairKey(id1 : int, id2 : int)
             + equals(o : Object) : boolean
             + hashCode() : int
         }
 
-
         class Mathf {
-            - Mathf()
-            + clamp(v : float, min : float, max : float) : float
-            + length(x : float, y : float) : float
-            + length2(x : float, y : float) : float
-            + distance(ax : float, ay : float, bx : float, by : float) : float
-            + distance2(ax : float, ay : float, bx : float, by : float) : float
+            + {static} clamp(v : float, min : float, max : float) : float
+            + {static} length(x : float, y : float) : float
+            + {static} length2(x : float, y : float) : float
+            + {static} distance(ax : float, ay : float, bx : float, by : float) : float
+            + {static} distance2(ax : float, ay : float, bx : float, by : float) : float
+        }
+
+        class Preconditions {
+            + {static} notNull<T>(value : T, name : String) : T
+            + {static} check(condition : boolean, message : String) : void
         }
     }
 }
 
-' ==========================================
-' RELATIONSHIPS & BRIDGES
-' ==========================================
-GameMaster *-- EngineContext
-EngineContext o-- EngineConfig
-GameMaster ..> EngineConfig
+' =========================
+' DEMO PACKAGE
+' =========================
 
-EngineContext o-- EntityManager
-EngineContext o-- SceneManager
-EngineContext o-- MovementManager
-EngineContext o-- CollisionManager
-EngineContext o-- IOManager
-EngineContext *-- RenderQueue
+package "demo" {
+    ' =============================
+    ' Demo Render Package
+    ' =============================
+    
+    package "render" {
+        class LibGdxRenderer {
+            - shapes : ShapeRenderer
+            - drawers : Map<String, ShapeDrawer>
+            + LibGdxRenderer(shapes : ShapeRenderer)
+            - initDrawers() : void
+            + begin() : void
+            + end() : void
+            + draw(key : String, x : float, y : float, radius : float, w : float, h : float) : void
+        }
 
-EntityManager *-- EntityIdGenerator
-EntityManager o-- Entity
-Entity o-- Component
+        interface ShapeDrawer {
+            {abstract} + draw(x : float, y : float, radius : float, w : float, h : float) : void
+        }
 
-Component <|-- TransformComponent
-Component <|-- VelocityComponent
-Component <|-- AccelerationComponent
-Component <|-- ColliderComponent
-Component <|-- RenderableComponent
+        LibGdxRenderer --|> IRenderer
+        LibGdxRenderer --> ShapeDrawer : uses
+    }
 
-'MovementManager --> EntityManager
-MovementManager ..> Entity
-MovementManager ..> TransformComponent
-MovementManager ..> VelocityComponent
-MovementManager ..> AccelerationComponent
+    ' =============================
+    ' Demo Scene Package
+    ' =============================
+    
+    package "scenes" {
+        class MenuScene {
+            - ctx : EngineContext
+            - spawnCount : int
+            + MenuScene(ctx : EngineContext)
+            + onLoad() : void
+            + update(dt : float) : void
+            + render() : void
+            + getSpawnCount() : int
+        }
 
-SimpleCollisionManager ..> Entity
-SimpleCollisionManager ..> ColliderComponent
-SimpleCollisionManager ..> TransformComponent
-SimpleCollisionManager ..|> CollisionManager
-SimpleCollisionManager o-- CollisionListener
-SimpleCollisionManager o-- CollisionResolver
-SimpleCollisionManager ..> CollisionEvent
-SimpleCollisionManager *-- SpatialHashGrid
-CollisionEvent *-- CollisionPair
-CollisionEvent *-- CollisionManifold
-CollisionPair o-- Entity
-ColliderComponent ..|> Component
-ColliderComponent +-- ColShapeType
-CollisionListener ..> CollisionEvent
-CollisionResolver ..> Entity
-CollisionResolver ..> CollisionManifold
-SpatialHashGrid ..> Entity
-SpatialHashGrid ..> TransformComponent
-SpatialHashGrid ..> ColliderComponent
+        class SandboxScene {
+            - ctx : EngineContext
+            - initialSpawnCount : int
+            - player : Entity
+            - npc : Entity
+            - rng : Random
+            - npcHitCooldown : float
+            + SandboxScene(ctx : EngineContext, initialSpawnCount : int)
+            + onLoad() : void
+            + update(dt : float) : void
+            + render() : void
+            - onCollision(event : CollisionEvent) : void
+            - spawnObstacle(x : float, y : float) : void
+            - keepInsideWindowBounce(e : Entity) : void
+            - isPair(a : Entity, b : Entity, x : Entity, y : Entity) : boolean
+        }
 
-' Render relationships
-RenderableComponent +-- RenderShape
-RenderQueue o-- RenderCommand
-RenderCommand +-- ShapeType
+        class TransitionScene {
+            - ctx : EngineContext
+            - next : Scene
+            - duration : float
+            - t : float
+            + TransitionScene(ctx : EngineContext, next : Scene, durationSeconds : float)
+            + onLoad() : void
+            + update(dt : float) : void
+            + render() : void
+        }
 
-' Scene relationships
-Scene <|.. AbstractBaseScene : realizes
-SceneManager "1" o-- "0..*" Scene : manages/aggregates
+        MenuScene --|> AbstractBaseScene
+        SandboxScene --|> AbstractBaseScene
+        TransitionScene --|> AbstractBaseScene
+        MenuScene --> EngineContext : uses
+        SandboxScene --> EngineContext : uses
+        SandboxScene --> Entity : manages
+        SandboxScene --> CollisionEvent : listens to
+        TransitionScene --> EngineContext : uses
+        TransitionScene --> Scene : wraps
+    }
+}
 
-' InputHandler relationships
-InputHandler *-- InputBinding : "has"
-InputHandler *-- InputState : "has"
-InputHandler ..> InputAction : "uses"
-InputBinding ..> InputAction : "maps to"
-InputState ..> InputAction : "tracks"
+' =============================
+' DEMO TEST PACKAGE
+' =============================
 
-' Audio relationships
-AudioPlayer o-- Sound : "contains current music"
-AudioPlayer o-- Sound : "contains active sounds"
+class EngineSmokeTest {
+    + {static} main(args : String[]) : void
+}
 
-' Logging relationships
-ErrorLogger o-- ErrorEntry : "contains"
-OutputHandler *-- AudioPlayer : "has"
-OutputHandler *-- ErrorLogger : "has"
+EngineSmokeTest --> EntityManager : uses
+EngineSmokeTest --> Entity : creates
+EngineSmokeTest --> MovementManager : uses
+EngineSmokeTest --> SimpleCollisionManager : uses
+EngineSmokeTest --> TransformComponent : uses
+EngineSmokeTest --> VelocityComponent : uses
+EngineSmokeTest --> ColliderComponent : uses
 
-' IOManager relationships (composition)
-IOManager *-- InputHandler : "owns"
-IOManager *-- OutputHandler : "owns"
+' =============================
+' KEY RELATIONSHIPS
+' =============================
 
-' Method parameter/return type dependencies
-InputState --> InputAction : "uses as parameter"
-InputBinding --> InputAction : "uses as parameter"
-
-' Util relationships
-EngineContext *-- EngineClock
-EngineContext *-- EventBus
-SimpleCollisionManager ..> Mathf : "uses"
-SimpleCollisionManager ..> Preconditions : "uses"
-EventBus ..> Preconditions : "uses"
+GameMaster --> EngineContext : creates and uses
+GameMaster --> LibGdxRenderer : creates
+GameMaster --> MenuScene : creates
+EngineContext --> IRenderer : uses (polymorphic)
+MenuScene --> SandboxScene : transitions to
+MenuScene --> TransitionScene : wraps with
+SandboxScene --> Entity : manages
+SandboxScene ..|> CollisionListener : implements
 
 @enduml
