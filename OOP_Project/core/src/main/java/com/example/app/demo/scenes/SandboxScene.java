@@ -128,7 +128,7 @@ public final class SandboxScene extends AbstractBaseScene {
         // NPC hits Player => play sound + bounce both (visible)
         if (isPair(a, b, npc, player)) {
             if (npcHitCooldown <= 0f) {
-                ctx.ioManager.playSound("hit.wav");
+                ctx.ioManager.playMusic("hit.wav");
                 ctx.ioManager.log("SandboxScene", "hit effect played");
                 npcHitCooldown = 0.15f;
             }

@@ -41,10 +41,6 @@ public class IOManager {
         outputHandler.playMusic(filePath);
     }
 
-    public void playSound(String filePath) {
-        outputHandler.playSound(filePath);
-    }
-
     public void stopMusic() {
         outputHandler.stopMusic();
     }

@@ -375,8 +375,6 @@ class AudioPlayer {
     + setMasterVolume(masterVolume : float) : void
     + playMusic(filePath : String) : void
     + getLastMusicFilePath() : String
-    + playSound(filePath : String) : void
-    - cleanupFinishedSounds() : void
     + stopMusic() : void
     + increaseVolume(amount : float) : void
     + decreaseVolume(amount : float) : void
@@ -421,7 +419,6 @@ class OutputHandler {
     + error(tag : String, message : String) : void
     + error(tag : String, message : String, throwable : Throwable) : void
     + playMusic(filePath : String) : void
-    + playSound(filePath : String) : void
     + stopMusic() : void
     + setVolume(volume : float) : void
     + getAudioPlayer() : AudioPlayer
@@ -441,7 +438,6 @@ class IOManager {
     + error(tag : String, message : String): void
     + error(tag : String, message : String, throwable : Throwable) : void
     + playMusic(filePath : String) : void
-    + playSound(filePath : String) : void
     + stopMusic() : void
     + dispose() : void
 }

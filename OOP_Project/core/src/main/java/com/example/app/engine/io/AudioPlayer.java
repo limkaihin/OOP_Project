@@ -50,26 +50,6 @@ public class AudioPlayer {
         return lastMusicFilePath;
     }
 
-    // Also add this convenience method
-    public void playSound(String filePath) {
-        Sound sound = new Sound(filePath);
-        if (sound != null) {
-            sound.setVolume(masterVolume);
-            sound.play();
-            activeSounds.add(sound);
-
-            // Remove sound when done (simplified - in real app you'd need to check if
-            // playing)
-            // For now, we'll clean up old sounds periodically
-            cleanupFinishedSounds();
-        }
-    }
-
-    private void cleanupFinishedSounds() {
-        // Remove sounds that are no longer playing
-        activeSounds.removeIf(sound -> !sound.isPlaying());
-    }
-
     public void stopMusic() {
         if (currentMusic != null) {
             currentMusic.stop();
