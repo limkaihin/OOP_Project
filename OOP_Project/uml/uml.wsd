@@ -365,6 +365,7 @@ package "engine" {
             + getMasterVolume() : float
             + setMasterVolume(masterVolume : float) : void
             + playMusic(filePath : String) : void
+            + playSound(filePath : String) : void
             + getLastMusicFilePath() : String
             + stopMusic() : void
             + increaseVolume(amount : float) : void
@@ -410,6 +411,7 @@ package "engine" {
             + error(tag : String, message : String) : void
             + error(tag : String, message : String, throwable : Throwable) : void
             + playMusic(filePath : String) : void
+            + playSound(filePath : String) : void
             + stopMusic() : void
             + setVolume(volume : float) : void
             + getAudioPlayer() : AudioPlayer
@@ -429,6 +431,7 @@ package "engine" {
             + error(tag : String, message : String): void
             + error(tag : String, message : String, throwable : Throwable) : void
             + playMusic(filePath : String) : void
+            + playSound(filePath : String) : void
             + stopMusic() : void
             + dispose() : void
         }
