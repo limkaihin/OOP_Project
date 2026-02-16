@@ -6,6 +6,7 @@ import com.example.app.engine.entity.EntityManager;
 import com.example.app.engine.io.IOManager;
 import com.example.app.engine.io.InputAction;
 import com.example.app.engine.movement.MovementManager;
+import com.example.app.engine.render.IRenderer;
 import com.example.app.engine.render.RenderQueue;
 import com.example.app.engine.scene.Scene;
 import com.example.app.engine.scene.SceneManager;
@@ -31,6 +32,7 @@ public final class EngineContext {
     public final RenderQueue renderQueue;
     public final EngineClock clock;
     public final EventBus<CollisionEvent> collisionEvents;
+    public IRenderer renderer;
 
     public EngineContext(
             EngineConfig config,
@@ -38,7 +40,8 @@ public final class EngineContext {
             EntityManager entityManager,
             MovementManager movementManager,
             CollisionManager collisionManager,
-            IOManager ioManager) {
+            IOManager ioManager,
+            IRenderer renderer) {
         this.config = config;
         this.sceneManager = sceneManager;
         this.entityManager = entityManager;
@@ -46,6 +49,7 @@ public final class EngineContext {
         this.collisionManager = collisionManager;
         this.ioManager = ioManager;
 
+        this.renderer = renderer;
         this.renderQueue = new RenderQueue();
         this.clock = new EngineClock(config.fixedDt);
         this.collisionEvents = new EventBus<>();

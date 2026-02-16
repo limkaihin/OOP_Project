@@ -38,14 +38,14 @@ public final class SandboxScene extends AbstractBaseScene {
         player.addComponent(TransformComponent.class, new TransformComponent(120, 120));
         player.addComponent(VelocityComponent.class, new VelocityComponent(0, 0));
         player.addComponent(ColliderComponent.class, ColliderComponent.aabb(18, 14)); // half extents
-        player.addComponent(RenderableComponent.class, RenderableComponent.rect(36, 28, 0.25f, 0.75f, 1f, 1f));
+        player.addComponent(RenderableComponent.class, new RenderableComponent("PLAYER"));
 
         // NPC (CIRCLE) auto-move
         npc = ctx.entityManager.create();
         npc.addComponent(TransformComponent.class, new TransformComponent(520, 300));
         npc.addComponent(VelocityComponent.class, new VelocityComponent(-140f, 90f));
         npc.addComponent(ColliderComponent.class, ColliderComponent.circle(18));
-        npc.addComponent(RenderableComponent.class, RenderableComponent.circle(18, 1.0f, 0.55f, 0.10f, 1f));
+        npc.addComponent(RenderableComponent.class, new RenderableComponent("NPC"));
 
         // Spawn initial red obstacles (CIRCLE + ObstacleTag)
         for (int i = 0; i < initialSpawnCount; i++) {
@@ -106,10 +106,17 @@ public final class SandboxScene extends AbstractBaseScene {
         for (Entity e : ctx.entityManager.getAll()) {
             TransformComponent t = e.getComponent(TransformComponent.class);
             RenderableComponent r = e.getComponent(RenderableComponent.class);
+            ColliderComponent c = e.getComponent(ColliderComponent.class);
             if (t == null || r == null)
                 continue;
 
-            if (r.shape == RenderableComponent.RenderShape.RECT) {
+            float radius = (c != null) ? c.radius : 0;
+            float w = (c != null) ? c.halfWidth * 2 : 0;
+            float h = (c != null) ? c.halfWidth * 2 : 0;
+
+            ctx.renderer.draw(r.renderKey, t.x, t.y, radius, w, h);
+
+            /*if (r.shape == RenderableComponent.RenderShape.RECT) {
                 ctx.renderQueue.submit(RenderCommand.rect(
                         t.x - r.w / 2f, t.y - r.h / 2f, r.w, r.h,
                         r.r, r.g, r.b, r.a));
@@ -117,7 +124,7 @@ public final class SandboxScene extends AbstractBaseScene {
                 ctx.renderQueue.submit(RenderCommand.circle(
                         t.x, t.y, r.radius,
                         r.r, r.g, r.b, r.a));
-            }
+            }*/
         }
     }
 
@@ -177,7 +184,7 @@ public final class SandboxScene extends AbstractBaseScene {
                 (rng.nextFloat() - 0.5f) * 110f));
 
         e.addComponent(ColliderComponent.class, ColliderComponent.circle(radius));
-        e.addComponent(RenderableComponent.class, RenderableComponent.circle(radius, 1.0f, 0.35f, 0.35f, 1f));
+        e.addComponent(RenderableComponent.class, new RenderableComponent("OBSTACLE"));
 
         // Ensure it never spawns out of bounds
         keepInsideWindowBounce(e);

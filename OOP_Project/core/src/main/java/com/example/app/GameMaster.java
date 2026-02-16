@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.example.app.demo.render.LibGdxRenderer;
 import com.example.app.demo.scenes.MenuScene;
 import com.example.app.engine.EngineConfig;
 import com.example.app.engine.EngineContext;
@@ -15,6 +16,7 @@ import com.example.app.engine.collision.SimpleCollisionManager;
 import com.example.app.engine.entity.EntityManager;
 import com.example.app.engine.io.*;
 import com.example.app.engine.movement.MovementManager;
+import com.example.app.engine.render.IRenderer;
 import com.example.app.engine.render.RenderCommand;
 import com.example.app.engine.scene.SceneManager;
 import com.example.app.engine.scene.Scene;
@@ -37,6 +39,7 @@ public class GameMaster extends ApplicationAdapter {
         font.setColor(Color.WHITE);
         shapes = new ShapeRenderer();
 
+        IRenderer renderer = new LibGdxRenderer(shapes);
         EngineConfig config = new EngineConfig(640, 480, "OOP_project");
         SceneManager sceneManager = new SceneManager();
         EntityManager entityManager = new EntityManager();
@@ -75,7 +78,7 @@ public class GameMaster extends ApplicationAdapter {
 
         IOManager ioManager = new IOManager(inputHandler, outputHandler);
 
-        ctx = new EngineContext(config, sceneManager, entityManager, movementManager, collisionManager, ioManager);
+        ctx = new EngineContext(config, sceneManager, entityManager, movementManager, collisionManager, ioManager, renderer);
 
         // Start at menu
         sceneManager.push(new MenuScene(ctx));
@@ -92,23 +95,25 @@ public class GameMaster extends ApplicationAdapter {
 
         Scene current = ctx.sceneManager.current();
         if (current != null) {
+            ctx.renderer.begin();
             current.render();
+            ctx.renderer.end();
         }
 
-        // Draw shapes from engine RenderQueue
-        shapes.begin(ShapeRenderer.ShapeType.Filled);
-        for (RenderCommand cmd : ctx.renderQueue.view()) {
-            shapes.setColor(cmd.r, cmd.g, cmd.b, cmd.a);
+        // // Draw shapes from engine RenderQueue
+        // shapes.begin(ShapeRenderer.ShapeType.Filled);
+        // for (RenderCommand cmd : ctx.renderQueue.view()) {
+        //     shapes.setColor(cmd.r, cmd.g, cmd.b, cmd.a);
 
-            if (cmd.type == RenderCommand.ShapeType.RECT) {
-                shapes.rect(cmd.x, cmd.y, cmd.w, cmd.h);
-            } else if (cmd.type == RenderCommand.ShapeType.CIRCLE) {
-                shapes.circle(cmd.cx, cmd.cy, cmd.radius);
-            } else if (cmd.type == RenderCommand.ShapeType.FULLSCREEN_FADE) {
-                shapes.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            }
-        }
-        shapes.end();
+        //     if (cmd.type == RenderCommand.ShapeType.RECT) {
+        //         shapes.rect(cmd.x, cmd.y, cmd.w, cmd.h);
+        //     } else if (cmd.type == RenderCommand.ShapeType.CIRCLE) {
+        //         shapes.circle(cmd.cx, cmd.cy, cmd.radius);
+        //     } else if (cmd.type == RenderCommand.ShapeType.FULLSCREEN_FADE) {
+        //         shapes.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        //     }
+        // }
+        // shapes.end();
 
         // UI instructions (top-left)
         batch.begin();
