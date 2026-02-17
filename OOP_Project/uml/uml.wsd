@@ -63,7 +63,7 @@ package "engine" {
     EngineContext --> IOManager : uses
     EngineContext --> IRenderer : uses
     EngineContext --> EngineClock : uses
-    EngineContext --> "EventBus<CollisionEvent>" : contains
+    EngineContext *-- "EventBus<CollisionEvent>" : contains
 
     ' =============================
     ' Entity Package
@@ -102,9 +102,9 @@ package "engine" {
             + nextId() : int
         }
 
-        EntityManager --> EntityIdGenerator : uses
+        EntityManager *-- EntityIdGenerator : uses
         EntityManager --> Entity : manages
-        Entity --> Component : contains
+        Entity o-- Component : contains
     }
 
     ' =============================
@@ -113,7 +113,7 @@ package "engine" {
     
     package "components" {
         interface Component {
-            {abstract} + validate() : void
+            + validate() : void
         }
         
         class MissingComponentException {
@@ -251,16 +251,16 @@ package "engine" {
 
         ColliderComponent --|> Component
         SimpleCollisionManager --|> CollisionManager
-        SimpleCollisionManager --> SpatialHashGrid : uses
+        SimpleCollisionManager *-- SpatialHashGrid : uses
         SimpleCollisionManager --> CollisionListener : notifies
         SimpleCollisionManager --> CollisionResolver : uses
         SimpleCollisionManager --> CollisionEvent : generates
-        SpatialHashGrid --> Entity : contains
+        SpatialHashGrid o-- Entity : contains
         SpatialHashGrid --> TransformComponent : uses
         SpatialHashGrid --> ColliderComponent : uses
         SpatialHashGrid --> "PairKey" : generates
-        CollisionEvent --> CollisionPair : contains
-        CollisionEvent --> CollisionManifold : contains
+        CollisionEvent *-- CollisionPair : contains
+        CollisionEvent *-- CollisionManifold : contains
         CollisionPair --> Entity : references
         CollisionListener --> CollisionEvent : receives
         CollisionResolver --> Entity : resolves between
@@ -279,7 +279,7 @@ package "engine" {
             {abstract} + onExit() : void
             {abstract} + onUnload() : void
             {abstract} + render() : void
-            + name() : String
+            + name() : String [default]
         }
 
         abstract class AbstractBaseScene {
@@ -471,16 +471,16 @@ package "engine" {
             + dispose() : void
         }
 
-        InputHandler --> InputBinding : uses
-        InputHandler --> InputState : uses
+        InputHandler *-- InputBinding : uses
+        InputHandler *-- InputState : uses
         InputState --> InputAction : uses
-        AudioPlayer --> Sound : manages
-        OutputHandler --> AudioPlayer : uses
-        OutputHandler --> ErrorLogger : uses
-        OutputHandler --> Sound : uses
-        ErrorLogger --> ErrorEntry : contains
-        IOManager --> InputHandler : delegates to
-        IOManager --> OutputHandler : delegates to
+        AudioPlayer *-- Sound : manages
+        OutputHandler *-- AudioPlayer : uses
+        OutputHandler *-- ErrorLogger : uses
+        AudioPlayer --> Sound : uses
+        ErrorLogger *-- ErrorEntry : contains
+        IOManager *-- InputHandler : delegates to
+        IOManager *-- OutputHandler : delegates to
     }
 
     ' =============================
