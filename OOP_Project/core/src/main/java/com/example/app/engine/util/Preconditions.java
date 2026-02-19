@@ -1,8 +1,6 @@
 package com.example.app.engine.util;
 
-/**
- * Tiny helper to keep null/argument checks consistent across the engine.
- */
+// Tiny helper to keep null/argument checks consistent across the engine
 public final class Preconditions {
     private Preconditions() { }
 

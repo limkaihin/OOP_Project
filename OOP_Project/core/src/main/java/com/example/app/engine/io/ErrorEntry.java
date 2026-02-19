@@ -1,6 +1,9 @@
 package com.example.app.engine.io;
 
+<<<<<<< HEAD
 // One logged error entry.
+=======
+>>>>>>> c94a7c550fcfd4d8063dd6edbe7a0eb0a87dbfb7
 public class ErrorEntry {
     private final long timestamp;
     private final String tag;

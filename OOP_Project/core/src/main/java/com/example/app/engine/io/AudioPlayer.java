@@ -2,8 +2,11 @@ package com.example.app.engine.io;
 
 import java.util.ArrayList;
 import java.util.List;
-public class AudioPlayer {
+<<<<<<< HEAD
+=======
 
+>>>>>>> c94a7c550fcfd4d8063dd6edbe7a0eb0a87dbfb7
+public class AudioPlayer {
     private float masterVolume = 0.5f;
     private Sound currentMusic;
     private String lastMusicFilePath;
@@ -23,7 +26,7 @@ public class AudioPlayer {
         if (currentMusic != null)
             currentMusic.setVolume(this.masterVolume);
 
-        // Update ALL active sounds
+        // Update all active sounds
         for (Sound sound : activeSounds) {
             sound.setVolume(this.masterVolume);
         }

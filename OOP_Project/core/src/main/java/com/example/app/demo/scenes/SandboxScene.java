@@ -8,22 +8,17 @@ import com.example.app.engine.io.InputAction;
 import com.example.app.engine.io.InputState;
 import com.example.app.engine.movement.TransformComponent;
 import com.example.app.engine.movement.VelocityComponent;
-import com.example.app.engine.render.RenderCommand;
 import com.example.app.engine.render.RenderableComponent;
 import com.example.app.engine.scene.AbstractBaseScene;
 
 import java.util.Random;
 
 public final class SandboxScene extends AbstractBaseScene {
-
     private final EngineContext ctx;
     private final int initialSpawnCount;
-
     private Entity player;
     private Entity npc;
-
     private final Random rng = new Random();
-
     private float npcHitCooldown = 0f;
 
     public SandboxScene(EngineContext ctx, int initialSpawnCount) {
@@ -101,8 +96,7 @@ public final class SandboxScene extends AbstractBaseScene {
 
     @Override
     public void render() {
-        ctx.renderQueue.clear();
-        // Submit render commands (draw everything)
+        // Draw everything
         for (Entity e : ctx.entityManager.getAll()) {
             TransformComponent t = e.getComponent(TransformComponent.class);
             RenderableComponent r = e.getComponent(RenderableComponent.class);
@@ -197,7 +191,7 @@ public final class SandboxScene extends AbstractBaseScene {
         float oldX = t.x;
         float oldY = t.y;
 
-        // clamp
+        // Clamp
         t.x = Math.max(minX, Math.min(maxX, t.x));
         t.y = Math.max(minY, Math.min(maxY, t.y));
 

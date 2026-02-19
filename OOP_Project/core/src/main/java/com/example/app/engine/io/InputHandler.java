@@ -1,10 +1,12 @@
 package com.example.app.engine.io;
 
 import com.badlogic.gdx.Gdx;
-
 import java.util.Map;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> c94a7c550fcfd4d8063dd6edbe7a0eb0a87dbfb7
 public class InputHandler {
 
     private final InputBinding bindings;
@@ -15,7 +17,7 @@ public class InputHandler {
     }
 
     public void update(float deltaTime) {
-        // Advance edge-detection history at the start of the frame.
+        // Edge-detection history at start of the frame
         state.nextFrame();
 
         // Process all bound keys
@@ -23,14 +25,13 @@ public class InputHandler {
             int keyCode = e.getKey();
             InputAction action = e.getValue();
             boolean down = Gdx.input.isKeyPressed(keyCode);
-            // Multiple keys may map to the same action: OR them together.
+            // Multiple keys may map to the same action
             if (down) {
                 state.processInput(action, true);
             }
         }
 
-        // Ensure actions with no active bound key are false
-        // (we only ever set true above).
+        // Ensure actions with no active bound key are false, we only ever set true above
         for (InputAction a : InputAction.values()) {
             boolean anyDown = isAnyKeyDownForAction(a);
             state.processInput(a, anyDown);
@@ -48,7 +49,11 @@ public class InputHandler {
         return state;
     }
 
+<<<<<<< HEAD
     // Optional hook for tests or platforms without polling.
+=======
+    // Optional hook for tests or platforms without polling
+>>>>>>> c94a7c550fcfd4d8063dd6edbe7a0eb0a87dbfb7
     public void setKeyState(int keyCode, boolean isPressed) {
         InputAction action = bindings.getAction(keyCode);
         if (action != null) {

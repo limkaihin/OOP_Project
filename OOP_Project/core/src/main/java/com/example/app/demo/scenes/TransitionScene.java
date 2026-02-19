@@ -1,12 +1,10 @@
 package com.example.app.demo.scenes;
 
 import com.example.app.engine.EngineContext;
-import com.example.app.engine.render.RenderCommand;
 import com.example.app.engine.scene.AbstractBaseScene;
 import com.example.app.engine.scene.Scene;
 
 public final class TransitionScene extends AbstractBaseScene {
-
     private final EngineContext ctx;
     private final Scene next;
     private final float duration;
@@ -34,6 +32,6 @@ public final class TransitionScene extends AbstractBaseScene {
     @Override
     public void render() {
         float alpha = Math.min(1f, t / duration);
-        ctx.renderQueue.submit(RenderCommand.fullscreenFade(0f, 0f, 0f, alpha));
+        ctx.renderer.draw("TRANSITION",0 , 0, alpha, 0, 0);
     }
 }

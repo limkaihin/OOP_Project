@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-/**
- * Simple publish/subscribe utility for decoupling managers.
- * Keep events generic and engine-level (demo decides event meanings).
- */
 public final class EventBus<T> {
     private final List<Consumer<T>> listeners = new ArrayList<>();
 

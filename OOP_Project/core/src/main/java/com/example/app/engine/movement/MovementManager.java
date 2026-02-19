@@ -1,19 +1,9 @@
 package com.example.app.engine.movement;
+
 import com.example.app.engine.components.Component;
 import com.example.app.engine.entity.Entity;
 import com.example.app.engine.entity.EntityManager;
 
-
-/**
- * MovementManager (UML-aligned concrete class).
- *
- * Integrates movement using:
- * - TransformComponent (position, rotation)
- * - VelocityComponent (vx, vy)
- * - AccelerationComponent (ax, ay) (optional)
- *
- * Also supports simple global gravity and a max speed clamp.
- */
 public class MovementManager implements Component {
 
     private float gravity = 0f;      // units/sec^2 applied to vy
@@ -32,9 +22,7 @@ public class MovementManager implements Component {
     public float getMaxSpeed() { return maxSpeed; }
     public void setMaxSpeed(float maxSpeed) { this.maxSpeed = maxSpeed; }
 
-    /**
-     * UML-style update: update all entities in the list.
-     */
+    // Update all entities in the list
     public void update(float dt, Iterable<Entity> entities) {
         if (dt <= 0f || entities == null) return;
         for (Entity e : entities) {
@@ -43,17 +31,13 @@ public class MovementManager implements Component {
         }
     }
 
-    /**
-     * Backward-compatible update signature used by older code.
-     */
+    // Backward-compatible update signature used by older code
     public void update(float dt, EntityManager entityManager) {
         if (entityManager == null) return;
         update(dt, entityManager.getAll());
     }
 
-    /**
-     * Updates a single entity's velocity and position.
-     */
+    // Updates a single entity's velocity and position
     public void moveEntity(float dt, Entity e) {
         TransformComponent t = e.getComponent(TransformComponent.class);
         VelocityComponent v = e.getComponent(VelocityComponent.class);
@@ -62,9 +46,7 @@ public class MovementManager implements Component {
         movePhysics(dt, e, t, v);
     }
 
-    /**
-     * Applies acceleration/gravity to velocity, then integrates position.
-     */
+    // Applies acceleration/gravity to velocity, then integrates position
     public void movePhysics(float dt, Entity e, TransformComponent t, VelocityComponent v) {
         AccelerationComponent a = e.getComponent(AccelerationComponent.class);
         if (a != null) {

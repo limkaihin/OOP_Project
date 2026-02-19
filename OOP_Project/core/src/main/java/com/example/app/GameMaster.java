@@ -17,13 +17,9 @@ import com.example.app.engine.entity.EntityManager;
 import com.example.app.engine.io.*;
 import com.example.app.engine.movement.MovementManager;
 import com.example.app.engine.render.IRenderer;
-import com.example.app.engine.render.RenderCommand;
 import com.example.app.engine.scene.SceneManager;
 import com.example.app.engine.scene.Scene;
 
-/**
- * GameMaster: libGDX ApplicationAdapter entry point (UML-aligned).
- */
 public class GameMaster extends ApplicationAdapter {
 
     private SpriteBatch batch;
@@ -56,7 +52,7 @@ public class GameMaster extends ApplicationAdapter {
         bindings.bind(Input.Keys.UP, InputAction.VOLUME_UP);
         bindings.bind(Input.Keys.DOWN, InputAction.VOLUME_DOWN);
 
-        // ALSO allow WASD
+        // Allow WASD input
         bindings.bind(Input.Keys.A, InputAction.MOVE_LEFT);
         bindings.bind(Input.Keys.D, InputAction.MOVE_RIGHT);
         bindings.bind(Input.Keys.W, InputAction.MOVE_UP);
@@ -90,7 +86,7 @@ public class GameMaster extends ApplicationAdapter {
         float realDt = Gdx.graphics.getDeltaTime();
         ctx.update(realDt);
 
-        // CLEAR ONCE — at the top
+        // Clear once
         ScreenUtils.clear(0.10f, 0.10f, 0.14f, 1f);
 
         Scene current = ctx.sceneManager.current();
