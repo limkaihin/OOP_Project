@@ -3,6 +3,7 @@ skinparam classAttributeIconSize 0
 skinparam style strictuml
 skinparam backgroundColor #FEFEFE
 skinparam arrowColor #333333
+scale 1500 width
 
 ' =========================
 ' APPLICATION LAYER
@@ -175,7 +176,7 @@ package "engine" {
     
     package "collision" {
         class ColliderComponent {
-            + {static} enum ColShapeType
+            + enum ColShapeType
             + layer : int
             + mask : int
             + isTrigger : boolean
@@ -186,12 +187,12 @@ package "engine" {
             + halfWidth : float
             + halfHeight : float
             - ColliderComponent(type : ColShapeType)
-            + {static} circle(radius : float) : ColliderComponent
-            + {static} aabb(halfWidth : float, halfHeight : float) : ColliderComponent
+            + circle(radius : float) : ColliderComponent
+            + aabb(halfWidth : float, halfHeight : float) : ColliderComponent
         }
 
         interface CollisionManager {
-            {abstract} + update(dt : float, entities : Iterable<Entity>) : List<CollisionEvent>
+            + update(dt : float, entities : Iterable<Entity>) : List<CollisionEvent>
         }
 
         class SimpleCollisionManager {
@@ -242,11 +243,11 @@ package "engine" {
         }
 
         interface CollisionListener {
-            {abstract} + onCollision(event : CollisionEvent) : void
+            + onCollision(event : CollisionEvent) : void
         }
 
         interface CollisionResolver {
-            {abstract} + resolve(a : Entity, b : Entity, manifold : CollisionManifold) : void
+            + resolve(a : Entity, b : Entity, manifold : CollisionManifold) : void
         }
 
         ColliderComponent --|> Component
@@ -273,12 +274,12 @@ package "engine" {
     
     package "scene" {
         interface Scene {
-            {abstract} + onLoad() : void
-            {abstract} + onEnter() : void
-            {abstract} + update(dt : float) : void
-            {abstract} + onExit() : void
-            {abstract} + onUnload() : void
-            {abstract} + render() : void
+            + onLoad() : void
+            + onEnter() : void
+            + update(dt : float) : void
+            + onExit() : void
+            + onUnload() : void
+            + render() : void
             + name() : String [default]
         }
 
@@ -310,9 +311,9 @@ package "engine" {
     
     package "render" {
         interface IRenderer {
-            {abstract} + begin() : void
-            {abstract} + end() : void
-            {abstract} + draw(key : String, x : float, y : float, radius : float, width : float, height : float) : void
+            + begin() : void
+            + end() : void
+            + draw(key : String, x : float, y : float, radius : float, width : float, height : float) : void
         }
 
         class RenderableComponent {
@@ -518,16 +519,16 @@ package "engine" {
         }
 
         class Mathf {
-            + {static} clamp(v : float, min : float, max : float) : float
-            + {static} length(x : float, y : float) : float
-            + {static} length2(x : float, y : float) : float
-            + {static} distance(ax : float, ay : float, bx : float, by : float) : float
-            + {static} distance2(ax : float, ay : float, bx : float, by : float) : float
+            + clamp(v : float, min : float, max : float) : float
+            + length(x : float, y : float) : float
+            + length2(x : float, y : float) : float
+            + distance(ax : float, ay : float, bx : float, by : float) : float
+            + distance2(ax : float, ay : float, bx : float, by : float) : float
         }
 
         class Preconditions {
-            + {static} notNull<T>(value : T, name : String) : T
-            + {static} check(condition : boolean, message : String) : void
+            + notNull<T>(value : T, name : String) : T
+            + check(condition : boolean, message : String) : void
         }
     }
 }
@@ -553,7 +554,7 @@ package "demo" {
         }
 
         interface ShapeDrawer {
-            {abstract} + draw(x : float, y : float, radius : float, w : float, h : float) : void
+            + draw(x : float, y : float, radius : float, w : float, h : float) : void
         }
 
         LibGdxRenderer --|> IRenderer
@@ -620,7 +621,7 @@ package "demo" {
 ' =============================
 
 class EngineSmokeTest {
-    + {static} main(args : String[]) : void
+    + main(args : String[]) : void
 }
 
 EngineSmokeTest --> EntityManager : uses
