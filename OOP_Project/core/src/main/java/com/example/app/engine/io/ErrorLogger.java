@@ -17,11 +17,6 @@ public class ErrorLogger {
     }
     //logs a message
     public void log(String tag, String message) {
-<<<<<<< HEAD
-=======
-        // Treat log entries as non-fatal; keep a smaller in-memory record
-        // Can extend this to store info logs
->>>>>>> c94a7c550fcfd4d8063dd6edbe7a0eb0a87dbfb7
         System.out.println("[LOG][" + tag + "] " + message);
     }
     //logs an error

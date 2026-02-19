@@ -2,11 +2,8 @@ package com.example.app.engine.io;
 
 import com.badlogic.gdx.Gdx;
 
-<<<<<<< HEAD
 // Lightweight sound wrapper (UML-aligned).
 // If the file cannot be loaded (missing asset), calls become no-ops.
-=======
->>>>>>> c94a7c550fcfd4d8063dd6edbe7a0eb0a87dbfb7
 public class Sound {
     private final String filePath;
     private float volume = 1f;

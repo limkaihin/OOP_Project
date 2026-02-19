@@ -96,14 +96,6 @@ public class GameMaster extends ApplicationAdapter {
             ctx.renderer.end();
         }
 
-        // Draw shapes from engine RenderQueue
-        shapes.begin(ShapeRenderer.ShapeType.Filled);
-        for (RenderCommand cmd : ctx.renderQueue.view()) {
-            shapes.setColor(cmd.r, cmd.g, cmd.b, cmd.a);
-            shapes.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        }
-        shapes.end();
-
         // UI instructions (top-left)
         batch.begin();
         float x = 10f;

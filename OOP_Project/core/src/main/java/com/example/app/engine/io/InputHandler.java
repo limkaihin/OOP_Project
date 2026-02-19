@@ -3,10 +3,6 @@ package com.example.app.engine.io;
 import com.badlogic.gdx.Gdx;
 import java.util.Map;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> c94a7c550fcfd4d8063dd6edbe7a0eb0a87dbfb7
 public class InputHandler {
 
     private final InputBinding bindings;
@@ -49,11 +45,7 @@ public class InputHandler {
         return state;
     }
 
-<<<<<<< HEAD
     // Optional hook for tests or platforms without polling.
-=======
-    // Optional hook for tests or platforms without polling
->>>>>>> c94a7c550fcfd4d8063dd6edbe7a0eb0a87dbfb7
     public void setKeyState(int keyCode, boolean isPressed) {
         InputAction action = bindings.getAction(keyCode);
         if (action != null) {

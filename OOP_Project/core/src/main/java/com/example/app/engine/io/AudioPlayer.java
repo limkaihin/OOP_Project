@@ -2,10 +2,7 @@ package com.example.app.engine.io;
 
 import java.util.ArrayList;
 import java.util.List;
-<<<<<<< HEAD
-=======
 
->>>>>>> c94a7c550fcfd4d8063dd6edbe7a0eb0a87dbfb7
 public class AudioPlayer {
     private float masterVolume = 0.5f;
     private Sound currentMusic;
