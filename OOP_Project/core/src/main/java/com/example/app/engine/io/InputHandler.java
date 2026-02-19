@@ -4,15 +4,12 @@ import com.badlogic.gdx.Gdx;
 
 import java.util.Map;
 
-/**
- * InputHandler (UML-aligned).
- * Polls libGDX keys each frame using an {@link InputBinding} map.
- */
+
 public class InputHandler {
 
     private final InputBinding bindings;
     private final InputState state = new InputState();
-
+    //to split up the InputHandler into input status checking and input binding
     public InputHandler(InputBinding bindings) {
         this.bindings = (bindings == null) ? new InputBinding() : bindings;
     }
@@ -51,9 +48,7 @@ public class InputHandler {
         return state;
     }
 
-    /**
-     * Optional hook for tests or platforms without polling.
-     */
+    // Optional hook for tests or platforms without polling.
     public void setKeyState(int keyCode, boolean isPressed) {
         InputAction action = bindings.getAction(keyCode);
         if (action != null) {

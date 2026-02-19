@@ -1,9 +1,7 @@
 package com.example.app.engine.io;
 
-/**
- * Generic actions (not context-specific).
- * Bind these to keys/buttons in InputBinding.
- */
+// Generic actions (not context-specific).
+// Bind these to keys/buttons in InputBinding.
 public enum InputAction {
     CONFIRM,
     BACK,

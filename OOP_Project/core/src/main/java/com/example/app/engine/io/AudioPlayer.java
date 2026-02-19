@@ -2,11 +2,6 @@ package com.example.app.engine.io;
 
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * Simple audio manager (UML-aligned).
- * Uses {@link Sound} as a minimal wrapper.
- */
 public class AudioPlayer {
 
     private float masterVolume = 0.5f;

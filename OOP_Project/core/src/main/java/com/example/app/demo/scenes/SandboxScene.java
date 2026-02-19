@@ -115,16 +115,6 @@ public final class SandboxScene extends AbstractBaseScene {
             float h = (c != null) ? c.halfWidth * 2 : 0;
 
             ctx.renderer.draw(r.renderKey, t.x, t.y, radius, w, h);
-
-            /*if (r.shape == RenderableComponent.RenderShape.RECT) {
-                ctx.renderQueue.submit(RenderCommand.rect(
-                        t.x - r.w / 2f, t.y - r.h / 2f, r.w, r.h,
-                        r.r, r.g, r.b, r.a));
-            } else {
-                ctx.renderQueue.submit(RenderCommand.circle(
-                        t.x, t.y, r.radius,
-                        r.r, r.g, r.b, r.a));
-            }*/
         }
     }
 
@@ -132,9 +122,10 @@ public final class SandboxScene extends AbstractBaseScene {
         Entity a = event.getPair().getA();
         Entity b = event.getPair().getB();
 
-        // NPC hits Player => play sound + bounce both (visible)
+        // NPC hits Player => play sound
         if (isPair(a, b, npc, player)) {
             if (npcHitCooldown <= 0f) {
+                //plays the sound when the npc hits the player
                 ctx.ioManager.playSound("hit.wav");
                 ctx.ioManager.log("SandboxScene", "hit effect played");
                 npcHitCooldown = 0.15f;
@@ -162,14 +153,6 @@ public final class SandboxScene extends AbstractBaseScene {
     private boolean isInPair(Entity a, Entity b, Entity x) {
         return a == x || b == x;
     }
-
-    // private void bounceEntity(Entity e) {
-    // VelocityComponent v = e.getComponent(VelocityComponent.class);
-    // if (v != null) {
-    // v.vx = -v.vx;
-    // v.vy = -v.vy;
-    // }
-    // }
 
     private void spawnObstacle(float x, float y) {
         float radius = 12f + rng.nextInt(10);
@@ -218,7 +201,7 @@ public final class SandboxScene extends AbstractBaseScene {
         t.x = Math.max(minX, Math.min(maxX, t.x));
         t.y = Math.max(minY, Math.min(maxY, t.y));
 
-        // bounce on impact
+        // bounce
         if (v != null) {
             if (t.x != oldX)
                 v.vx = -v.vx;

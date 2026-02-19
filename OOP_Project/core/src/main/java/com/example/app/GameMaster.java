@@ -100,20 +100,13 @@ public class GameMaster extends ApplicationAdapter {
             ctx.renderer.end();
         }
 
-        // // Draw shapes from engine RenderQueue
-        // shapes.begin(ShapeRenderer.ShapeType.Filled);
-        // for (RenderCommand cmd : ctx.renderQueue.view()) {
-        //     shapes.setColor(cmd.r, cmd.g, cmd.b, cmd.a);
-
-        //     if (cmd.type == RenderCommand.ShapeType.RECT) {
-        //         shapes.rect(cmd.x, cmd.y, cmd.w, cmd.h);
-        //     } else if (cmd.type == RenderCommand.ShapeType.CIRCLE) {
-        //         shapes.circle(cmd.cx, cmd.cy, cmd.radius);
-        //     } else if (cmd.type == RenderCommand.ShapeType.FULLSCREEN_FADE) {
-        //         shapes.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        //     }
-        // }
-        // shapes.end();
+        // Draw shapes from engine RenderQueue
+        shapes.begin(ShapeRenderer.ShapeType.Filled);
+        for (RenderCommand cmd : ctx.renderQueue.view()) {
+            shapes.setColor(cmd.r, cmd.g, cmd.b, cmd.a);
+            shapes.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        }
+        shapes.end();
 
         // UI instructions (top-left)
         batch.begin();
