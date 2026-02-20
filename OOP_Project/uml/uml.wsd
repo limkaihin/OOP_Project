@@ -206,6 +206,11 @@ package "engine" {
             + update(dt : float, entities : Iterable<Entity>) : List<CollisionEvent>
             - passesFilter(a : ColliderComponent, b : ColliderComponent) : boolean
             - intersect(ta : TransformComponent, ca : ColliderComponent, tb : TransformComponent, cb : ColliderComponent) : CollisionManifold
+            - circleCircle(ax : float, ay : float, ar : float, bx : float, by : float, br : float) : CollisionManifold
+            - aabbAabb(ax : float, ay : float, ar : float, bx : float, by : float, br : float) : CollisionManifold
+            - circleCircle(ax : float, ay : float, ahw : float, ahh : float, bx : float, by : float, bhw : float, bhh : float) : CollisionManifold
+            - circleAabb(cx : float, cy : float, cr : float, bx : float, by : float, bhw : float, bhh : float) : CollisionManifold
+            - clamp(v : float, min : float, max : float) : float
         }
 
         class SpatialHashGrid {
@@ -292,7 +297,6 @@ package "engine" {
 
         class SceneManager {
             - scenes : List<Scene>
-            + SceneManager()
             + getScenes() : List<Scene>
             + current() : Scene
             + switchTo(scene : Scene) : void
@@ -351,7 +355,6 @@ package "engine" {
 
         class InputBinding {
             - keyToAction : Map<Integer, InputAction>
-            + InputBinding()
             + bind(keyCode : int, action : InputAction) : void
             + unbind(keyCode : int) : void
             + getAction(keyCode : int) : InputAction
@@ -375,6 +378,7 @@ package "engine" {
             - state : InputState
             + InputHandler(bindings : InputBinding)
             + update(deltaTime : float) : void
+            - isAnyKeyDownForAction(action : InputAction) : boolean
             + getState() : InputState
             + setKeyState(keyCode : int, isPressed : boolean) : void
         }
@@ -504,7 +508,6 @@ package "engine" {
 
         class "EventBus<T>" {
             - listeners : List<Consumer<T>>
-            + EventBus()
             + subscribe(listener : Consumer<T>) : void
             + publish(event : T) : void
             + listenerCount() : int
@@ -519,6 +522,7 @@ package "engine" {
         }
 
         class Mathf {
+            - Mathf()
             + clamp(v : float, min : float, max : float) : float
             + length(x : float, y : float) : float
             + length2(x : float, y : float) : float
@@ -527,6 +531,7 @@ package "engine" {
         }
 
         class Preconditions {
+            - Preconditions()
             + notNull<T>(value : T, name : String) : T
             + check(condition : boolean, message : String) : void
         }
@@ -588,9 +593,11 @@ package "demo" {
             + update(dt : float) : void
             + render() : void
             - onCollision(event : CollisionEvent) : void
+            - isObstacle(e : Entity) : boolean
+            - isPair(a : Entity, b : Entity, x : Entity, y : Entity) : boolean
+            - isInPair(a : Entity, b : Entity, x : Entity) : boolean
             - spawnObstacle(x : float, y : float) : void
             - keepInsideWindowBounce(e : Entity) : void
-            - isPair(a : Entity, b : Entity, x : Entity, y : Entity) : boolean
         }
 
         class TransitionScene {
@@ -615,22 +622,6 @@ package "demo" {
         TransitionScene --> Scene : wraps
     }
 }
-
-' =============================
-' DEMO TEST PACKAGE
-' =============================
-
-class EngineSmokeTest {
-    + main(args : String[]) : void
-}
-
-EngineSmokeTest --> EntityManager : uses
-EngineSmokeTest --> Entity : creates
-EngineSmokeTest --> MovementManager : uses
-EngineSmokeTest --> SimpleCollisionManager : uses
-EngineSmokeTest --> TransformComponent : uses
-EngineSmokeTest --> VelocityComponent : uses
-EngineSmokeTest --> ColliderComponent : uses
 
 ' =============================
 ' KEY RELATIONSHIPS
