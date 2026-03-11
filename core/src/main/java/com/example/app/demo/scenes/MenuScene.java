@@ -20,7 +20,7 @@ public final class MenuScene extends AbstractBaseScene {
     @Override
     public void update(float dt) {
         if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.CONFIRM)) {
-            ctx.sceneManager.switchTo(new TransitionScene(ctx, new SandboxScene(ctx, spawnCount), 0.6f));
+            ctx.sceneManager.switchTo(new TransitionScene(ctx, new PlatformScene (ctx, spawnCount), 0.6f));
         }
     }
 
