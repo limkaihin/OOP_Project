@@ -18,7 +18,6 @@ public final class PlatformScene extends AbstractBaseScene {
      private float npcHitCooldown = 0f;
       private PassengerAbstractFactory factory;
       private float timer = 30f;
-    private GamePhase phase;
 
  
     public PlatformScene (EngineContext ctx, int initialSpawnCount) {
