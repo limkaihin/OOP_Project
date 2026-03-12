@@ -49,6 +49,9 @@ public class LibGdxRenderer implements IRenderer {
         textures.put("mrt_train_side.png", new Texture(Gdx.files.internal("mrt_train_side.png")));
         textures.put("train_door.png", new Texture(Gdx.files.internal("train_door.png")));
 
+        //Player
+        textures.put("passenger_npc_09.png", new Texture(Gdx.files.internal("passenger_npc_09.png")));
+
         // Passengers
         textures.put("passenger_npc_01.png", new Texture(Gdx.files.internal("passenger_npc_01.png")));
         textures.put("passenger_npc_03.png", new Texture(Gdx.files.internal("passenger_npc_03.png")));

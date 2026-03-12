@@ -8,6 +8,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.example.app.demo.factory.EnemyFactory;
+import com.example.app.demo.factory.PlayerFactory;
+import com.example.app.demo.factory.EntityFactory;
 import com.example.app.demo.render.LibGdxRenderer;
 import com.example.app.demo.scenes.MenuScene;
 import com.example.app.engine.EngineConfig;
@@ -74,7 +77,11 @@ public class GameMaster extends ApplicationAdapter {
 
         IOManager ioManager = new IOManager(inputHandler, outputHandler);
 
-        ctx = new EngineContext(config, sceneManager, entityManager, movementManager, collisionManager, ioManager, renderer);
+        //Entities
+        EntityFactory playerFactory = new PlayerFactory(entityManager);
+        EntityFactory enemyFactory = new EnemyFactory(entityManager);
+
+        ctx = new EngineContext(config, sceneManager, entityManager, movementManager, collisionManager, ioManager, renderer, playerFactory, enemyFactory);
 
         // Start at menu
         sceneManager.push(new MenuScene(ctx));

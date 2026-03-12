@@ -11,10 +11,17 @@ import com.example.app.engine.scene.Scene;
 import com.example.app.engine.scene.SceneManager;
 import com.example.app.engine.util.EngineClock;
 import com.example.app.engine.util.EventBus;
+import com.example.app.demo.factory.EntityFactory;
+import com.example.app.demo.factory.PlayerFactory;
+import com.example.app.demo.factory.EnemyFactory;
 
 import java.util.List;
 
 public final class EngineContext {
+
+    //Factory
+    public final EntityFactory PlayerFactory;
+    public final EntityFactory EnemyFactory;
 
     public final EngineConfig config;
 
@@ -36,14 +43,17 @@ public final class EngineContext {
             MovementManager movementManager,
             CollisionManager collisionManager,
             IOManager ioManager,
-            IRenderer renderer) {
+            IRenderer renderer,
+            EntityFactory playerFactory,
+            EntityFactory enemyFactory) {
         this.config = config;
         this.sceneManager = sceneManager;
         this.entityManager = entityManager;
         this.movementManager = movementManager;
         this.collisionManager = collisionManager;
         this.ioManager = ioManager;
-
+        this.PlayerFactory = playerFactory;
+        this.EnemyFactory = enemyFactory;
         this.renderer = renderer;
         this.clock = new EngineClock(config.fixedDt);
         this.collisionEvents = new EventBus<>();
