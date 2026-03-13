@@ -29,7 +29,7 @@ public final class MenuScene extends AbstractBaseScene {
     @Override
     public void update(float dt) {
         if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.CONFIRM)) {
-            ctx.sceneManager.switchTo(new TransitionScene(ctx, new PlatformScene(ctx, 10), 0.6f));
+            ctx.sceneManager.switchTo(new TransitionScene(ctx, new LevelSelectScene(ctx), 0.6f));
         }
     }
 
@@ -40,9 +40,11 @@ public final class MenuScene extends AbstractBaseScene {
         batch.begin();
         font.getData().setScale(2.5f);
         font.draw(batch, "TRAIN RUSH!!!", 200, Gdx.graphics.getHeight() - 50);
-        
+
         font.getData().setScale(1.5f);
-        font.draw(batch, "How to Play:\n\n1. Wait for people to leave the train!\n2. Don't push them or you'll bounce away!\n3. Run into the train before time runs out!\n\nLevels get harder! Can you beat all 10?\n\nPress ENTER to Start!", 50, Gdx.graphics.getHeight() - 150);
+        font.draw(batch,
+                "How to Play:\n\n1. Wait for people to leave the train!\n2. Don't push them or you'll bounce away!\n3. Run into the train before time runs out!\n\nLevels get harder! Can you beat all 10?\n\nPress ENTER to Start!",
+                50, Gdx.graphics.getHeight() - 150);
         batch.end();
 
         ctx.renderer.begin(); // Restart ShapeRenderer so GameMaster doesn't crash on end()
@@ -50,7 +52,9 @@ public final class MenuScene extends AbstractBaseScene {
 
     @Override
     public void onUnload() {
-        if (batch != null) batch.dispose();
-        if (font != null) font.dispose();
+        if (batch != null)
+            batch.dispose();
+        if (font != null)
+            font.dispose();
     }
 }

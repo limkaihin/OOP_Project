@@ -1,19 +1,13 @@
 package com.example.app.demo.render;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import java.util.*;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.example.app.engine.render.IRenderer;
 
 public class LibGdxRenderer implements IRenderer {
     private final ShapeRenderer shapes;
     private final Map<String, ShapeDrawer> drawers = new HashMap<>();
-    private final SpriteBatch batch = new SpriteBatch();
-    private final Map<String, Texture> textures = new HashMap<>();
 
     private void initDrawers() {
         drawers.put("PLAYER", (x, y, radius, w, h) -> {
@@ -41,9 +35,10 @@ public class LibGdxRenderer implements IRenderer {
     public LibGdxRenderer(ShapeRenderer shapes) {
         this.shapes = shapes;
         initDrawers();
-        loadTextures();
     }
     
+<<<<<<< HEAD
+=======
     private void loadTextures() {
          // Train & train door
         textures.put("mrt_train_side.png", new Texture(Gdx.files.internal("mrt_train_side.png")));
@@ -75,6 +70,7 @@ public class LibGdxRenderer implements IRenderer {
         textures.put("instruction_banner.png", new Texture(Gdx.files.internal("instruction_banner.png")));
 }
 
+>>>>>>> 9233e09451d98a8f162682745c3093460338ee11
     @Override
     public void begin() {
         shapes.begin(ShapeRenderer.ShapeType.Filled);
@@ -87,35 +83,14 @@ public class LibGdxRenderer implements IRenderer {
 
     @Override
     public void draw(String key, float x, float y, float radius, float w, float h) {
-        Texture tex = textures.get(key);
-        if (tex != null) {
-            batch.begin();
-            batch.draw(tex, 
-                x - w/2f,       // center X
-                y - h/2f,       // center Y
-                w,              // width
-                h);             // height
-            batch.end();
-            return;
+        ShapeDrawer drawer = drawers.get(key);
+        if (drawer != null) {
+            drawer.draw(x, y, radius, w, h);
+        }
     }
-
-    // fallback to shape drawer
-    ShapeDrawer drawer = drawers.get(key);
-    if (drawer != null) {
-        drawer.draw(x, y, radius, w, h);
-    }
-}
-
 
     // Helper for Hash Map
     interface ShapeDrawer {
         void draw(float x, float y, float radius, float w, float h);
-    }
-    public void dispose() {
-        batch.dispose();
-        for (Texture t : textures.values()) {
-            t.dispose();
-        }
-        shapes.dispose();
     }
 }
