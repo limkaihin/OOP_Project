@@ -7,24 +7,27 @@ import com.example.app.engine.render.RenderableComponent;
 
 public class EnemyFactory implements EntityFactory {
     private final EntityManager em;
-	private static final String Enemy_Sprite = "passenger_npc_01.png";
-	private static final float Enemy_Dimension_Width = 50;
-	private static final float Enemy_Dimension_Length = 50;
-
-
+    private static final String DEFAULT_TEXTURE_KEY = "passenger_npc_01.png";
+    private static final float WIDTH = 24f;
+    private static final float HEIGHT = 24f;
+    private static final float COLLIDER_RADIUS = 12f;
+ 
     public EnemyFactory(EntityManager em) {
         this.em = em;
     }
-
-    public Entity create(float x, float y, String textureKey) {
-        Entity enemy = em.create();
-        enemy.addComponent(TransformComponent.class, new TransformComponent(x, y));
-        enemy.addComponent(RenderableComponent.class, new RenderableComponent(textureKey,Enemy_Dimension_Width,Enemy_Dimension_Length));
-        return enemy;
+ 
+    @Override
+    public Entity create() {
+        return create(400f, 300f, DEFAULT_TEXTURE_KEY);
     }
-
-	@Override
-	public Entity create() {
-		return create(400, 300, Enemy_Sprite);
-	}
+ 
+    @Override
+    public Entity create(float x, float y, String textureKey) {
+        Entity npc = em.create();
+        npc.addComponent(TransformComponent.class, new TransformComponent(x, y));
+        npc.addComponent(VelocityComponent.class, new VelocityComponent(0, 0));
+        npc.addComponent(ColliderComponent.class, ColliderComponent.circle(COLLIDER_RADIUS));
+        npc.addComponent(RenderableComponent.class, new RenderableComponent(textureKey, WIDTH, HEIGHT));
+        return npc;
+    }
 }

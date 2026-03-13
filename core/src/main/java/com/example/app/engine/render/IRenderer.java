@@ -5,4 +5,7 @@ public interface IRenderer {
     void begin();
     void end();
     void draw(String key, float x, float y, float radius, float width, float height);
+    void loadTexture(String key, String path);
+    void unloadTexture(String key);
+    void flushSprites();
 }

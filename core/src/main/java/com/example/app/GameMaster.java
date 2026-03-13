@@ -39,7 +39,7 @@ public class GameMaster extends ApplicationAdapter {
         font.setColor(Color.WHITE);
         shapes = new ShapeRenderer();
 
-        IRenderer renderer = new LibGdxRenderer(shapes);
+        IRenderer renderer = new LibGdxRenderer(shapes, batch);
         EngineConfig config = new EngineConfig(640, 480, "OOP_project");
         SceneManager sceneManager = new SceneManager();
         EntityManager entityManager = new EntityManager();
