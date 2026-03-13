@@ -8,8 +8,12 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.example.app.demo.factory.EnemyFactory;
+import com.example.app.demo.factory.PlayerFactory;
+import com.example.app.demo.factory.EntityFactory;
 import com.example.app.demo.render.LibGdxRenderer;
 import com.example.app.demo.scenes.MenuScene;
+import com.example.app.demo.scenes.TrainScene;
 import com.example.app.engine.EngineConfig;
 import com.example.app.engine.EngineContext;
 import com.example.app.engine.collision.SimpleCollisionManager;
@@ -58,9 +62,7 @@ public class GameMaster extends ApplicationAdapter {
         bindings.bind(Input.Keys.W, InputAction.MOVE_UP);
         bindings.bind(Input.Keys.S, InputAction.MOVE_DOWN);
 
-        // Space to spawn
-        bindings.bind(Input.Keys.SPACE, InputAction.ACTION_1); // demo: spawn obstacle
-
+        // Removed Space spawn obstacle
         bindings.bind(Input.Keys.ENTER, InputAction.CONFIRM);
         bindings.bind(Input.Keys.ESCAPE, InputAction.BACK);
         bindings.bind(Input.Keys.P, InputAction.PAUSE);
@@ -74,9 +76,13 @@ public class GameMaster extends ApplicationAdapter {
 
         IOManager ioManager = new IOManager(inputHandler, outputHandler);
 
-        ctx = new EngineContext(config, sceneManager, entityManager, movementManager, collisionManager, ioManager, renderer);
+        //Entities
+        EntityFactory playerFactory = new PlayerFactory(entityManager);
+        EntityFactory enemyFactory = new EnemyFactory(entityManager);
 
-        // Start at menu
+        ctx = new EngineContext(config, sceneManager, entityManager, movementManager, collisionManager, ioManager, renderer, playerFactory, enemyFactory);
+
+        // Start at Menu Scene
         sceneManager.push(new MenuScene(ctx));
         ioManager.log("GameMaster", "Engine started");
     }
@@ -96,25 +102,7 @@ public class GameMaster extends ApplicationAdapter {
             ctx.renderer.end();
         }
 
-        // UI instructions (top-left)
-        batch.begin();
-        float x = 10f;
-        float y = Gdx.graphics.getHeight() - 10f;
-
-        font.draw(batch, "Controls:", x, y);
-        font.draw(batch, "WASD: move", x, y - 18f);
-        font.draw(batch, "1 : hit effect music", x, y - 36f);
-        font.draw(batch, "2 : kahoot music", x, y - 54f);
-        font.draw(batch, "3 : crazy frog music", x, y - 72f);
-        font.draw(batch, "Left/Right: Stop/Play", x, y - 90f);
-        font.draw(batch, "Up/Down: Volume +-", x, y - 108f);
-        font.draw(batch, "Volume: " + ctx.ioManager.getOutputHandler().getAudioPlayer().getVolumePercentage() + "%", x,
-                y - 126f);
-        font.draw(batch, "Space: spawn obstacle", x, y - 144f);
-        font.draw(batch, "Enter: start / (if paused) step 1 frame", x, y - 162f);
-        font.draw(batch, "P: pause/resume  |  Esc: quit", x, y - 180f);
-
-        batch.end();
+        // UI instructions (top-left) removed because scenes handle their own UI
 
         if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.SONG1)) {
             ctx.ioManager.getOutputHandler().stopMusic();
