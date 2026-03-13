@@ -37,38 +37,6 @@ public class LibGdxRenderer implements IRenderer {
         initDrawers();
     }
 
-    private void loadTextures() {
-        // Train & train door
-        textures.put("mrt_train_side.png", new Texture(Gdx.files.internal("mrt_train_side.png")));
-        textures.put("train_door.png", new Texture(Gdx.files.internal("train_door.png")));
-
-        // Player
-        textures.put("passenger_npc_09.png", new Texture(Gdx.files.internal("passenger_npc_09.png")));
-
-        // Passengers
-        textures.put("passenger_npc_01.png", new Texture(Gdx.files.internal("passenger_npc_01.png")));
-        textures.put("passenger_npc_03.png", new Texture(Gdx.files.internal("passenger_npc_03.png")));
-        textures.put("passenger_npc_04.png", new Texture(Gdx.files.internal("passenger_npc_04.png")));
-
-        // Platform objects
-        textures.put("platform_bench.png", new Texture(Gdx.files.internal("platform_bench.png")));
-        textures.put("station_pillar.png", new Texture(Gdx.files.internal("station_pillar.png")));
-        textures.put("station_information_sign_stand.png",
-                new Texture(Gdx.files.internal("station_information_sign_stand.png")));
-
-        // Zones & markers
-        textures.put("boarding_zone_marker.png", new Texture(Gdx.files.internal("boarding_zone_marker.png")));
-        textures.put("crowd_spawn_marker.png", new Texture(Gdx.files.internal("crowd_spawn_marker.png")));
-        textures.put("exit_zone_floor_marker.png", new Texture(Gdx.files.internal("exit_zone_floor_marker.png")));
-        textures.put("waiting_zone_floor_marker.png", new Texture(Gdx.files.internal("waiting_zone_floor_marker.png")));
-        textures.put("platform_boundary_marker.png", new Texture(Gdx.files.internal("platform_boundary_marker.png")));
-
-        // UI
-        textures.put("score_ui_panel.png", new Texture(Gdx.files.internal("score_ui_panel.png")));
-        textures.put("timer_ui_panel.png", new Texture(Gdx.files.internal("timer_ui_panel.png")));
-        textures.put("instruction_banner.png", new Texture(Gdx.files.internal("instruction_banner.png")));
-    }
-
     @Override
     public void begin() {
         shapes.begin(ShapeRenderer.ShapeType.Filled);
