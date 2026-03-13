@@ -12,7 +12,7 @@ public class LibGdxRenderer implements IRenderer {
     private void initDrawers() {
         drawers.put("PLAYER", (x, y, radius, w, h) -> {
             shapes.setColor(0.25f, 0.75f, 1f, 1f);
-            shapes.rect(x - w/2, y - h/2, w, h);
+            shapes.rect(x - w / 2, y - h / 2, w, h);
         });
         drawers.put("NPC", (x, y, radius, w, h) -> {
             shapes.setColor(1.0f, 0.55f, 0.10f, 1f);
@@ -36,15 +36,13 @@ public class LibGdxRenderer implements IRenderer {
         this.shapes = shapes;
         initDrawers();
     }
-    
-<<<<<<< HEAD
-=======
+
     private void loadTextures() {
-         // Train & train door
+        // Train & train door
         textures.put("mrt_train_side.png", new Texture(Gdx.files.internal("mrt_train_side.png")));
         textures.put("train_door.png", new Texture(Gdx.files.internal("train_door.png")));
 
-        //Player
+        // Player
         textures.put("passenger_npc_09.png", new Texture(Gdx.files.internal("passenger_npc_09.png")));
 
         // Passengers
@@ -55,7 +53,8 @@ public class LibGdxRenderer implements IRenderer {
         // Platform objects
         textures.put("platform_bench.png", new Texture(Gdx.files.internal("platform_bench.png")));
         textures.put("station_pillar.png", new Texture(Gdx.files.internal("station_pillar.png")));
-        textures.put("station_information_sign_stand.png", new Texture(Gdx.files.internal("station_information_sign_stand.png")));
+        textures.put("station_information_sign_stand.png",
+                new Texture(Gdx.files.internal("station_information_sign_stand.png")));
 
         // Zones & markers
         textures.put("boarding_zone_marker.png", new Texture(Gdx.files.internal("boarding_zone_marker.png")));
@@ -68,9 +67,8 @@ public class LibGdxRenderer implements IRenderer {
         textures.put("score_ui_panel.png", new Texture(Gdx.files.internal("score_ui_panel.png")));
         textures.put("timer_ui_panel.png", new Texture(Gdx.files.internal("timer_ui_panel.png")));
         textures.put("instruction_banner.png", new Texture(Gdx.files.internal("instruction_banner.png")));
-}
+    }
 
->>>>>>> 9233e09451d98a8f162682745c3093460338ee11
     @Override
     public void begin() {
         shapes.begin(ShapeRenderer.ShapeType.Filled);
