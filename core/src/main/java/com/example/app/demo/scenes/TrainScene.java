@@ -51,7 +51,7 @@ public final class TrainScene extends AbstractBaseScene {
         font = new BitmapFont();
         font.setColor(Color.WHITE);
         font.getData().setScale(1.5f);
-        
+
         // Load textures
         ctx.renderer.loadTexture("mrt_bg", "mrt_train_side.png");
         ctx.renderer.loadTexture("platform_floor", "waiting_zone_floor_marker.png");
@@ -63,19 +63,18 @@ public final class TrainScene extends AbstractBaseScene {
             ctx.renderer.loadTexture(key, key);
         }
         
-        ctx.ioManager.playSound("hit.wav"); // Play sound (no dedicated voice clip provided, using what is there)
+        ctx.ioManager.playSound("alert.mp3"); // Play sound (no dedicated voice clip provided, using what is there)
         ctx.ioManager.log("TrainScene", "Loaded (NPCs=" + initialNpcCount + ")");
-        
         setupWorld();
     }
-    
+
     private void setupWorld() {
         // Player (Outside the train, bottom center)
         player = ctx.playerFactory.create(120f, 80f, "player");
         
         // MRT Walls (Top half of the screen bounds)
-        float trainYBase = 240f; 
-        
+        float trainYBase = 240f;
+
         // Left wall
         Entity wallL = ctx.entityManager.create();
         wallL.addComponent(TransformComponent.class, new TransformComponent(160, trainYBase + 120));
@@ -85,7 +84,7 @@ public final class TrainScene extends AbstractBaseScene {
         Entity wallR = ctx.entityManager.create();
         wallR.addComponent(TransformComponent.class, new TransformComponent(640 - 160, trainYBase + 120));
         wallR.addComponent(ColliderComponent.class, ColliderComponent.aabb(160, 120));
-        
+
         // Spawn NPCs inside the train (y > trainYBase + 40)
         for (int i = 0; i < initialNpcCount; i++) {
             spawnNPC(
@@ -128,7 +127,7 @@ public final class TrainScene extends AbstractBaseScene {
                 return;
             }
         }
-        
+
         if (won || lost) {
             postGameTimer += dt;
             if (postGameTimer > 2.5f) {
@@ -142,7 +141,8 @@ public final class TrainScene extends AbstractBaseScene {
             timer += dt;
             if (timer > timeLimit) {
                 lost = true;
-                ctx.ioManager.playSound("hit.wav"); // play fail sound
+                ctx.ioManager.getOutputHandler().stopSound();
+                ctx.ioManager.playSound("level_fail.mp3"); // play fail sound
             }
         }
 
@@ -161,6 +161,8 @@ public final class TrainScene extends AbstractBaseScene {
         TransformComponent pTransform = player.getComponent(TransformComponent.class);
         if (pTransform.y > 280f && Math.abs(pTransform.x - 320) < 60) {
             won = true;
+            ctx.ioManager.getOutputHandler().stopSound();
+            ctx.ioManager.playSound("level_clear.mp3"); // play clear sound
         }
  
         // NPC logic — use explicit list, no component sniffing
@@ -260,7 +262,7 @@ public final class TrainScene extends AbstractBaseScene {
             pv.vy += (dy / dist) * pushForce * 10f;
         }
     }
-    
+
     private boolean isPlayerAndNPC(Entity a, Entity b) {
         if (a == player) return npcs.contains(b);
         if (b == player) return npcs.contains(a);
@@ -275,11 +277,15 @@ public final class TrainScene extends AbstractBaseScene {
  
         float minX, minY, maxX, maxY;
         if (c.type == ColliderComponent.ColShapeType.CIRCLE) {
-            minX = c.radius; maxX = ctx.config.width - c.radius;
-            minY = c.radius; maxY = ctx.config.height - c.radius;
+            minX = c.radius;
+            maxX = ctx.config.width - c.radius;
+            minY = c.radius;
+            maxY = ctx.config.height - c.radius;
         } else {
-            minX = c.halfWidth; maxX = ctx.config.width - c.halfWidth;
-            minY = c.halfHeight; maxY = ctx.config.height - c.halfHeight;
+            minX = c.halfWidth;
+            maxX = ctx.config.width - c.halfWidth;
+            minY = c.halfHeight;
+            maxY = ctx.config.height - c.halfHeight;
         }
  
         // Prevent player from walking through train walls via the door gap
@@ -294,11 +300,13 @@ public final class TrainScene extends AbstractBaseScene {
         t.y = Math.max(minY, Math.min(maxY, t.y));
  
         if (v != null) {
-            if (t.x != oldX) v.vx = -v.vx;
-            if (t.y != oldY) v.vy = -v.vy;
+            if (t.x != oldX)
+                v.vx = -v.vx;
+            if (t.y != oldY)
+                v.vy = -v.vy;
         }
     }
-    
+
     @Override
     public void onUnload() {
         if (hudBatch != null) hudBatch.dispose();

@@ -48,11 +48,6 @@ public class GameMaster extends ApplicationAdapter {
 
         // Input bindings
         InputBinding bindings = new InputBinding();
-        bindings.bind(Input.Keys.NUM_1, InputAction.SONG1);
-        bindings.bind(Input.Keys.NUM_2, InputAction.SONG2);
-        bindings.bind(Input.Keys.NUM_3, InputAction.SONG3);
-        bindings.bind(Input.Keys.LEFT, InputAction.STOP);
-        bindings.bind(Input.Keys.RIGHT, InputAction.PLAY);
         bindings.bind(Input.Keys.UP, InputAction.VOLUME_UP);
         bindings.bind(Input.Keys.DOWN, InputAction.VOLUME_DOWN);
 
@@ -65,7 +60,6 @@ public class GameMaster extends ApplicationAdapter {
         // Removed Space spawn obstacle
         bindings.bind(Input.Keys.ENTER, InputAction.CONFIRM);
         bindings.bind(Input.Keys.ESCAPE, InputAction.BACK);
-        bindings.bind(Input.Keys.P, InputAction.PAUSE);
 
         InputHandler inputHandler = new InputHandler(bindings);
 
@@ -86,6 +80,7 @@ public class GameMaster extends ApplicationAdapter {
         // Start at Menu Scene
         sceneManager.push(new MenuScene(ctx));
         ioManager.log("GameMaster", "Engine started");
+        ioManager.getOutputHandler().playMusic("music1.mp3");
     }
 
     @Override
@@ -101,38 +96,6 @@ public class GameMaster extends ApplicationAdapter {
             ctx.renderer.begin();
             current.render();
             ctx.renderer.end();
-        }
-
-        // UI instructions (top-left) removed because scenes handle their own UI
-
-        if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.SONG1)) {
-            ctx.ioManager.getOutputHandler().stopMusic();
-            ctx.ioManager.getOutputHandler().playMusic("hit.wav");
-        }
-        if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.SONG2)) {
-            ctx.ioManager.getOutputHandler().stopMusic();
-            ctx.ioManager.getOutputHandler().playMusic("music1.mp3");
-        }
-        if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.SONG3)) {
-            ctx.ioManager.getOutputHandler().stopMusic();
-            ctx.ioManager.getOutputHandler().playMusic("music2.mp3");
-        }
-        if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.PLAY)) {
-            String lastMusicFilePath = ctx.ioManager.getOutputHandler().getAudioPlayer().getLastMusicFilePath();
-            if (lastMusicFilePath != null) {
-                ctx.ioManager.getOutputHandler().playMusic(lastMusicFilePath);
-            } else {
-                ctx.ioManager.log("Audio", "No current music to play");
-            }
-        }
-        if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.STOP)) {
-            ctx.ioManager.getOutputHandler().stopMusic();
-        }
-        if (ctx.ioManager.getInputHandler().getState().isPressed(InputAction.VOLUME_UP)) {
-            ctx.ioManager.getOutputHandler().getAudioPlayer().increaseVolume(0.1f * Gdx.graphics.getDeltaTime());
-        }
-        if (ctx.ioManager.getInputHandler().getState().isPressed(InputAction.VOLUME_DOWN)) {
-            ctx.ioManager.getOutputHandler().getAudioPlayer().decreaseVolume(0.1f * Gdx.graphics.getDeltaTime());
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {

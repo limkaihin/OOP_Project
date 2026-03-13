@@ -6,6 +6,7 @@ import java.util.List;
 public class AudioPlayer {
     private float masterVolume = 0.5f;
     private Sound currentMusic;
+    private Sound currentSound;
     private String lastMusicFilePath;
     private final List<Sound> activeSounds = new ArrayList<>();
 
@@ -57,6 +58,13 @@ public class AudioPlayer {
         if (currentMusic != null) {
             currentMusic.stop();
             currentMusic = null;
+        }
+    }
+
+    public void stopSound() {
+        if (currentSound != null) {
+            currentSound.stop();
+            currentSound = null;
         }
     }
 
