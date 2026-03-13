@@ -48,7 +48,7 @@ public class LibGdxRenderer implements IRenderer {
             try {
                 textures.put(key, new Texture(Gdx.files.internal(internalPath)));
             } catch (Exception e) {
-                ctx.ioManager.log("LibGdxRenderer", "Failed to load texture: " + internalPath);
+                Gdx.app.log("LibGdxRenderer", "Failed to load texture: " + internalPath);
             }
         }
     }
@@ -79,7 +79,7 @@ public class LibGdxRenderer implements IRenderer {
 
     @Override
     public void draw(String key, float x, float y, float radius, float w, float h) {
-        ShapeDrawer shapeDrawer = shapeDrawers.get(key);
+        ShapeDrawer shapeDrawer = drawers.get(key);
         if (shapeDrawer != null) {
             shapeDrawer.draw(x, y, radius, w, h);
             return;
@@ -99,7 +99,7 @@ public class LibGdxRenderer implements IRenderer {
             return;
         }
  
-        ctx.ioManager.log("LibGdxRenderer", "No drawer or texture found for key: " + key);
+        Gdx.app.log("LibGdxRenderer", "No drawer or texture found for key: " + key);
     }
 
     public void flushSprites() {

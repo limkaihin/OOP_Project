@@ -29,7 +29,7 @@ public final class PlatformScene extends AbstractBaseScene {
     public void onLoad() {
         ctx.ioManager.log("PlatformScene", "Loading platform scene");
         //Create Player
-        this.player = ctx.PlayerFactory.create(100, 100, "passenger_npc_09.png");
+        this.player = ctx.playerFactory.create(100, 100, "passenger_npc_09.png");
         //Create Platform
         spawnPlatformObjects();
         //Create passengers
@@ -96,13 +96,13 @@ public final class PlatformScene extends AbstractBaseScene {
     	ctx.ioManager.log("PlatformScene", "Spawning passengers");
             // Exiting passengers
             for (int i = 0; i < 5; i++) {
-                ctx.EnemyFactory.create(400, 260 + (i * 30), "passenger_npc_01.png");
+                ctx.enemyFactory.create(400, 260 + (i * 30), "passenger_npc_01.png");
                 ctx.ioManager.log("PlatformScene", "Spawned exiting passangers");
             }
 
             // Waiting passengers
             for (int i = 0; i < 3; i++) {
-                ctx.EnemyFactory.create(260 + (i * 20), 330, "passenger_npc_03.png");
+                ctx.enemyFactory.create(260 + (i * 20), 330, "passenger_npc_03.png");
                 ctx.ioManager.log("PlatformScene", "Spawned waiting passangers");
             }
     }

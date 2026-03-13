@@ -3,6 +3,8 @@ package com.example.app.demo.factory;
 import com.example.app.engine.entity.Entity;
 import com.example.app.engine.entity.EntityManager;
 import com.example.app.engine.movement.TransformComponent;
+import com.example.app.engine.collision.ColliderComponent;
+import com.example.app.engine.movement.VelocityComponent;
 import com.example.app.engine.render.RenderableComponent;
 
 public class EnemyFactory implements EntityFactory {

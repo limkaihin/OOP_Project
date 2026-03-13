@@ -71,7 +71,7 @@ public final class TrainScene extends AbstractBaseScene {
     
     private void setupWorld() {
         // Player (Outside the train, bottom center)
-        player = ctx.PlayerFactory.create(120f, 80f, "player");
+        player = ctx.playerFactory.create(120f, 80f, "player");
         
         // MRT Walls (Top half of the screen bounds)
         float trainYBase = 240f; 
@@ -100,7 +100,7 @@ public final class TrainScene extends AbstractBaseScene {
         String textureKey = String.format("passenger_npc_%02d.png", rng.nextInt(24) + 1);
  
         // Use factory to create the NPC with correct components
-        Entity npc = ctx.EnemyFactory.create(x, y, textureKey);
+        Entity npc = ctx.enemyFactory.create(x, y, textureKey);
  
         // Set initial velocity toward the door
         float targetX = 320f + (rng.nextFloat() - 0.5f) * 40f;
