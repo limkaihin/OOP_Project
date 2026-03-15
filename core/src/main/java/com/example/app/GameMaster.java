@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.example.app.demo.factory.EnemyFactory;
 import com.example.app.demo.factory.PlayerFactory;
 import com.example.app.demo.factory.EntityFactory;
+import com.example.app.demo.factory.EnvironmentFactory;
 import com.example.app.demo.render.LibGdxRenderer;
 import com.example.app.demo.scenes.MenuScene;
 import com.example.app.demo.scenes.TrainScene;
@@ -73,9 +74,10 @@ public class GameMaster extends ApplicationAdapter {
         // Entities
         EntityFactory playerFactory = new PlayerFactory(entityManager);
         EntityFactory enemyFactory = new EnemyFactory(entityManager);
+        EntityFactory environmentFactory = new EnvironmentFactory(entityManager);
 
         ctx = new EngineContext(config, sceneManager, entityManager, movementManager, collisionManager, ioManager,
-                renderer, playerFactory, enemyFactory);
+                renderer, playerFactory, enemyFactory, environmentFactory);
 
         // Start at Menu Scene
         sceneManager.push(new MenuScene(ctx));

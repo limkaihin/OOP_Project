@@ -36,6 +36,8 @@ public final class TrainScene extends AbstractBaseScene {
     private boolean lost = false;
     private boolean gameStarted = false;
     private float postGameTimer = 0f;
+    private Entity leftDoor;
+    private Entity rightDoor;
 
     // Textures map
     private Map<String, Texture> textures = new HashMap<>();
@@ -57,7 +59,8 @@ public final class TrainScene extends AbstractBaseScene {
         // Load textures
         textures.put("mrt_bg", new Texture(Gdx.files.internal("mrt_train_side.png")));
         textures.put("platform_floor", new Texture(Gdx.files.internal("waiting_zone_floor_marker.png")));
-        textures.put("door", new Texture(Gdx.files.internal("train_door.png")));
+        textures.put("left_door", new Texture(Gdx.files.internal("train_leftdoor.png")));
+        textures.put("right_door", new Texture(Gdx.files.internal("train_rightdoor.png")));
         textures.put("player", new Texture(Gdx.files.internal("player_down.png")));
 
         ctx.ioManager.playSound("alert.mp3"); // Play sound (no dedicated voice clip provided, using what is there)
@@ -66,26 +69,22 @@ public final class TrainScene extends AbstractBaseScene {
     }
 
     private void setupWorld() {
+        ctx.entityManager.clear();
         // Player (Outside the train, bottom center)
-        player = ctx.entityManager.create();
-        player.addComponent(TransformComponent.class, new TransformComponent(120, 80));
-        player.addComponent(VelocityComponent.class, new VelocityComponent(0, 0));
-        player.addComponent(ColliderComponent.class, ColliderComponent.aabb(16, 16));
-        player.addComponent(SpriteComponent.class, new SpriteComponent("player", 32, 32));
+        player = ctx.PlayerFactory.create(120, 80, "player");
 
         // MRT Walls (Top half of the screen bounds)
         float trainYBase = 240f;
 
         // Left wall
-        Entity wallL = ctx.entityManager.create();
-        wallL.addComponent(TransformComponent.class, new TransformComponent(160, trainYBase + 120));
-        wallL.addComponent(ColliderComponent.class, ColliderComponent.aabb(160, 120));
-
+        //ctx.EnvironmentFactory.create(160, trainYBase + 120, 0, 0, "mrt_bg", 320, 240);
+        //ctx.EnvironmentFactory.create(640 - 160, trainYBase + 120, 0, 0, "mrt_bg", 320, 240);
         // Right wall
-        Entity wallR = ctx.entityManager.create();
-        wallR.addComponent(TransformComponent.class, new TransformComponent(640 - 160, trainYBase + 120));
-        wallR.addComponent(ColliderComponent.class, ColliderComponent.aabb(160, 120));
+        //ctx.EnvironmentFactory.create(160, trainYBase + 120, 0, 0, "mrt_bg", 320, 240);
+        //ctx.EnvironmentFactory.create(640 - 160, trainYBase + 120, 0, 0, "mrt_bg", 320, 240);
 
+        this.leftDoor = ctx.EnvironmentFactory.create(260, 350, 0, 0, "left_door", 150, 200);
+        this.rightDoor = ctx.EnvironmentFactory.create(410, 350, 0, 0, "right_door", 150, 200);
         // Spawn NPCs inside the train (y > trainYBase + 40)
         for (int i = 0; i < initialNpcCount; i++) {
             spawnNPC(
@@ -97,32 +96,29 @@ public final class TrainScene extends AbstractBaseScene {
     }
 
     private void spawnNPC(float x, float y) {
-        Entity npc = ctx.entityManager.create();
-        npc.addComponent(TransformComponent.class, new TransformComponent(x, y));
-
         // Give them velocity towards the door (x=320, y=trainYBase)
         float targetX = 320f + (rng.nextFloat() - 0.5f) * 40f;
         float targetY = 160f;
-
         float dx = targetX - x;
         float dy = targetY - y;
         float dist = (float) Math.sqrt(dx * dx + dy * dy);
-
         float speed = 40f + rng.nextFloat() * 40f;
-        npc.addComponent(VelocityComponent.class, new VelocityComponent((dx / dist) * speed, (dy / dist) * speed));
-
-        npc.addComponent(ColliderComponent.class, ColliderComponent.circle(12));
+        float vx = (dx / dist) * speed;
+        float vy = (dy / dist) * speed;
 
         // Load a random passenger sprite
         String spriteName = "passenger_npc_" + String.format("%02d", rng.nextInt(24) + 1) + ".png";
-        if (!textures.containsKey(spriteName)) {
-            try {
-                textures.put(spriteName, new Texture(Gdx.files.internal(spriteName)));
-            } catch (Exception e) {
-                // Ignore if missing, use first
+        for (int i = 1; i <= 24; i++) {
+            if (!textures.containsKey(spriteName)) {
+                try {
+                    textures.put(spriteName, new Texture(Gdx.files.internal(spriteName)));
+                } catch (Exception e) {
+                    // Ignore if missing, use first
+                }
             }
         }
-        npc.addComponent(SpriteComponent.class, new SpriteComponent(spriteName, 24, 24));
+        ctx.EnemyFactory.create(x, y, vx, vy, spriteName, 60, 80);
+
     }
 
     @Override
@@ -134,6 +130,30 @@ public final class TrainScene extends AbstractBaseScene {
                 timer = 0f;
             } else {
                 return;
+            }
+        }
+
+        if (gameStarted && !won && !lost) {
+            if (leftDoor != null && rightDoor != null) {
+                // SLIDE LEFT DOOR
+                TransformComponent leftT = leftDoor.getComponent(TransformComponent.class);
+                VelocityComponent leftV = leftDoor.getComponent(VelocityComponent.class);
+
+                if (leftT.x > 200) {
+                    leftV.vx = -50f; // Moving left
+                } else {
+                    leftV.vx = 0; // Stopped at target
+                }
+
+                // SLIDE RIGHT DOOR
+                TransformComponent rightT = rightDoor.getComponent(TransformComponent.class);
+                VelocityComponent rightV = rightDoor.getComponent(VelocityComponent.class);
+
+                if (rightT.x < 450) {
+                    rightV.vx = 50f; // Moving right
+                } else {
+                    rightV.vx = 0; // Stopped at target
+                }
             }
         }
 
@@ -224,6 +244,15 @@ public final class TrainScene extends AbstractBaseScene {
         for (Entity e : ctx.entityManager.getAll()) {
             TransformComponent t = e.getComponent(TransformComponent.class);
             SpriteComponent s = e.getComponent(SpriteComponent.class);
+            RenderableComponent r = e.getComponent(RenderableComponent.class); // Get the component
+
+            if (t != null && r != null) {
+                Texture tex = textures.get(r.renderKey);
+                if (tex != null) {
+                    batch.draw(tex, t.x - r.width / 2, t.y - r.height / 2, r.width, r.height);
+                }
+            }
+
             if (t != null && s != null) {
                 Texture tex = textures.get(s.texturePath);
                 if (tex != null) {
