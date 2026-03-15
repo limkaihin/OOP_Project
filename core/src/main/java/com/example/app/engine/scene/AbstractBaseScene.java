@@ -5,4 +5,5 @@ public abstract class AbstractBaseScene implements Scene {
     @Override public void onEnter() { }
     @Override public void onExit() { }
     @Override public void onUnload() { }
+    @Override public void renderHud() { }
 }

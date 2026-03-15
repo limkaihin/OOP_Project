@@ -18,6 +18,8 @@ public interface Scene {
 
     void render();
 
+    void renderHud();
+
     // Convenience: scene name for debugging/logging
     default String name() {
         return getClass().getSimpleName();

@@ -95,6 +95,8 @@ public class GameMaster extends ApplicationAdapter {
             ctx.renderer.begin();
             current.render();
             ctx.renderer.end();
+            current.renderHud();
+            ctx.renderer.flushSprites();
         }
     }
 
