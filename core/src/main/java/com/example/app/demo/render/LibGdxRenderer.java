@@ -2,8 +2,10 @@ package com.example.app.demo.render;
 
 import java.util.*;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.example.app.engine.render.IRenderer;
 
@@ -43,26 +45,6 @@ public class LibGdxRenderer implements IRenderer {
         initDrawers();
     }
 
-    public void loadTexture(String key, String internalPath) {
-        if (!textures.containsKey(key)) {
-            try {
-                textures.put(key, new Texture(Gdx.files.internal(internalPath)));
-            } catch (Exception e) {
-                Gdx.app.log("LibGdxRenderer", "Failed to load texture: " + internalPath);
-            }
-        }
-    }
-
-    public void unloadTexture(String key) {
-        Texture t = textures.remove(key);
-        if (t != null) t.dispose();
-    }
- 
-    public void unloadAllTextures() {
-        for (Texture t : textures.values()) t.dispose();
-        textures.clear();
-    }
-
     @Override
     public void begin() {
         shapes.begin(ShapeRenderer.ShapeType.Filled);
@@ -100,6 +82,71 @@ public class LibGdxRenderer implements IRenderer {
         }
  
         Gdx.app.log("LibGdxRenderer", "No drawer or texture found for key: " + key);
+    }
+
+    @Override
+    public void drawText(BitmapFont font, String text, float x, float y) {
+        if (inShapeMode) {
+            shapes.end();
+            inShapeMode = false;
+        }
+        if (!batch.isDrawing()) {
+            batch.begin();
+        }
+        font.draw(batch, text, x, y);
+    }
+
+    @Override
+    public void drawRect(float x, float y, float w, float h, Color color) {
+        if (!inShapeMode) {
+            if (batch.isDrawing()) batch.end();
+            shapes.begin(ShapeRenderer.ShapeType.Filled);
+            inShapeMode = true;
+        }
+        shapes.setColor(color);
+        shapes.rect(x, y, w, h);
+    }
+
+    @Override
+    public void drawCircle(float x, float y, float radius, Color color) {
+        if (!inShapeMode) {
+            if (batch.isDrawing()) batch.end();
+            shapes.begin(ShapeRenderer.ShapeType.Filled);
+            inShapeMode = true;
+        }
+        shapes.setColor(color);
+        shapes.circle(x, y, radius, 20);
+    }
+
+    @Override
+    public void drawLine(float x1, float y1, float x2, float y2, Color color) {
+        if (!inShapeMode) {
+            if (batch.isDrawing()) batch.end();
+            shapes.begin(ShapeRenderer.ShapeType.Line);
+            inShapeMode = true;
+        }
+        shapes.setColor(color);
+        shapes.line(x1, y1, x2, y2);
+    }
+
+    public void loadTexture(String key, String internalPath) {
+        if (!textures.containsKey(key)) {
+            try {
+                textures.put(key, new Texture(Gdx.files.internal(internalPath)));
+            } catch (Exception e) {
+                Gdx.app.log("LibGdxRenderer", "Failed to load texture: " + internalPath);
+            }
+        }
+    }
+
+    public void unloadTexture(String key) {
+        Texture t = textures.remove(key);
+        if (t != null) t.dispose();
+    }
+ 
+    public void unloadAllTextures() {
+        for (Texture t : textures.values()) t.dispose();
+        textures.clear();
     }
 
     public void flushSprites() {

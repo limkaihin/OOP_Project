@@ -29,7 +29,6 @@ public class GameMaster extends ApplicationAdapter {
     private SpriteBatch batch;
     private BitmapFont font;
     private ShapeRenderer shapes;
-
     private EngineContext ctx;
 
     @Override
@@ -96,10 +95,6 @@ public class GameMaster extends ApplicationAdapter {
             ctx.renderer.begin();
             current.render();
             ctx.renderer.end();
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            Gdx.app.exit();
         }
     }
 
