@@ -47,6 +47,8 @@ public class LibGdxRenderer implements IRenderer {
 
     @Override
     public void begin() {
+        if (inShapeMode) shapes.end();
+        if (batch.isDrawing()) batch.end();
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         inShapeMode = true;
     }
@@ -122,11 +124,16 @@ public class LibGdxRenderer implements IRenderer {
     public void drawLine(float x1, float y1, float x2, float y2, Color color) {
         if (!inShapeMode) {
             if (batch.isDrawing()) batch.end();
-            shapes.begin(ShapeRenderer.ShapeType.Line);
+            shapes.begin(ShapeRenderer.ShapeType.Filled);
             inShapeMode = true;
         }
         shapes.setColor(color);
-        shapes.line(x1, y1, x2, y2);
+        // Draw as a 1px tall/wide rect instead of switching to Line mode
+        if (x1 == x2) {
+            shapes.rect(x1, Math.min(y1, y2), 1f, Math.abs(y2 - y1));
+        } else {
+            shapes.rect(Math.min(x1, x2), y1, Math.abs(x2 - x1), 1f);
+        }
     }
 
     public void loadTexture(String key, String internalPath) {
@@ -152,9 +159,6 @@ public class LibGdxRenderer implements IRenderer {
     public void flushSprites() {
         if (batch.isDrawing()) {
             batch.end();
-            // Re-enter shape mode since GameMaster expects ShapeRenderer to be active
-            shapes.begin(ShapeRenderer.ShapeType.Filled);
-            inShapeMode = true;
         }
     }
  
