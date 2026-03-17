@@ -1,9 +1,8 @@
 package com.example.app.demo.scenes;
- 
+
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.example.app.engine.EngineContext;
 import com.example.app.engine.collision.ColliderComponent;
 import com.example.app.engine.collision.CollisionEvent;
@@ -20,6 +19,63 @@ import java.util.List;
 import java.util.Random;
 
 public final class TrainScene extends AbstractBaseScene {
+    // Constants
+    private static final float DOOR_X = 320f;
+    private static final float DOOR_Y = 105f;  // height of train band
+    private static final float DOOR_WIDTH = 50f;   // half-width of door gap
+    private static final float DOOR_OPEN_SPEED = 1.5f;
+    private static final float SPAWN_INTERVAL = 0.4f;
+    private static final int MAX_LIVES = 3;
+
+    // Train colours
+    private static final Color COL_TRAIN_BODY = new Color(0.95f, 0.94f, 0.92f, 1f);
+    private static final Color COL_TRAIN_PANEL = new Color(0.12f, 0.12f, 0.14f, 1f);
+    private static final Color COL_TRAIN_STRIPE = new Color(0.83f, 0.15f, 0.15f, 1f);
+    private static final Color COL_TRAIN_SHADOW = new Color(0.50f, 0.50f, 0.52f, 1f);
+    private static final Color COL_WIN_BORDER = new Color(0.15f, 0.15f, 0.18f, 1f);
+    private static final Color COL_WIN_GLASS = new Color(0.35f, 0.55f, 0.65f, 1f);
+    private static final Color COL_WIN_SHINE = new Color(0.60f, 0.78f, 0.88f, 0.7f);
+    private static final Color COL_DOOR_BG = new Color(0.73f, 0.73f, 0.75f, 1f);
+    private static final Color COL_DOOR_PANEL = new Color(0.82f, 0.82f, 0.84f, 1f);
+    private static final Color COL_DOOR_LINE = new Color(0.75f, 0.75f, 0.77f, 1f);
+    private static final Color COL_DOOR_FRAME = new Color(0.53f, 0.53f, 0.56f, 1f);
+    private static final Color COL_DOOR_SILL = new Color(0.96f, 0.77f, 0.09f, 1f);
+    private static final Color COL_TACTILE = new Color(0.94f, 0.75f, 0.06f, 1f);
+    private static final Color COL_BUMP = new Color(0.83f, 0.65f, 0.04f, 1f);
+    private static final Color COL_MARKER = new Color(0.83f, 0.18f, 0.18f, 0.7f);
+    private static final Color COL_HEADLIGHT = new Color(0.90f, 0.90f, 0.75f, 1f);
+    private static final Color COL_HEADLIGHT_HI = new Color(1.00f, 1.00f, 0.92f, 1f);
+    private static final Color COL_CAP_LIGHT = new Color(0.80f, 0.79f, 0.77f, 1f);
+    private static final Color COL_CAP_MID = new Color(0.65f, 0.64f, 0.62f, 1f);
+    private static final Color COL_CAP_DARK = new Color(0.45f, 0.44f, 0.43f, 1f);
+
+    // Platform colours
+    private static final Color COL_PLATFORM = new Color(0.83f, 0.81f, 0.78f, 1f);
+    private static final Color COL_GRID = new Color(0.75f, 0.73f, 0.70f, 1f);
+    private static final Color COL_SHADOW = new Color(0.60f, 0.59f, 0.57f, 1f);
+
+    // NPC colours
+    private static final Color COL_NPC_RED = new Color(0.77f, 0.36f, 0.36f, 1f);
+    private static final Color COL_NPC_RED_HI = new Color(0.85f, 0.44f, 0.44f, 1f);
+    private static final Color COL_NPC_ORG = new Color(0.72f, 0.44f, 0.25f, 1f);
+    private static final Color COL_NPC_ORG_HI = new Color(0.80f, 0.50f, 0.31f, 1f);
+
+    // Player colours
+    private static final Color COL_PLAYER = new Color(0.10f, 0.54f, 0.43f, 1f);
+    private static final Color COL_PLAYER_HI = new Color(0.13f, 0.67f, 0.53f, 1f);
+
+    // HUD colours
+    private static final Color COL_HUD_BG = new Color(0.10f, 0.10f, 0.16f, 0.88f);
+    private static final Color COL_HUD_MSG = new Color(0.10f, 0.10f, 0.16f, 0.75f);
+    private static final Color COL_HEART_ON = new Color(0.83f, 0.18f, 0.18f, 1f);
+    private static final Color COL_HEART_OFF = new Color(0.35f, 0.35f, 0.40f, 1f);
+    private static final Color COL_TEXT_NPC = new Color(0.85f, 0.44f, 0.44f, 1f);
+    private static final Color COL_TEXT_TIMER = new Color(0.96f, 0.77f, 0.09f, 1f);
+    private static final Color COL_TEXT_WIN = new Color(0.13f, 0.67f, 0.53f, 1f);
+    private static final Color COL_TEXT_LOSE = new Color(0.83f, 0.18f, 0.18f, 1f);
+    private static final Color COL_TEXT_INTRO = new Color(0.96f, 0.77f, 0.09f, 1f);
+
+    // State
     private final EngineContext ctx;
     private final int level;
     private final int initialNpcCount;
@@ -31,20 +87,12 @@ public final class TrainScene extends AbstractBaseScene {
 
     private BitmapFont font;
 
-    private static final float doorX = 320f;
-    private static final float DOOR_Y = 105f;
     private int npcsRemaining;
     private float spawnTimer = 0f;
-    private static final float spawnInterval = 0.4f;
-
-    private int lives = 3;
-    private float doorOpenAmount = 0f;    // 0 = closed, 1 = fully open
-    private boolean doorsOpen = false;
-    private static final float DOOR_OPEN_SPEED = 1.5f;
-    private static final float DOOR_WIDTH = 50f; // half width of door opening
-
-    private float introTimer= 0f;
-    private float gameTimer= 0f;
+    private int lives = MAX_LIVES;
+    private float doorOpenAmount = 0f;
+    private float introTimer = 0f;
+    private float gameTimer = 0f;
     private float postGameTimer = 0f;
     private boolean won = false;
     private boolean lost = false;
@@ -52,13 +100,15 @@ public final class TrainScene extends AbstractBaseScene {
 
     private EventBus<CollisionEvent>.Subscription collisionSub;
 
+    // Constructor
     public TrainScene(EngineContext ctx, int level) {
         this.ctx = ctx;
         this.level = level;
-        this.initialNpcCount = Math.round(30f + ((level - 1) * (20f / 9f)));
-        this.timeLimit = 20f - ((level - 1) * (10f / 9f));
+        this.initialNpcCount = Math.round(10f + ((level - 1) * 10f));
+        this.timeLimit = 15f - ((level - 1) * (10f / 9f));
     }
 
+    // Lifecycle
     @Override
     public void onLoad() {
         font = new BitmapFont();
@@ -76,68 +126,76 @@ public final class TrainScene extends AbstractBaseScene {
         collisionSub = ctx.collisionEvents.subscribe(this::onCollision);
     }
 
-    private void spawnNPC(float x, float y) {
-        Entity npc = ctx.enemyFactory.create(x, y, "NPC");
-
-        // Force initial direction downward into the platform
-        float angle = MathUtils.PI + (rng.nextFloat() - 0.5f) * MathUtils.PI; // downward arc only
-        float speed = 60f + rng.nextFloat() * 40f;
-
-        VelocityComponent v = npc.getComponent(VelocityComponent.class);
-        v.vx = MathUtils.cos(angle) * speed;
-        v.vy = MathUtils.sin(angle) * speed;
-
-        npcs.add(npc);
+    @Override
+    public void onUnload() {
+        if (collisionSub != null) collisionSub.cancel();
+        if (font != null) font.dispose();
+        for (Entity npc : npcs) ctx.entityManager.destroy(npc);
+        npcs.clear();
     }
 
+    // Update
     @Override
     public void update(float dt) {
         if (!gameStarted) {
-            introTimer += dt;
-            // Animate doors opening during intro
-            doorOpenAmount = Math.min(1f, introTimer / 2f);
-            if (introTimer > 2f) {
-                gameStarted = true;
-                doorsOpen = true;
-            } else {
-                return;
-            }
-        }
-
-        if (won || lost) {
-            // Close doors on win/loss
-            doorOpenAmount = Math.max(0f, doorOpenAmount - dt * DOOR_OPEN_SPEED);
-            postGameTimer += dt;
-            if (postGameTimer > 2.5f) {
-                if (won) {
-                    LevelSelectScene.maxUnlockedLevel = Math.max(LevelSelectScene.maxUnlockedLevel, level + 1);
-                }
-                ctx.sceneManager.switchTo(new TransitionScene(ctx, new LevelSelectScene(ctx), 0.6f));
-            }
+            updateIntro(dt);
             return;
         }
+        if (won || lost) {
+            updatePostGame(dt);
+            return;
+        }
+        updateGame(dt);
+    }
 
-        // Close doors warning when time is low
+    private void updateIntro(float dt) {
+        introTimer += dt;
+        doorOpenAmount = Math.min(1f, introTimer / 2f);
+        if (introTimer > 2f) {
+            gameStarted = true;
+        }
+    }
+
+    private void updatePostGame(float dt) {
+        doorOpenAmount = Math.max(0f, doorOpenAmount - dt * DOOR_OPEN_SPEED);
+        postGameTimer += dt;
+        if (postGameTimer > 2.5f) {
+            if (won) {
+                LevelSelectScene.maxUnlockedLevel = Math.max(LevelSelectScene.maxUnlockedLevel, level + 1);
+            }
+            ctx.sceneManager.switchTo(new TransitionScene(ctx, new LevelSelectScene(ctx), 0.6f));
+        }
+    }
+
+    private void updateGame(float dt) {
+        // Door warning when time is low
         if (timeLimit - gameTimer < 5f) {
             doorOpenAmount = Math.max(0.2f, doorOpenAmount - dt * 0.3f);
         }
 
         gameTimer += dt;
         if (gameTimer > timeLimit) {
-            lost = true;
-            doorsOpen = false;
-            ctx.ioManager.getOutputHandler().stopSound();
-            ctx.ioManager.playSound("level_fail.mp3");
+            triggerLoss();
+            return;
         }
 
-        if (npcsRemaining > 0) {
-            spawnTimer += dt;
-            if (spawnTimer >= spawnInterval) {
-                spawnTimer = 0f;
-                spawnNPC(320f, ctx.config.height - DOOR_Y + 50f);
-                npcsRemaining--;
-            }
+        updateSpawner(dt);
+        updatePlayer();
+        updateNPCs();
+    }
+
+    private void updateSpawner(float dt) {
+        if (npcsRemaining <= 0) return;
+        spawnTimer += dt;
+        if (spawnTimer >= SPAWN_INTERVAL) {
+            spawnTimer = 0f;
+            spawnNPC(DOOR_X, ctx.config.height - DOOR_Y + 50f);
+            npcsRemaining--;
         }
+    }
+
+    private void updatePlayer() {
+        if (player == null) return;
 
         InputState in = ctx.ioManager.getInputHandler().getState();
         VelocityComponent pv = player.getComponent(VelocityComponent.class);
@@ -149,213 +207,252 @@ public final class TrainScene extends AbstractBaseScene {
         if (in.isPressed(InputAction.MOVE_RIGHT)) pv.vx += speed;
         if (in.isPressed(InputAction.MOVE_UP)) pv.vy += speed;
         if (in.isPressed(InputAction.MOVE_DOWN)) pv.vy -= speed;
-        
-        // Check win condition: player is inside train
-        TransformComponent pTransform = player.getComponent(TransformComponent.class);
-        boolean nearDoor = false;
-        if (Math.abs(pTransform.x - doorX) < 30f && pTransform.y > ctx.config.height - DOOR_Y - 30f) {
-            nearDoor = true;
-        }
 
-        if (nearDoor) {
-            won = true;
-            ctx.ioManager.getOutputHandler().stopSound();
-            ctx.ioManager.playSound("level_clear.mp3");
-        }
- 
-        // NPC logic
+        keepInsideBounds(player, true);
+        checkWinCondition();
+    }
+
+    private void checkWinCondition() {
+        if (player == null) return;
+        TransformComponent t = player.getComponent(TransformComponent.class);
+        boolean nearDoor = Math.abs(t.x - DOOR_X) < 30f
+                        && t.y > ctx.config.height - DOOR_Y - 30f;
+        if (nearDoor) triggerWin();
+    }
+
+    private void triggerWin() {
+        won = true;
+        ctx.ioManager.getOutputHandler().stopSound();
+        ctx.ioManager.playSound("level_clear.mp3");
+        ctx.entityManager.destroy(player);
+        player = null;
+    }
+
+    private void triggerLoss() {
+        lost = true;
+        ctx.ioManager.getOutputHandler().stopSound();
+        ctx.ioManager.playSound("level_fail.mp3");
+    }
+
+    private void updateNPCs() {
         for (int i = 0; i < npcs.size(); i++) {
             Entity npc = npcs.get(i);
             TransformComponent t = npc.getComponent(TransformComponent.class);
-            VelocityComponent v = npc.getComponent(VelocityComponent.class);
+            VelocityComponent  v = npc.getComponent(VelocityComponent.class);
             if (t == null || v == null) continue;
 
-            boolean isPushy = (i % 3 == 0); // every 3rd NPC is pushy
-
-            if (isPushy) {
-                // Home toward player
-                TransformComponent pt = player.getComponent(TransformComponent.class);
-                float dx = pt.x - t.x;
-                float dy = pt.y - t.y;
-                float dist = (float) Math.sqrt(dx * dx + dy * dy);
-                if (dist > 0) {
-                    float chaseSpeed = 60f + level * 5f;
-                    v.vx = (dx / dist) * chaseSpeed;
-                    v.vy = (dy / dist) * chaseSpeed;
-                }
+            if (i % 3 == 0) {
+                updatePushyNPC(t, v);
             } else {
-                if (rng.nextFloat() < 0.02f) {
-                    float angle = rng.nextFloat() * MathUtils.PI2;
-                    float npcSpeed = 40f + rng.nextFloat() * 40f;
-                    v.vx = MathUtils.cos(angle) * npcSpeed;
-                    v.vy = MathUtils.sin(angle) * npcSpeed;
-                }
+                updateWanderNPC(v);
             }
 
             keepInsideBounds(npc, false);
-            if (v.vy > 0) v.vy = -v.vy;
+            if (v.vy > 0) v.vy = -v.vy; // never move upward
         }
-
-        keepInsideBounds(player, true);
     }
 
+    private void updatePushyNPC(TransformComponent t, VelocityComponent v) {
+        if (player == null) return;
+        TransformComponent pt = player.getComponent(TransformComponent.class);
+        float dx = pt.x - t.x;
+        float dy = pt.y - t.y;
+        float dist = (float) Math.sqrt(dx * dx + dy * dy);
+        if (dist > 0) {
+            float speed = 60f + level * 5f;
+            v.vx = (dx / dist) * speed;
+            v.vy = (dy / dist) * speed;
+        }
+    }
+
+    private void updateWanderNPC(VelocityComponent v) {
+        if (rng.nextFloat() < 0.02f) {
+            float angle = rng.nextFloat() * MathUtils.PI2;
+            float speed = 40f + rng.nextFloat() * 40f;
+            v.vx = MathUtils.cos(angle) * speed;
+            v.vy = MathUtils.sin(angle) * speed;
+        }
+    }
+
+    private void spawnNPC(float x, float y) {
+        Entity npc = ctx.enemyFactory.create(x, y, "NPC");
+        float angle = MathUtils.PI + (rng.nextFloat() - 0.5f) * MathUtils.PI;
+        float speed = 60f + rng.nextFloat() * 40f;
+        VelocityComponent v = npc.getComponent(VelocityComponent.class);
+        v.vx = MathUtils.cos(angle) * speed;
+        v.vy = MathUtils.sin(angle) * speed;
+        npcs.add(npc);
+    }
+
+    // Render
+    @Override
+    public void render() {
+        float W = ctx.config.width;
+        float H = ctx.config.height;
+
+        drawPlatform(W, H);
+        drawNPCs();
+        if (player != null) drawPlayer();
+        drawTrain(W, H);
+    }
+
+    private void drawPlatform(float W, float H) {
+        ctx.renderer.drawRect(0, 0, W, H, COL_PLATFORM);
+        for (float y = 80f; y < H - DOOR_Y; y += 80f)
+            ctx.renderer.drawLine(0, y, W, y, COL_GRID);
+        for (float x = 80f; x < W; x += 80f)
+            ctx.renderer.drawLine(x, 0, x, H - DOOR_Y, COL_GRID);
+    }
+
+    private void drawNPCs() {
+        for (int i = 0; i < npcs.size(); i++) {
+            TransformComponent t = npcs.get(i).getComponent(TransformComponent.class);
+            if (t == null) continue;
+            boolean orange = i % 2 == 0;
+            ctx.renderer.drawCircle(t.x + 2f, t.y - 2f, 14f, COL_SHADOW);
+            ctx.renderer.drawCircle(t.x, t.y, 13f, orange ? COL_NPC_ORG : COL_NPC_RED);
+            ctx.renderer.drawCircle(t.x, t.y,  7f, orange ? COL_NPC_ORG_HI : COL_NPC_RED_HI);
+        }
+    }
+
+    private void drawPlayer() {
+        TransformComponent pt = player.getComponent(TransformComponent.class);
+        ctx.renderer.drawCircle(pt.x + 2f, pt.y - 2f, 18f, COL_SHADOW);
+        ctx.renderer.drawCircle(pt.x, pt.y, 16f, COL_PLAYER);
+        ctx.renderer.drawCircle(pt.x, pt.y, 10f, COL_PLAYER_HI);
+    }
+
+    private void drawTrain(float W, float H) {
+        float trainY = H - DOOR_Y;
+
+        // Main body
+        ctx.renderer.drawRect(0, trainY, W, DOOR_Y, COL_TRAIN_BODY);
+        ctx.renderer.drawRect(0, trainY, W, 28f,    COL_TRAIN_PANEL);
+        ctx.renderer.drawRect(0, trainY + 28f, W, 12f, COL_TRAIN_STRIPE);
+        ctx.renderer.drawRect(0, trainY, W, 4f,     COL_TRAIN_SHADOW);
+
+        drawWindows(H);
+        drawDoor(trainY);
+        drawTactileStrip(W, H);
+        drawWaitingMarkers(H);
+    }
+
+    private void drawWindows(float H) {
+        float[] windowX = { 55f, 155f, 395f, 495f };
+        for (float x : windowX) {
+            ctx.renderer.drawRect(x, 415f, 80f, 48f, COL_WIN_BORDER);
+            ctx.renderer.drawRect(x + 3f, 418f, 74f, 42f, COL_WIN_GLASS);
+            ctx.renderer.drawRect(x + 3f, 450f, 22f,  8f, COL_WIN_SHINE);
+        }
+    }
+
+    private void drawDoor(float trainY) {
+        // Background
+        ctx.renderer.drawRect(DOOR_X - DOOR_WIDTH - 4f, trainY, DOOR_WIDTH * 2f + 8f, DOOR_Y, COL_DOOR_BG);
+
+        // Animated panels
+        float panelWidth = DOOR_WIDTH * (1f - doorOpenAmount);
+        ctx.renderer.drawRect(DOOR_X - DOOR_WIDTH, trainY, panelWidth, DOOR_Y - 8f, COL_DOOR_PANEL);
+        ctx.renderer.drawRect(DOOR_X - DOOR_WIDTH + panelWidth * 0.6f, trainY, 2f, DOOR_Y - 8f, COL_DOOR_LINE);
+        ctx.renderer.drawRect(DOOR_X + DOOR_WIDTH - panelWidth, trainY, panelWidth, DOOR_Y - 8f, COL_DOOR_PANEL);
+        ctx.renderer.drawRect(DOOR_X + DOOR_WIDTH - panelWidth * 0.4f, trainY, 2f, DOOR_Y - 8f, COL_DOOR_LINE);
+
+        // Frames and sill
+        ctx.renderer.drawRect(DOOR_X - DOOR_WIDTH - 6f, trainY, 6f, DOOR_Y, COL_DOOR_FRAME);
+        ctx.renderer.drawRect(DOOR_X + DOOR_WIDTH, trainY, 6f, DOOR_Y, COL_DOOR_FRAME);
+        ctx.renderer.drawRect(DOOR_X - DOOR_WIDTH - 6f, trainY, DOOR_WIDTH * 2f + 12f, 9f, COL_DOOR_SILL);
+    }
+
+    private void drawTactileStrip(float W, float H) {
+        ctx.renderer.drawRect(0, H - DOOR_Y - 10f, W, 10f, COL_TACTILE);
+        for (float x = 20f; x < W; x += 25f)
+            ctx.renderer.drawCircle(x, H - DOOR_Y - 5f, 3.5f, COL_BUMP);
+    }
+
+    private void drawWaitingMarkers(float H) {
+        float mx = DOOR_X - DOOR_WIDTH - 6f;
+        float my = H - DOOR_Y - 26f;
+        float mw = DOOR_WIDTH * 2f + 12f;
+        ctx.renderer.drawRect(mx, my, mw, 5f,  COL_MARKER);
+        ctx.renderer.drawRect(mx, my, 5f,  22f, COL_MARKER);
+        ctx.renderer.drawRect(DOOR_X + DOOR_WIDTH + 1f, my, 5f, 22f, COL_MARKER);
+    }
+
+    private void drawEndGameOverlay(float W, float H) {
+        if (lost) {
+            ctx.renderer.drawRect(0, 0, W, H, new Color(0.25f, 0.02f, 0.02f, 0.60f));
+        }
+    }
+
+    // HUD
     @Override
     public void renderHud() {
         float W = ctx.config.width;
         float H = ctx.config.height;
         float timeRemaining = Math.max(0, timeLimit - gameTimer);
 
-        // Dark HUD bar at bottom
-        ctx.renderer.drawRect(0, 0, W, 42f, new Color(0.10f, 0.10f, 0.16f, 0.88f));
-
-        // Lives
-        for (int i = 0; i < 3; i++) {
-            Color heartColor = i < lives
-                ? new Color(0.83f, 0.18f, 0.18f, 1f)
-                : new Color(0.35f, 0.35f, 0.40f, 1f);
-            ctx.renderer.drawCircle(20f + i * 22f, 21f, 9f, heartColor);
-        }
-
-        // Text
-        // NPC Count
-        font.setColor(new Color(0.85f, 0.44f, 0.44f, 1f));
-        ctx.renderer.drawText(font, "NPC: " + npcs.size(), W / 4f, 28f);
-
-        // Level
-        font.setColor(Color.WHITE);
-        ctx.renderer.drawText(font, "LVL " + level, W / 2f - 30f, 28f);
-
-        // Timer
-        font.setColor(new Color(0.96f, 0.77f, 0.09f, 1f));
-        ctx.renderer.drawText(font, String.format("%.1fs", timeRemaining), W - 80f, 28f);
-
-        // Mid screen messages
-        if (!gameStarted) {
-            ctx.renderer.drawRect(80f, H / 2f - 30f, W - 160f, 44f, new Color(0.10f, 0.10f, 0.16f, 0.75f));
-            font.setColor(new Color(0.96f, 0.77f, 0.09f, 1f));
-            ctx.renderer.drawText(font, "Avoid Passengers and Board the Train!", 120f, H / 2f);
-        } else if (won) {
-            ctx.renderer.drawRect(200f, H / 2f - 30f, 280f, 44f, new Color(0.10f, 0.10f, 0.16f, 0.75f));
-            font.setColor(new Color(0.13f, 0.67f, 0.53f, 1f));
-            ctx.renderer.drawText(font, "CLEARED!", W / 2f - 60f, H / 2f);
-            if (level == 10) ctx.renderer.drawText(font, "YOU BEAT THE GAME!", W / 2f - 120f, H / 2f - 40f);
-        } else if (lost) {
-            ctx.renderer.drawRect(210f, H / 2f - 30f, 260f, 44f, new Color(0.10f, 0.10f, 0.16f, 0.75f));
-            font.setColor(new Color(0.83f, 0.18f, 0.18f, 1f));
-            ctx.renderer.drawText(font, "YOU BUMPER CAR!", W / 2f - 60f, H / 2f);
-        }
+        drawHudBar(W);
+        drawLives(W);
+        drawHudText(W, timeRemaining);
+        drawMidScreenMessage(W, H);
 
         font.setColor(Color.WHITE);
-    } 
-
-    @Override
-    public void render() {
-        float W = ctx.config.width;
-        float H = ctx.config.height;
-
-        // --- 1. Platform floor - warmer grey ---
-        ctx.renderer.drawRect(0, 0, W, H, new Color(0.83f, 0.81f, 0.78f, 1f));
-
-        // Floor tile grid
-        Color gridColor = new Color(0.75f, 0.73f, 0.70f, 1f);
-        for (float y = 80f; y < H - DOOR_Y; y += 80f)
-            ctx.renderer.drawLine(0, y, W, y, gridColor);
-        for (float x = 80f; x < W; x += 80f)
-            ctx.renderer.drawLine(x, 0, x, H - DOOR_Y, gridColor);
-
-        // --- 2. NPCs before train ---
-        Color shadow   = new Color(0.60f, 0.59f, 0.57f, 1f);
-        Color npcRed   = new Color(0.77f, 0.36f, 0.36f, 1f);
-        Color npcRedHi = new Color(0.85f, 0.44f, 0.44f, 1f);
-        Color npcOrg   = new Color(0.72f, 0.44f, 0.25f, 1f);
-        Color npcOrgHi = new Color(0.80f, 0.50f, 0.31f, 1f);
-        for (int i = 0; i < npcs.size(); i++) {
-            TransformComponent t = npcs.get(i).getComponent(TransformComponent.class);
-            if (t == null) continue;
-            boolean orange = i % 2 == 0;
-            ctx.renderer.drawCircle(t.x + 2f, t.y - 2f, 14f, shadow);
-            ctx.renderer.drawCircle(t.x, t.y, 13f, orange ? npcOrg   : npcRed);
-            ctx.renderer.drawCircle(t.x, t.y,  7f, orange ? npcOrgHi : npcRedHi);
-        }
-
-        // Train body - white/cream
-        ctx.renderer.drawRect(0, H - DOOR_Y, W, DOOR_Y, new Color(0.95f, 0.94f, 0.92f, 1f));
-
-        // Dark lower panel (black band below windows)
-        ctx.renderer.drawRect(0, H - DOOR_Y, W, 28f, new Color(0.12f, 0.12f, 0.14f, 1f));
-
-        // Red stripe
-        ctx.renderer.drawRect(0, H - DOOR_Y + 28f, W, 12f, new Color(0.83f, 0.15f, 0.15f, 1f));
-
-        // Train bottom shadow
-        ctx.renderer.drawRect(0, H - DOOR_Y, W, 4f, new Color(0.50f, 0.50f, 0.52f, 1f));
-
-        // Left windows
-        ctx.renderer.drawRect(55f,  415f, 80f, 48f, new Color(0.15f, 0.15f, 0.18f, 1f));
-        ctx.renderer.drawRect(58f,  418f, 74f, 42f, new Color(0.35f, 0.55f, 0.65f, 1f));
-        ctx.renderer.drawRect(58f,  450f, 22f, 8f,  new Color(0.60f, 0.78f, 0.88f, 0.7f));
-
-        ctx.renderer.drawRect(155f, 415f, 80f, 48f, new Color(0.15f, 0.15f, 0.18f, 1f));
-        ctx.renderer.drawRect(158f, 418f, 74f, 42f, new Color(0.35f, 0.55f, 0.65f, 1f));
-        ctx.renderer.drawRect(158f, 450f, 22f, 8f,  new Color(0.60f, 0.78f, 0.88f, 0.7f));
-
-        // Right windows
-        ctx.renderer.drawRect(395f, 415f, 80f, 48f, new Color(0.15f, 0.15f, 0.18f, 1f));
-        ctx.renderer.drawRect(398f, 418f, 74f, 42f, new Color(0.35f, 0.55f, 0.65f, 1f));
-        ctx.renderer.drawRect(398f, 450f, 22f, 8f,  new Color(0.60f, 0.78f, 0.88f, 0.7f));
-
-        ctx.renderer.drawRect(495f, 415f, 80f, 48f, new Color(0.15f, 0.15f, 0.18f, 1f));
-        ctx.renderer.drawRect(498f, 418f, 74f, 42f, new Color(0.35f, 0.55f, 0.65f, 1f));
-        ctx.renderer.drawRect(498f, 450f, 22f, 8f,  new Color(0.60f, 0.78f, 0.88f, 0.7f));
-
-        // Door opening - darker than platform to show depth
-        ctx.renderer.drawRect(doorX - DOOR_WIDTH - 4f, H - DOOR_Y, DOOR_WIDTH * 2f + 8f, DOOR_Y, new Color(0.73f, 0.73f, 0.75f, 1f));
-
-        // Animated door panels
-        float panelWidth = DOOR_WIDTH * (1f - doorOpenAmount);
-        Color doorPanel = new Color(0.82f, 0.82f, 0.84f, 1f);
-        Color doorPanelLine = new Color(0.75f, 0.75f, 0.77f, 1f);
-        Color doorFrame = new Color(0.53f, 0.53f, 0.56f, 1f);
-        ctx.renderer.drawRect(doorX - DOOR_WIDTH, H - DOOR_Y, panelWidth, DOOR_Y - 8f, doorPanel);
-        ctx.renderer.drawRect(doorX - DOOR_WIDTH + panelWidth * 0.6f, H - DOOR_Y, 2f, DOOR_Y - 8f, doorPanelLine);
-        ctx.renderer.drawRect(doorX + DOOR_WIDTH - panelWidth, H - DOOR_Y, panelWidth, DOOR_Y - 8f, doorPanel);
-        ctx.renderer.drawRect(doorX + DOOR_WIDTH - panelWidth * 0.4f, H - DOOR_Y, 2f, DOOR_Y - 8f, doorPanelLine);
-
-        // Door frames - darker
-        ctx.renderer.drawRect(doorX - DOOR_WIDTH - 6f, H - DOOR_Y, 6f, DOOR_Y, doorFrame);
-        ctx.renderer.drawRect(doorX + DOOR_WIDTH,       H - DOOR_Y, 6f, DOOR_Y, doorFrame);
-
-        // Door sill
-        ctx.renderer.drawRect(doorX - DOOR_WIDTH - 6f, H - DOOR_Y, DOOR_WIDTH * 2f + 12f, 9f, new Color(0.96f, 0.77f, 0.09f, 1f));
-
-        // Yellow tactile strip
-        ctx.renderer.drawRect(0, H - DOOR_Y - 10f, W, 10f, new Color(0.94f, 0.75f, 0.06f, 1f));
-        Color bump = new Color(0.83f, 0.65f, 0.04f, 1f);
-        for (float x = 20f; x < W; x += 25f)
-            ctx.renderer.drawCircle(x, H - DOOR_Y - 5f, 3.5f, bump);
-
-        // Waiting zone markers - wider to match door
-        Color marker = new Color(0.83f, 0.18f, 0.18f, 0.7f);
-        ctx.renderer.drawRect(doorX - DOOR_WIDTH - 6f, H - DOOR_Y - 26f, DOOR_WIDTH * 2f + 12f, 5f, marker);
-        ctx.renderer.drawRect(doorX - DOOR_WIDTH - 6f, H - DOOR_Y - 26f, 5f, 22f, marker);
-        ctx.renderer.drawRect(doorX + DOOR_WIDTH + 1f,  H - DOOR_Y - 26f, 5f, 22f, marker);
-
-        // --- 4. Player ---
-        TransformComponent pt = player.getComponent(TransformComponent.class);
-        ctx.renderer.drawCircle(pt.x + 2f, pt.y - 2f, 18f, shadow);
-        ctx.renderer.drawCircle(pt.x, pt.y, 16f, new Color(0.10f, 0.54f, 0.43f, 1f));
-        ctx.renderer.drawCircle(pt.x, pt.y, 10f, new Color(0.13f, 0.67f, 0.53f, 1f));
     }
 
+    private void drawHudBar(float W) {
+        ctx.renderer.drawRect(0, 0, W, 42f, COL_HUD_BG);
+    }
+
+    private void drawLives(float W) {
+        for (int i = 0; i < MAX_LIVES; i++) {
+            ctx.renderer.drawCircle(20f + i * 22f, 21f, 9f, i < lives ? COL_HEART_ON : COL_HEART_OFF);
+        }
+    }
+
+    private void drawHudText(float W, float timeRemaining) {
+        font.setColor(COL_TEXT_NPC);
+        ctx.renderer.drawText(font, "NPC: " + npcs.size(), W / 4f, 28f);
+        font.setColor(Color.WHITE);
+        ctx.renderer.drawText(font, "LVL " + level, W / 2f - 30f, 28f);
+        font.setColor(COL_TEXT_TIMER);
+        ctx.renderer.drawText(font, String.format("%.1fs", timeRemaining), W - 80f, 28f);
+    }
+
+    private void drawMidScreenMessage(float W, float H) {
+        float midY = H / 2f;
+        if (!gameStarted) {
+            ctx.renderer.drawRect(80f, midY - 30f, W - 160f, 44f, COL_HUD_MSG);
+            font.setColor(COL_TEXT_INTRO);
+            ctx.renderer.drawText(font, "Avoid Passengers and Board the Train!", 120f, midY);
+        } else if (won) {
+            ctx.renderer.drawRect(200f, midY - 30f, 280f, 44f, COL_HUD_MSG);
+            font.setColor(COL_TEXT_WIN);
+            ctx.renderer.drawText(font, "CLEARED!", W / 2f - 60f, midY);
+            if (level == 10) ctx.renderer.drawText(font, "YOU BEAT THE GAME!", W / 2f - 120f, midY - 40f);
+        } else if (lost) {
+            ctx.renderer.drawRect(210f, midY - 30f, 260f, 44f, COL_HUD_MSG);
+            font.setColor(COL_TEXT_LOSE);
+            ctx.renderer.drawText(font, "YOU LOSE!", W / 2f - 60f, midY);
+        }
+    }
+
+    // Collision
     private void onCollision(CollisionEvent event) {
         Entity a = event.getPair().getA();
         Entity b = event.getPair().getB();
         if (!isPlayerAndNPC(a, b)) return;
 
-        Entity npc = a == player ? b : a;
-        VelocityComponent pv = player.getComponent(VelocityComponent.class);
+        Entity npc = (a == player) ? b : a;
+        resolveCollision(player, npc);
+
+        lives--;
+        if (lives <= 0) triggerLoss();
+    }
+
+    private void resolveCollision(Entity p, Entity npc) {
+        VelocityComponent pv = p.getComponent(VelocityComponent.class);
         VelocityComponent nv = npc.getComponent(VelocityComponent.class);
-        TransformComponent pt = player.getComponent(TransformComponent.class);
+        TransformComponent pt = p.getComponent(TransformComponent.class);
         TransformComponent nt = npc.getComponent(TransformComponent.class);
 
         float dx = pt.x - nt.x;
@@ -363,59 +460,43 @@ public final class TrainScene extends AbstractBaseScene {
         float dist = (float) Math.sqrt(dx * dx + dy * dy);
         if (dist == 0) dist = 0.001f;
 
-        float pushForce = 10f + ((level - 1) * 2.22f);
-        pt.x += (dx / dist) * pushForce;
-        pt.y += (dy / dist) * pushForce;
-        nt.x -= (dx / dist) * pushForce;
-        nt.y -= (dy / dist) * pushForce;
+        float push = 10f + ((level - 1) * 2.22f);
+        pt.x += (dx / dist) * push;
+        pt.y += (dy / dist) * push;
+        nt.x -= (dx / dist) * push;
+        nt.y -= (dy / dist) * push;
 
-        if (nv != null) {
-            nv.vx = -nv.vx * 1.5f;
-            nv.vy = -nv.vy * 1.5f;
-        }
-        if (pv != null) {
-            pv.vx += (dx / dist) * pushForce * 10f;
-            pv.vy += (dy / dist) * pushForce * 10f;
-        }
-
-        // Lose a life
-        lives--;
-        if (lives <= 0) {
-            lost = true;
-            ctx.ioManager.getOutputHandler().stopSound();
-            ctx.ioManager.playSound("level_fail.mp3");
-        }
+        if (nv != null) { nv.vx = -nv.vx * 1.5f; nv.vy = -nv.vy * 1.5f; }
+        if (pv != null) { pv.vx += (dx / dist) * push * 10f; pv.vy += (dy / dist) * push * 10f; }
     }
 
     private boolean isPlayerAndNPC(Entity a, Entity b) {
+        if (player == null) return false;
         if (a == player) return npcs.contains(b);
         if (b == player) return npcs.contains(a);
         return false;
     }
- 
+
+    // Physics
     private void keepInsideBounds(Entity e, boolean isPlayer) {
         TransformComponent t = e.getComponent(TransformComponent.class);
         ColliderComponent c = e.getComponent(ColliderComponent.class);
         VelocityComponent v = e.getComponent(VelocityComponent.class);
         if (t == null || c == null) return;
 
-        float radius = (c.type == ColliderComponent.ColShapeType.CIRCLE)
-            ? c.radius : Math.max(c.halfWidth, c.halfHeight);
-
-        float minX = radius;
-        float maxX = ctx.config.width - radius;
-        float minY = radius;
-        float maxY = ctx.config.height - radius;
+        float r = (c.type == ColliderComponent.ColShapeType.CIRCLE) ? c.radius : Math.max(c.halfWidth, c.halfHeight);
+        float minX = r;
+        float maxX = ctx.config.width - r;
+        float minY = r;
+        float maxY = ctx.config.height - r;
 
         if (!isPlayer) {
-            // NPCs stay on platform, cant re-enter train
-            maxY = ctx.config.height - DOOR_Y - radius;
+            maxY = ctx.config.height - DOOR_Y - r;
         } else {
-            // Player blocked by train wall everywhere except door gap
-            float platformCeiling = ctx.config.height - DOOR_Y - radius;
-            boolean inDoorGap = Math.abs(t.x - doorX) < DOOR_WIDTH - radius;
-            if (t.y > platformCeiling && !inDoorGap) {
-                t.y = platformCeiling;
+            float ceiling = ctx.config.height - DOOR_Y - r;
+            boolean inGap = Math.abs(t.x - DOOR_X) < DOOR_WIDTH - r;
+            if (t.y > ceiling && !inGap) {
+                t.y = ceiling;
                 if (v != null) v.vy = 0;
             }
         }
@@ -428,13 +509,5 @@ public final class TrainScene extends AbstractBaseScene {
             if (t.x != oldX) v.vx = -v.vx;
             if (t.y != oldY) v.vy = -v.vy;
         }
-    }
-
-    @Override
-    public void onUnload() {
-        if (collisionSub != null) collisionSub.cancel();
-        if (font != null) font.dispose();
-        for (Entity npc : npcs) ctx.entityManager.destroy(npc);
-        npcs.clear();
     }
 }
