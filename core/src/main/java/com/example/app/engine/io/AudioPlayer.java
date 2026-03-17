@@ -4,54 +4,53 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AudioPlayer {
-    private float masterVolume = 0.5f;
+
+    private boolean musicEnabled = true;
+    private boolean sfxEnabled   = true;
+
+    private float musicVolume = 0.5f;
+    private float sfxVolume   = 0.5f;
+
     private Sound currentMusic;
-    private Sound currentSound;
     private String lastMusicFilePath;
     private final List<Sound> activeSounds = new ArrayList<>();
 
-    public AudioPlayer() {
-    }
+    public AudioPlayer() {}
 
-    public float getMasterVolume() {
-        return masterVolume;
-    }
+    // ---------------------------------------------------------------- music
 
-    public void setMasterVolume(float masterVolume) {
-        this.masterVolume = Math.max(0f, Math.min(1f, masterVolume));
+    public boolean isMusicEnabled() { return musicEnabled; }
 
-        // Update current music
-        if (currentMusic != null)
-            currentMusic.setVolume(this.masterVolume);
-
-        // Update all active sounds
-        for (Sound sound : activeSounds) {
-            sound.setVolume(this.masterVolume);
+    public void setMusicEnabled(boolean enabled) {
+        this.musicEnabled = enabled;
+        if (!enabled) {
+            stopMusic();
+        } else if (lastMusicFilePath != null) {
+            // Restart the last track immediately
+            playMusicInternal(lastMusicFilePath);
         }
+    }
+
+    public float getMusicVolume() { return musicVolume; }
+
+    public void setMusicVolume(float volume) {
+        this.musicVolume = Math.max(0f, Math.min(1f, volume));
+        if (currentMusic != null) currentMusic.setVolume(this.musicVolume);
     }
 
     public void playMusic(String filePath) {
-        stopMusic();
-        this.lastMusicFilePath = filePath;
+        lastMusicFilePath = filePath;
+        if (!musicEnabled) return;
+        playMusicInternal(filePath);
+    }
 
-        // Create and play the sound
+    private void playMusicInternal(String filePath) {
+        stopMusic();
         currentMusic = new Sound(filePath);
         if (currentMusic != null) {
-            currentMusic.setVolume(masterVolume);
+            currentMusic.setVolume(musicVolume);
             currentMusic.play();
         }
-    }
-
-    public void playSound(String filePath) {
-        Sound sound = new Sound(filePath);
-        if (sound != null) {
-            sound.setVolume(masterVolume);
-            sound.play();
-        }
-    }
-
-    public String getLastMusicFilePath() {
-        return lastMusicFilePath;
     }
 
     public void stopMusic() {
@@ -61,37 +60,59 @@ public class AudioPlayer {
         }
     }
 
+    public String getLastMusicFilePath() { return lastMusicFilePath; }
+
+    public Sound getCurrentMusic() { return currentMusic; }
+
+    // ---------------------------------------------------------------- sfx
+
+    public boolean isSfxEnabled() { return sfxEnabled; }
+
+    public void setSfxEnabled(boolean enabled) {
+        this.sfxEnabled = enabled;
+    }
+
+    public float getSfxVolume() { return sfxVolume; }
+
+    public void setSfxVolume(float volume) {
+        this.sfxVolume = Math.max(0f, Math.min(1f, volume));
+    }
+
+    public void playSound(String filePath) {
+        if (!sfxEnabled) return;
+        Sound sound = new Sound(filePath);
+        if (sound != null) {
+            sound.setVolume(sfxVolume);
+            sound.play();
+            activeSounds.add(sound);
+        }
+    }
+
     public void stopSound() {
-        if (currentSound != null) {
-            currentSound.stop();
-            currentSound = null;
-        }
+        // Legacy helper — stops all active oneshot sounds
+        for (Sound s : activeSounds) s.stop();
+        activeSounds.clear();
     }
 
-    public void increaseVolume(float amount) {
-        setMasterVolume(masterVolume + amount);
+    // ---------------------------------------------------------------- legacy master volume helpers (kept for backward compatibility)
+
+    /** Returns music volume (was "masterVolume"). */
+    public float getMasterVolume() { return musicVolume; }
+
+    public void setMasterVolume(float volume) {
+        setMusicVolume(volume);
+        setSfxVolume(volume);
     }
 
-    public void decreaseVolume(float amount) {
-        setMasterVolume(masterVolume - amount);
-    }
+    public void increaseVolume(float amount) { setMusicVolume(musicVolume + amount); }
+    public void decreaseVolume(float amount) { setMusicVolume(musicVolume - amount); }
+    public int getVolumePercentage()         { return (int)(musicVolume * 100); }
 
-    public int getVolumePercentage() {
-        return (int) (masterVolume * 100);
-    }
-
-    public Sound getCurrentMusic() {
-        if (currentMusic == null) {
-            return null;
-        }
-        return currentMusic;
-    }
+    // ----------------------------------------------------------------
 
     public void dispose() {
         stopMusic();
-        for (Sound sound : activeSounds) {
-            sound.dispose();
-        }
+        for (Sound s : activeSounds) s.dispose();
         activeSounds.clear();
     }
 }

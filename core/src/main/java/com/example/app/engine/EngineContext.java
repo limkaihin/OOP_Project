@@ -9,6 +9,7 @@ import com.example.app.engine.movement.MovementManager;
 import com.example.app.engine.render.IRenderer;
 import com.example.app.engine.scene.Scene;
 import com.example.app.engine.scene.SceneManager;
+import com.example.app.demo.scenes.SettingsScene;
 import com.example.app.engine.util.EngineClock;
 import com.example.app.engine.util.EventBus;
 import com.example.app.demo.factory.EntityFactory;
@@ -61,6 +62,14 @@ public final class EngineContext {
     public void update(float realDt) {
         // IO updates on real time
         ioManager.update(realDt);
+
+        // Global: open settings from any scene when E is pressed
+        if (ioManager.getInputHandler().getState().isJustPressed(InputAction.OPEN_SETTINGS)) {
+            Scene cur = sceneManager.current();
+            if (!(cur instanceof SettingsScene)) {
+                sceneManager.push(new SettingsScene(this));
+            }
+        }
 
         // Engine-level pause/step controls
         if (ioManager.getInputHandler().getState().isJustPressed(InputAction.PAUSE)) {

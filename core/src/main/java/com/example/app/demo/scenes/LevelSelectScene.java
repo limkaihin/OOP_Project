@@ -12,7 +12,7 @@ public final class LevelSelectScene extends AbstractBaseScene {
     private final EngineContext ctx;
     private SpriteBatch batch;
     private BitmapFont font;
-    
+
     public static int maxUnlockedLevel = 1;
 
     public LevelSelectScene(EngineContext ctx) {
@@ -33,20 +33,20 @@ public final class LevelSelectScene extends AbstractBaseScene {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             int mx = Gdx.input.getX();
             int my = Gdx.graphics.getHeight() - Gdx.input.getY(); // Convert to bottom-left origin
-            
+
             // Check collisions with level boxes
             float startX = 80f;
             float startY = 320f;
             float boxSize = 80f;
             float gapX = 20f;
             float gapY = 30f;
-            
-            for (int i = 0; i < 10; i++) {
+
+            for (int i = 0; i < 5; i++) {
                 int row = i / 5;
                 int col = i % 5;
                 float bx = startX + col * (boxSize + gapX);
                 float by = startY - row * (boxSize + gapY);
-                
+
                 // Box collision
                 if (mx >= bx && mx <= bx + boxSize && my >= by && my <= by + boxSize) {
                     if (i + 1 <= maxUnlockedLevel) {
@@ -67,29 +67,29 @@ public final class LevelSelectScene extends AbstractBaseScene {
         float boxSize = 80f;
         float gapX = 20f;
         float gapY = 30f;
-        
-        for (int i = 0; i < 10; i++) {
+
+        for (int i = 0; i < 5; i++) {
             int row = i / 5;
             int col = i % 5;
             float bx = startX + col * (boxSize + gapX);
             float by = startY - row * (boxSize + gapY);
-            
+
             // Draw box using the "PLAYER" (blue rect) type
-            ctx.renderer.draw("PLAYER", bx + boxSize/2, by + boxSize/2, 0, boxSize, boxSize);
+            ctx.renderer.draw("PLAYER", bx + boxSize / 2, by + boxSize / 2, 0, boxSize, boxSize);
         }
         ctx.renderer.end(); // Stop ShapeRenderer before starting SpriteBatch
-        
+
         // Now draw the text over the boxes
         batch.begin();
         font.setColor(Color.WHITE);
         font.draw(batch, "SELECT LEVEL", 220, 440);
-        
-        for (int i = 0; i < 10; i++) {
+
+        for (int i = 0; i < 5; i++) {
             int row = i / 5;
             int col = i % 5;
             float bx = startX + col * (boxSize + gapX);
             float by = startY - row * (boxSize + gapY);
-            
+
             String text = String.valueOf(i + 1);
             if (i + 1 > maxUnlockedLevel) {
                 font.setColor(Color.RED);
@@ -105,7 +105,9 @@ public final class LevelSelectScene extends AbstractBaseScene {
 
     @Override
     public void onUnload() {
-        if (batch != null) batch.dispose();
-        if (font != null) font.dispose();
+        if (batch != null)
+            batch.dispose();
+        if (font != null)
+            font.dispose();
     }
 }

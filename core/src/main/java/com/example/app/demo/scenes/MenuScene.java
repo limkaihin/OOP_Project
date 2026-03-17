@@ -43,8 +43,8 @@ public final class MenuScene extends AbstractBaseScene {
 
         font.getData().setScale(1.5f);
         font.draw(batch,
-                "How to Play:\n\n1. Wait for people to leave the train!\n2. Don't push them or you'll bounce away!\n3. Run into the train before time runs out!\n\nLevels get harder! Can you beat all 10?\n\nPress ENTER to Start!",
-                50, Gdx.graphics.getHeight() - 150);
+                "How to Play:\n\nWASD control your character.\nE to open setting for music adjustment.\n\nTry to get into the train before time runs out!\nIf you are touched 3 times by NPC, you lose.\n\nLevels get harder! Can you beat all 10?\n\nPress ENTER to Start!",
+                50, Gdx.graphics.getHeight() - 100);
         batch.end();
 
         ctx.renderer.begin(); // Restart ShapeRenderer so GameMaster doesn't crash on end()

@@ -59,6 +59,7 @@ public class GameMaster extends ApplicationAdapter {
         // Removed Space spawn obstacle
         bindings.bind(Input.Keys.ENTER, InputAction.CONFIRM);
         bindings.bind(Input.Keys.ESCAPE, InputAction.BACK);
+        bindings.bind(Input.Keys.E, InputAction.OPEN_SETTINGS);
 
         InputHandler inputHandler = new InputHandler(bindings);
 

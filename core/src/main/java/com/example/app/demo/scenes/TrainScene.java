@@ -22,8 +22,8 @@ import java.util.Random;
 public final class TrainScene extends AbstractBaseScene {
     // Constants
     private static final float DOOR_X = 320f;
-    private static final float DOOR_Y = 105f;  // height of train band
-    private static final float DOOR_WIDTH = 50f;   // half-width of door gap
+    private static final float DOOR_Y = 105f; // height of train band
+    private static final float DOOR_WIDTH = 50f; // half-width of door gap
     private static final float DOOR_OPEN_SPEED = 1.5f;
     private static final float SPAWN_INTERVAL = 0.4f;
     private static final int MAX_LIVES = 3;
@@ -97,14 +97,15 @@ public final class TrainScene extends AbstractBaseScene {
     public TrainScene(EngineContext ctx, int level) {
         this.ctx = ctx;
         this.level = level;
-        this.initialNpcCount = Math.round(10f + ((level - 1) * 10f));
-        this.timeLimit = 15f - ((level - 1) * (10f / 9f));
+        this.initialNpcCount = Math.round(10f + ((level - 1)));
+        this.timeLimit = 15f - ((level + 1) * (10f / 9f));
     }
 
     // Lifecycle
     @Override
     public void onLoad() {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(com.badlogic.gdx.Gdx.files.internal("Oswald-Regular.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
+                com.badlogic.gdx.Gdx.files.internal("Oswald-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter smallParams = new FreeTypeFontGenerator.FreeTypeFontParameter();
         smallParams.size = 18;
         font = generator.generateFont(smallParams);
@@ -129,10 +130,14 @@ public final class TrainScene extends AbstractBaseScene {
 
     @Override
     public void onUnload() {
-        if (collisionSub != null) collisionSub.cancel();
-        if (font != null) font.dispose();
-        if (bigFont != null) bigFont.dispose();
-        for (Entity npc : npcs) ctx.entityManager.destroy(npc);
+        if (collisionSub != null)
+            collisionSub.cancel();
+        if (font != null)
+            font.dispose();
+        if (bigFont != null)
+            bigFont.dispose();
+        for (Entity npc : npcs)
+            ctx.entityManager.destroy(npc);
         npcs.clear();
     }
 
@@ -164,6 +169,11 @@ public final class TrainScene extends AbstractBaseScene {
         if (postGameTimer > 2.5f) {
             if (won) {
                 LevelSelectScene.maxUnlockedLevel = Math.max(LevelSelectScene.maxUnlockedLevel, level + 1);
+                // Last level cleared → show game-clear screen
+                if (level >= 5) {
+                    ctx.sceneManager.switchTo(new GameClearScene(ctx));
+                    return;
+                }
             }
             ctx.sceneManager.switchTo(new TransitionScene(ctx, new LevelSelectScene(ctx), 0.6f));
         }
@@ -187,7 +197,8 @@ public final class TrainScene extends AbstractBaseScene {
     }
 
     private void updateSpawner(float dt) {
-        if (npcsRemaining <= 0) return;
+        if (npcsRemaining <= 0)
+            return;
         spawnTimer += dt;
         if (spawnTimer >= SPAWN_INTERVAL) {
             spawnTimer = 0f;
@@ -197,7 +208,8 @@ public final class TrainScene extends AbstractBaseScene {
     }
 
     private void updatePlayer() {
-        if (player == null) return;
+        if (player == null)
+            return;
 
         InputState in = ctx.ioManager.getInputHandler().getState();
         VelocityComponent pv = player.getComponent(VelocityComponent.class);
@@ -205,21 +217,27 @@ public final class TrainScene extends AbstractBaseScene {
         pv.vy = 0;
 
         float speed = 150f;
-        if (in.isPressed(InputAction.MOVE_LEFT)) pv.vx -= speed;
-        if (in.isPressed(InputAction.MOVE_RIGHT)) pv.vx += speed;
-        if (in.isPressed(InputAction.MOVE_UP)) pv.vy += speed;
-        if (in.isPressed(InputAction.MOVE_DOWN)) pv.vy -= speed;
+        if (in.isPressed(InputAction.MOVE_LEFT))
+            pv.vx -= speed;
+        if (in.isPressed(InputAction.MOVE_RIGHT))
+            pv.vx += speed;
+        if (in.isPressed(InputAction.MOVE_UP))
+            pv.vy += speed;
+        if (in.isPressed(InputAction.MOVE_DOWN))
+            pv.vy -= speed;
 
         keepInsideBounds(player, true);
         checkWinCondition();
     }
 
     private void checkWinCondition() {
-        if (player == null) return;
+        if (player == null)
+            return;
         TransformComponent t = player.getComponent(TransformComponent.class);
         boolean nearDoor = Math.abs(t.x - DOOR_X) < 30f
-                        && t.y > ctx.config.height - DOOR_Y - 30f;
-        if (nearDoor) triggerWin();
+                && t.y > ctx.config.height - DOOR_Y - 30f;
+        if (nearDoor)
+            triggerWin();
     }
 
     private void triggerWin() {
@@ -240,8 +258,9 @@ public final class TrainScene extends AbstractBaseScene {
         for (int i = 0; i < npcs.size(); i++) {
             Entity npc = npcs.get(i);
             TransformComponent t = npc.getComponent(TransformComponent.class);
-            VelocityComponent  v = npc.getComponent(VelocityComponent.class);
-            if (t == null || v == null) continue;
+            VelocityComponent v = npc.getComponent(VelocityComponent.class);
+            if (t == null || v == null)
+                continue;
 
             if (i % 3 == 0) {
                 updatePushyNPC(t, v);
@@ -250,12 +269,14 @@ public final class TrainScene extends AbstractBaseScene {
             }
 
             keepInsideBounds(npc, false);
-            if (v.vy > 0) v.vy = -v.vy; // never move upward
+            if (v.vy > 0)
+                v.vy = -v.vy; // never move upward
         }
     }
 
     private void updatePushyNPC(TransformComponent t, VelocityComponent v) {
-        if (player == null) return;
+        if (player == null)
+            return;
         TransformComponent pt = player.getComponent(TransformComponent.class);
         float dx = pt.x - t.x;
         float dy = pt.y - t.y;
@@ -294,7 +315,8 @@ public final class TrainScene extends AbstractBaseScene {
 
         drawPlatform(W, H);
         drawNPCs();
-        if (player != null) drawPlayer();
+        if (player != null)
+            drawPlayer();
         drawTrain(W, H);
         drawEndGameOverlay(W, H);
     }
@@ -310,11 +332,12 @@ public final class TrainScene extends AbstractBaseScene {
     private void drawNPCs() {
         for (int i = 0; i < npcs.size(); i++) {
             TransformComponent t = npcs.get(i).getComponent(TransformComponent.class);
-            if (t == null) continue;
+            if (t == null)
+                continue;
             boolean orange = i % 2 == 0;
             ctx.renderer.drawCircle(t.x + 2f, t.y - 2f, 14f, COL_SHADOW);
             ctx.renderer.drawCircle(t.x, t.y, 13f, orange ? COL_NPC_ORG : COL_NPC_RED);
-            ctx.renderer.drawCircle(t.x, t.y,  7f, orange ? COL_NPC_ORG_HI : COL_NPC_RED_HI);
+            ctx.renderer.drawCircle(t.x, t.y, 7f, orange ? COL_NPC_ORG_HI : COL_NPC_RED_HI);
         }
     }
 
@@ -330,9 +353,9 @@ public final class TrainScene extends AbstractBaseScene {
 
         // Main body
         ctx.renderer.drawRect(0, trainY, W, DOOR_Y, COL_TRAIN_BODY);
-        ctx.renderer.drawRect(0, trainY, W, 28f,    COL_TRAIN_PANEL);
+        ctx.renderer.drawRect(0, trainY, W, 28f, COL_TRAIN_PANEL);
         ctx.renderer.drawRect(0, trainY + 28f, W, 12f, COL_TRAIN_STRIPE);
-        ctx.renderer.drawRect(0, trainY, W, 4f,     COL_TRAIN_SHADOW);
+        ctx.renderer.drawRect(0, trainY, W, 4f, COL_TRAIN_SHADOW);
 
         drawWindows(H);
         drawDoor(trainY);
@@ -345,7 +368,7 @@ public final class TrainScene extends AbstractBaseScene {
         for (float x : windowX) {
             ctx.renderer.drawRect(x, 415f, 80f, 48f, COL_WIN_BORDER);
             ctx.renderer.drawRect(x + 3f, 418f, 74f, 42f, COL_WIN_GLASS);
-            ctx.renderer.drawRect(x + 3f, 450f, 22f,  8f, COL_WIN_SHINE);
+            ctx.renderer.drawRect(x + 3f, 450f, 22f, 8f, COL_WIN_SHINE);
         }
     }
 
@@ -376,8 +399,8 @@ public final class TrainScene extends AbstractBaseScene {
         float mx = DOOR_X - DOOR_WIDTH - 6f;
         float my = H - DOOR_Y - 26f;
         float mw = DOOR_WIDTH * 2f + 12f;
-        ctx.renderer.drawRect(mx, my, mw, 5f,  COL_MARKER);
-        ctx.renderer.drawRect(mx, my, 5f,  22f, COL_MARKER);
+        ctx.renderer.drawRect(mx, my, mw, 5f, COL_MARKER);
+        ctx.renderer.drawRect(mx, my, 5f, 22f, COL_MARKER);
         ctx.renderer.drawRect(DOOR_X + DOOR_WIDTH + 1f, my, 5f, 22f, COL_MARKER);
     }
 
@@ -439,13 +462,15 @@ public final class TrainScene extends AbstractBaseScene {
     private void onCollision(CollisionEvent event) {
         Entity a = event.getPair().getA();
         Entity b = event.getPair().getB();
-        if (!isPlayerAndNPC(a, b)) return;
+        if (!isPlayerAndNPC(a, b))
+            return;
 
         Entity npc = (a == player) ? b : a;
         resolveCollision(player, npc);
 
         lives--;
-        if (lives <= 0) triggerLoss();
+        if (lives <= 0)
+            triggerLoss();
     }
 
     private void resolveCollision(Entity p, Entity npc) {
@@ -457,7 +482,8 @@ public final class TrainScene extends AbstractBaseScene {
         float dx = pt.x - nt.x;
         float dy = pt.y - nt.y;
         float dist = (float) Math.sqrt(dx * dx + dy * dy);
-        if (dist == 0) dist = 0.001f;
+        if (dist == 0)
+            dist = 0.001f;
 
         float push = 10f + ((level - 1) * 2.22f);
         pt.x += (dx / dist) * push;
@@ -465,14 +491,23 @@ public final class TrainScene extends AbstractBaseScene {
         nt.x -= (dx / dist) * push;
         nt.y -= (dy / dist) * push;
 
-        if (nv != null) { nv.vx = -nv.vx * 1.5f; nv.vy = -nv.vy * 1.5f; }
-        if (pv != null) { pv.vx += (dx / dist) * push * 10f; pv.vy += (dy / dist) * push * 10f; }
+        if (nv != null) {
+            nv.vx = -nv.vx * 1.5f;
+            nv.vy = -nv.vy * 1.5f;
+        }
+        if (pv != null) {
+            pv.vx += (dx / dist) * push * 10f;
+            pv.vy += (dy / dist) * push * 10f;
+        }
     }
 
     private boolean isPlayerAndNPC(Entity a, Entity b) {
-        if (player == null) return false;
-        if (a == player) return npcs.contains(b);
-        if (b == player) return npcs.contains(a);
+        if (player == null)
+            return false;
+        if (a == player)
+            return npcs.contains(b);
+        if (b == player)
+            return npcs.contains(a);
         return false;
     }
 
@@ -481,7 +516,8 @@ public final class TrainScene extends AbstractBaseScene {
         TransformComponent t = e.getComponent(TransformComponent.class);
         ColliderComponent c = e.getComponent(ColliderComponent.class);
         VelocityComponent v = e.getComponent(VelocityComponent.class);
-        if (t == null || c == null) return;
+        if (t == null || c == null)
+            return;
 
         float r = (c.type == ColliderComponent.ColShapeType.CIRCLE) ? c.radius : Math.max(c.halfWidth, c.halfHeight);
         float minX = r;
@@ -496,7 +532,8 @@ public final class TrainScene extends AbstractBaseScene {
             boolean inGap = Math.abs(t.x - DOOR_X) < DOOR_WIDTH - r;
             if (t.y > ceiling && !inGap) {
                 t.y = ceiling;
-                if (v != null) v.vy = 0;
+                if (v != null)
+                    v.vy = 0;
             }
         }
 
@@ -505,8 +542,10 @@ public final class TrainScene extends AbstractBaseScene {
         t.y = Math.max(minY, Math.min(maxY, t.y));
 
         if (v != null) {
-            if (t.x != oldX) v.vx = -v.vx;
-            if (t.y != oldY) v.vy = -v.vy;
+            if (t.x != oldX)
+                v.vx = -v.vx;
+            if (t.y != oldY)
+                v.vy = -v.vy;
         }
     }
 }

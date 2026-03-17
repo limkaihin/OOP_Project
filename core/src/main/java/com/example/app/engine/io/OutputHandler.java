@@ -5,64 +5,38 @@ public class OutputHandler {
     private final AudioPlayer audioPlayer;
     private final ErrorLogger errorLogger;
 
-    // initializes the output handler
     public OutputHandler(AudioPlayer audioPlayer, ErrorLogger errorLogger) {
         this.audioPlayer = (audioPlayer == null) ? new AudioPlayer() : audioPlayer;
         this.errorLogger = (errorLogger == null) ? new ErrorLogger() : errorLogger;
     }
 
-    // log the message to the error logger
-    public void log(String tag, String message) {
-        errorLogger.log(tag, message);
-    }
+    // ---- logging ----
+    public void log(String tag, String message)                        { errorLogger.log(tag, message); }
+    public void error(String tag, String message)                      { errorLogger.error(tag, message); }
+    public void error(String tag, String message, Throwable throwable) { errorLogger.error(tag, message, throwable); }
 
-    // overiding used to pass the message to the error logger
-    public void error(String tag, String message) {
-        errorLogger.error(tag, message);
-    }
+    // ---- music ----
+    public void playMusic(String filePath)          { audioPlayer.playMusic(filePath); }
+    public void stopMusic()                         { audioPlayer.stopMusic(); }
+    public boolean isMusicEnabled()                 { return audioPlayer.isMusicEnabled(); }
+    public void setMusicEnabled(boolean enabled)    { audioPlayer.setMusicEnabled(enabled); }
+    public float getMusicVolume()                   { return audioPlayer.getMusicVolume(); }
+    public void setMusicVolume(float v)             { audioPlayer.setMusicVolume(v); }
 
-    // overiding used to pass the message to the error logger
-    public void error(String tag, String message, Throwable throwable) {
-        errorLogger.error(tag, message, throwable);
-    }
+    // ---- sfx ----
+    public void playSound(String filePath)          { audioPlayer.playSound(filePath); }
+    public void stopSound()                         { audioPlayer.stopSound(); }
+    public boolean isSfxEnabled()                   { return audioPlayer.isSfxEnabled(); }
+    public void setSfxEnabled(boolean enabled)      { audioPlayer.setSfxEnabled(enabled); }
+    public float getSfxVolume()                     { return audioPlayer.getSfxVolume(); }
+    public void setSfxVolume(float v)               { audioPlayer.setSfxVolume(v); }
 
-    // plays music
-    public void playMusic(String filePath) {
-        audioPlayer.playMusic(filePath);
-    }
+    // ---- legacy volume ----
+    public void setVolume(float volume)             { audioPlayer.setMasterVolume(volume); }
 
-    // plays sound
-    public void playSound(String filePath) {
-        audioPlayer.playSound(filePath);
-    }
+    // ---- accessors ----
+    public AudioPlayer getAudioPlayer()             { return audioPlayer; }
+    public ErrorLogger getErrorLogger()             { return errorLogger; }
 
-    // stop music
-    public void stopMusic() {
-        audioPlayer.stopMusic();
-    }
-
-    // stop sound
-    public void stopSound() {
-        audioPlayer.stopSound();
-    }
-
-    // set the volume
-    public void setVolume(float volume) {
-        audioPlayer.setMasterVolume(volume);
-    }
-
-    // get the audio player
-    public AudioPlayer getAudioPlayer() {
-        return audioPlayer;
-    }
-
-    // get the error logger
-    public ErrorLogger getErrorLogger() {
-        return errorLogger;
-    }
-
-    // dispose the audio player
-    public void dispose() {
-        stopMusic();
-    }
+    public void dispose()                           { stopMusic(); }
 }

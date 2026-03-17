@@ -6,6 +6,7 @@ public enum InputAction {
     CONFIRM,
     BACK,
     PAUSE,
+    OPEN_SETTINGS,
     VOLUME_UP,
     VOLUME_DOWN,
     STOP,

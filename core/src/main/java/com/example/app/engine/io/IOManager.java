@@ -4,49 +4,37 @@ public class IOManager {
 
     private final InputHandler inputHandler;
     private final OutputHandler outputHandler;
-    //to split up the IOManager into input and output handlers  
+
     public IOManager(InputHandler inputHandler, OutputHandler outputHandler) {
-        this.inputHandler = (inputHandler == null) ? new InputHandler(new InputBinding()) : inputHandler;
-        this.outputHandler = (outputHandler == null) ? new OutputHandler(null, null) : outputHandler;
+        this.inputHandler  = (inputHandler  == null) ? new InputHandler(new InputBinding()) : inputHandler;
+        this.outputHandler = (outputHandler == null) ? new OutputHandler(null, null)        : outputHandler;
     }
-    //get the input handler
-    public InputHandler getInputHandler() {
-        return inputHandler;
-    }
-    //get the output handler
-    public OutputHandler getOutputHandler() {
-        return outputHandler;
-    }
-    //update the input handler
-    public void update(float deltaTime) {
-        inputHandler.update(deltaTime);
-    }
-    //log the message to the output handler
-    public void log(String tag, String message) {
-        outputHandler.log(tag, message);
-    }
-    //overiding used to pass the message to the output handler
-    public void error(String tag, String message) {
-        outputHandler.error(tag, message);
-    }
-    //overiding used to pass the throwable to the output handler
-    public void error(String tag, String message, Throwable throwable) {
-        outputHandler.error(tag, message, throwable);
-    }
-    //plays music
-    public void playMusic(String filePath) {
-        outputHandler.playMusic(filePath);
-    }
-    //plays sound
-    public void playSound(String filePath) {
-        outputHandler.playSound(filePath);
-    }
-    //stop music
-    public void stopMusic() {
-        outputHandler.stopMusic();
-    }
-    //dispose the output handler
-    public void dispose() {
-        outputHandler.dispose();
-    }
+
+    // ---- input ----
+    public InputHandler getInputHandler()                              { return inputHandler; }
+    public void update(float deltaTime)                                { inputHandler.update(deltaTime); }
+
+    // ---- output ----
+    public OutputHandler getOutputHandler()                            { return outputHandler; }
+    public void log(String tag, String message)                        { outputHandler.log(tag, message); }
+    public void error(String tag, String message)                      { outputHandler.error(tag, message); }
+    public void error(String tag, String message, Throwable throwable) { outputHandler.error(tag, message, throwable); }
+
+    // ---- music ----
+    public void playMusic(String filePath)         { outputHandler.playMusic(filePath); }
+    public void stopMusic()                        { outputHandler.stopMusic(); }
+    public boolean isMusicEnabled()               { return outputHandler.isMusicEnabled(); }
+    public void setMusicEnabled(boolean enabled)  { outputHandler.setMusicEnabled(enabled); }
+    public float getMusicVolume()                 { return outputHandler.getMusicVolume(); }
+    public void setMusicVolume(float v)           { outputHandler.setMusicVolume(v); }
+
+    // ---- sfx ----
+    public void playSound(String filePath)         { outputHandler.playSound(filePath); }
+    public boolean isSfxEnabled()                 { return outputHandler.isSfxEnabled(); }
+    public void setSfxEnabled(boolean enabled)    { outputHandler.setSfxEnabled(enabled); }
+    public float getSfxVolume()                   { return outputHandler.getSfxVolume(); }
+    public void setSfxVolume(float v)             { outputHandler.setSfxVolume(v); }
+
+    // ---- dispose ----
+    public void dispose()                          { outputHandler.dispose(); }
 }
