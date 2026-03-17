@@ -1,5 +1,6 @@
 package com.example.app.demo.scenes;
 
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -43,11 +44,6 @@ public final class TrainScene extends AbstractBaseScene {
     private static final Color COL_TACTILE = new Color(0.94f, 0.75f, 0.06f, 1f);
     private static final Color COL_BUMP = new Color(0.83f, 0.65f, 0.04f, 1f);
     private static final Color COL_MARKER = new Color(0.83f, 0.18f, 0.18f, 0.7f);
-    private static final Color COL_HEADLIGHT = new Color(0.90f, 0.90f, 0.75f, 1f);
-    private static final Color COL_HEADLIGHT_HI = new Color(1.00f, 1.00f, 0.92f, 1f);
-    private static final Color COL_CAP_LIGHT = new Color(0.80f, 0.79f, 0.77f, 1f);
-    private static final Color COL_CAP_MID = new Color(0.65f, 0.64f, 0.62f, 1f);
-    private static final Color COL_CAP_DARK = new Color(0.45f, 0.44f, 0.43f, 1f);
 
     // Platform colours
     private static final Color COL_PLATFORM = new Color(0.83f, 0.81f, 0.78f, 1f);
@@ -66,14 +62,10 @@ public final class TrainScene extends AbstractBaseScene {
 
     // HUD colours
     private static final Color COL_HUD_BG = new Color(0.10f, 0.10f, 0.16f, 0.88f);
-    private static final Color COL_HUD_MSG = new Color(0.10f, 0.10f, 0.16f, 0.75f);
     private static final Color COL_HEART_ON = new Color(0.83f, 0.18f, 0.18f, 1f);
     private static final Color COL_HEART_OFF = new Color(0.35f, 0.35f, 0.40f, 1f);
-    private static final Color COL_TEXT_NPC = new Color(0.85f, 0.44f, 0.44f, 1f);
     private static final Color COL_TEXT_TIMER = new Color(0.96f, 0.77f, 0.09f, 1f);
-    private static final Color COL_TEXT_WIN = new Color(0.13f, 0.67f, 0.53f, 1f);
-    private static final Color COL_TEXT_LOSE = new Color(0.83f, 0.18f, 0.18f, 1f);
-    private static final Color COL_TEXT_INTRO = new Color(0.96f, 0.77f, 0.09f, 1f);
+    private static final Color COL_TEXT_INTRO = new Color(0f, 0f, 0f, 1f);
 
     // State
     private final EngineContext ctx;
@@ -86,6 +78,7 @@ public final class TrainScene extends AbstractBaseScene {
     private final Random rng = new Random();
 
     private BitmapFont font;
+    private BitmapFont bigFont;
 
     private int npcsRemaining;
     private float spawnTimer = 0f;
@@ -111,8 +104,16 @@ public final class TrainScene extends AbstractBaseScene {
     // Lifecycle
     @Override
     public void onLoad() {
-        font = new BitmapFont();
-        font.getData().setScale(1.2f);
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(com.badlogic.gdx.Gdx.files.internal("Oswald-Regular.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter smallParams = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        smallParams.size = 18;
+        font = generator.generateFont(smallParams);
+
+        FreeTypeFontGenerator.FreeTypeFontParameter bigParams = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        bigParams.size = 72;
+        bigFont = generator.generateFont(bigParams);
+
+        generator.dispose();
         font.setColor(Color.WHITE);
 
         ctx.ioManager.playSound("alert.mp3");
@@ -130,6 +131,7 @@ public final class TrainScene extends AbstractBaseScene {
     public void onUnload() {
         if (collisionSub != null) collisionSub.cancel();
         if (font != null) font.dispose();
+        if (bigFont != null) bigFont.dispose();
         for (Entity npc : npcs) ctx.entityManager.destroy(npc);
         npcs.clear();
     }
@@ -294,6 +296,7 @@ public final class TrainScene extends AbstractBaseScene {
         drawNPCs();
         if (player != null) drawPlayer();
         drawTrain(W, H);
+        drawEndGameOverlay(W, H);
     }
 
     private void drawPlatform(float W, float H) {
@@ -380,7 +383,7 @@ public final class TrainScene extends AbstractBaseScene {
 
     private void drawEndGameOverlay(float W, float H) {
         if (lost) {
-            ctx.renderer.drawRect(0, 0, W, H, new Color(0.25f, 0.02f, 0.02f, 0.60f));
+            ctx.renderer.drawRect(0, 0, W, H, new Color(0.15f, 0.15f, 0.15f, 0.65f));
         }
     }
 
@@ -405,35 +408,31 @@ public final class TrainScene extends AbstractBaseScene {
 
     private void drawLives(float W) {
         for (int i = 0; i < MAX_LIVES; i++) {
-            ctx.renderer.drawCircle(20f + i * 22f, 21f, 9f, i < lives ? COL_HEART_ON : COL_HEART_OFF);
+            ctx.renderer.drawCircle(20f + i * 22f, 19f, 9f, i < lives ? COL_HEART_ON : COL_HEART_OFF);
         }
     }
 
     private void drawHudText(float W, float timeRemaining) {
-        font.setColor(COL_TEXT_NPC);
-        ctx.renderer.drawText(font, "NPC: " + npcs.size(), W / 4f, 28f);
         font.setColor(Color.WHITE);
-        ctx.renderer.drawText(font, "LVL " + level, W / 2f - 30f, 28f);
+        ctx.renderer.drawText(font, "LVL " + level, W / 2f - 18f, 28f);
         font.setColor(COL_TEXT_TIMER);
-        ctx.renderer.drawText(font, String.format("%.1fs", timeRemaining), W - 80f, 28f);
+        ctx.renderer.drawText(font, String.format("%.1fs", timeRemaining), W - 70f, 28f);
     }
 
     private void drawMidScreenMessage(float W, float H) {
-        float midY = H / 2f;
+        float midY = H / 2f + 36f;
+
         if (!gameStarted) {
-            ctx.renderer.drawRect(80f, midY - 30f, W - 160f, 44f, COL_HUD_MSG);
             font.setColor(COL_TEXT_INTRO);
-            ctx.renderer.drawText(font, "Avoid Passengers and Board the Train!", 120f, midY);
+            ctx.renderer.drawText(font, "Avoid passengers, board the train!", W / 2f - 120f, H / 2f);
         } else if (won) {
-            ctx.renderer.drawRect(200f, midY - 30f, 280f, 44f, COL_HUD_MSG);
-            font.setColor(COL_TEXT_WIN);
-            ctx.renderer.drawText(font, "CLEARED!", W / 2f - 60f, midY);
-            if (level == 10) ctx.renderer.drawText(font, "YOU BEAT THE GAME!", W / 2f - 120f, midY - 40f);
+            bigFont.setColor(new Color(0.13f, 0.67f, 0.53f, 1f));
+            ctx.renderer.drawText(bigFont, "BOARDED!", W / 2f - 120f, midY);
         } else if (lost) {
-            ctx.renderer.drawRect(210f, midY - 30f, 260f, 44f, COL_HUD_MSG);
-            font.setColor(COL_TEXT_LOSE);
-            ctx.renderer.drawText(font, "YOU LOSE!", W / 2f - 60f, midY);
+            bigFont.setColor(new Color(0.95f, 0.95f, 0.95f, 1f));
+            ctx.renderer.drawText(bigFont, "WASTED", W / 2f - 120f, midY);
         }
+        font.setColor(Color.WHITE);
     }
 
     // Collision
