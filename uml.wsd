@@ -1,0 +1,149 @@
+@startuml uml_diagram
+
+skinparam PackageBackgroundColor #EFEFEF
+skinparam ClassBackgroundColor #FFFFFF
+skinparam NoteBackgroundColor #FFFACD
+
+' --- Package: com.example.app ---
+package "com.example.app" #DDFFFF {
+    class GameMaster {
+        - ctx : EngineContext
+        + create()
+        + render()
+        + dispose()
+    }
+}
+
+' --- Package: com.example.app.engine ---
+package "com.example.app.engine" #DDFFDD {
+    class EngineContext {
+        + config : EngineConfig
+        + sceneManager : SceneManager
+        + entityManager : EntityManager
+        + movementManager : MovementManager
+        + collisionManager : CollisionManager
+        + ioManager : IOManager
+        + renderer : IRenderer
+        + update(float)
+    }
+    class EngineConfig
+}
+
+' --- Package: com.example.app.engine.entity ---
+package "com.example.app.engine.entity" #DDFFDD {
+    class Entity {
+        - id : long
+        - components : Map<Class, Component>
+    }
+    class EntityManager {
+        - entities : Map<Long, Entity>
+        + create() : Entity
+        + destroy(Entity)
+        + getAll() : List<Entity>
+    }
+}
+
+' --- Package: com.example.app.engine.components ---
+package "com.example.app.engine.components" #DDFFDD {
+    interface Component <<interface>>
+}
+
+' --- Package: com.example.app.engine.movement ---
+package "com.example.app.engine.movement" #DDFFDD {
+    class TransformComponent implements Component
+    class VelocityComponent implements Component
+    class AccelerationComponent implements Component
+    class MovementManager {
+        + update(float, List<Entity>)
+    }
+}
+
+' --- Package: com.example.app.engine.collision ---
+package "com.example.app.engine.collision" #DDFFDD {
+    interface CollisionManager <<interface>>
+    class SimpleCollisionManager implements CollisionManager
+    abstract class ColliderComponent implements Component
+    class CollisionEvent
+    class SpatialHashGrid
+}
+
+' --- Package: com.example.app.engine.scene ---
+package "com.example.app.engine.scene" #DDFFDD {
+    interface Scene <<interface>>
+    abstract class AbstractBaseScene implements Scene
+    class SceneManager {
+        - scenes : List<Scene>
+        + push(Scene)
+        + pop()
+        + switchTo(Scene)
+    }
+}
+
+' --- Package: com.example.app.engine.io ---
+package "com.example.app.engine.io" #DDFFDD {
+    class IOManager {
+        - inputHandler : InputHandler
+        - outputHandler : OutputHandler
+    }
+    class InputHandler
+    class AudioPlayer {
+        - musicEnabled : boolean
+        - sfxEnabled : boolean
+    }
+    class OutputHandler
+    enum InputAction <<enum>>
+}
+
+' --- Package: com.example.app.engine.render ---
+package "com.example.app.engine.render" #DDFFDD {
+    interface IRenderer <<interface>>
+    class RenderableComponent implements Component
+}
+
+' --- Package: com.example.app.demo.factory ---
+package "com.example.app.demo.factory" #FFEECC {
+    interface EntityFactory <<interface>>
+    class PlayerFactory implements EntityFactory
+    class EnemyFactory implements EntityFactory
+}
+
+' --- Package: com.example.app.demo.render ---
+package "com.example.app.demo.render" #FFEECC {
+    class LibGdxRenderer implements com.example.app.engine.render.IRenderer
+}
+
+' --- Package: com.example.app.demo.scenes ---
+package "com.example.app.demo.scenes" #FFEECC {
+    class MenuScene extends com.example.app.engine.scene.AbstractBaseScene
+    class LevelSelectScene extends com.example.app.engine.scene.AbstractBaseScene
+    class TrainScene extends com.example.app.engine.scene.AbstractBaseScene
+    class SettingsScene extends com.example.app.engine.scene.AbstractBaseScene
+    class GameClearScene extends com.example.app.engine.scene.AbstractBaseScene
+    class TransitionScene extends com.example.app.engine.scene.AbstractBaseScene
+}
+
+' --- Relationships across packages ---
+GameMaster *-- EngineContext
+EngineContext *-- com.example.app.engine.scene.SceneManager
+EngineContext *-- com.example.app.engine.entity.EntityManager
+EngineContext *-- com.example.app.engine.movement.MovementManager
+EngineContext *-- com.example.app.engine.collision.CollisionManager
+EngineContext *-- com.example.app.engine.io.IOManager
+EngineContext *-- com.example.app.engine.render.IRenderer
+
+com.example.app.engine.scene.SceneManager o-- com.example.app.engine.scene.Scene
+com.example.app.engine.entity.Entity "1" *-- "many" com.example.app.engine.components.Component
+
+note top of "com.example.app.engine"
+  **Abstract Engine Layers (Green)**
+  Core mechanics and generic systems.
+  No specific assets/logic for "Train Rush".
+end note
+
+note top of "com.example.app.demo"
+  **Game Specific Layers (Orange)**
+  Concrete implementations and assets.
+  Defines specific gameplay levels and entities.
+end note
+
+@enduml
