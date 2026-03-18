@@ -175,7 +175,7 @@ public final class TrainScene extends AbstractBaseScene {
         postGameTimer += dt;
         if (postGameTimer > 2.5f) {
             if (won) {
-                LevelSelectScene.maxUnlockedLevel = Math.max(LevelSelectScene.maxUnlockedLevel, level + 1);
+                GameProgress.maxUnlockedLevel = Math.max(GameProgress.maxUnlockedLevel, level + 1);
                 // Show game-clear screen
                 if (level >= 5) {
                     ctx.getSceneManager().switchTo(new GameClearScene(ctx));

@@ -20,10 +20,10 @@ public final class LevelSelectScene extends AbstractBaseScene {
     private final GlyphLayout layout = new GlyphLayout();
 
     private final float W, H;
+    private float startX, startY;
     private final float boxSize = 80f;
     private final float gapX = 20f;
     private final float gapY = 30f;
-    public static int maxUnlockedLevel = 1;
     private final int totalLevels = 5;
 
     private static final EngineColor COL_BG = new EngineColor(0.06f, 0.06f, 0.10f, 1f);
@@ -35,6 +35,9 @@ public final class LevelSelectScene extends AbstractBaseScene {
         this.ctx = ctx;
         this.W = ctx.getConfig().width;
         this.H = ctx.getConfig().height;
+        float totalWidth = totalLevels * boxSize + (totalLevels - 1) * gapX;
+        this.startX = (W - totalWidth) / 2f;
+        this.startY = H / 2f + 20f;
     }
 
     @Override
@@ -51,7 +54,7 @@ public final class LevelSelectScene extends AbstractBaseScene {
 
         generator.dispose();
         font.setColor(EngineColor.WHITE);
-        ctx.getIoManager().log("LevelSelectScene", "Loaded (Max unlocked: " + maxUnlockedLevel + ")");
+        ctx.getIoManager().log("LevelSelectScene", "Loaded (Max unlocked: " + GameProgress.maxUnlockedLevel + ")");
     }
 
     @Override
@@ -61,15 +64,11 @@ public final class LevelSelectScene extends AbstractBaseScene {
         int mx = Gdx.input.getX();
         int my = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-        float totalWidth = totalLevels * boxSize + (totalLevels - 1) * gapX;
-        float startX = (W - totalWidth) / 2f;
-        float startY = H / 2f + 20f;
-
         for (int i = 0; i < totalLevels; i++) {
             float bx = startX + i * (boxSize + gapX);
             float by = startY;
             if (mx >= bx && mx <= bx + boxSize && my >= by && my <= by + boxSize) {
-                if (i + 1 <= maxUnlockedLevel) {
+                if (i + 1 <= GameProgress.maxUnlockedLevel) {
                     ctx.getSceneManager().switchTo(new TransitionScene(ctx, new TrainScene(ctx, i + 1), 1.5f));
                 } else {
                     ctx.getIoManager().playSound("hit.wav");
@@ -80,10 +79,6 @@ public final class LevelSelectScene extends AbstractBaseScene {
 
     @Override
     public void render() {
-        float totalWidth = totalLevels * boxSize + (totalLevels - 1) * gapX;
-        float startX = (W - totalWidth) / 2f;
-        float startY = H / 2f + 20f;
-
         int mx = Gdx.input.getX();
         int my = Gdx.graphics.getHeight() - Gdx.input.getY();
 
@@ -95,7 +90,7 @@ public final class LevelSelectScene extends AbstractBaseScene {
             float bx = startX + i * (boxSize + gapX);
             float by = startY;
             boolean isHovered = mx >= bx && mx <= bx + boxSize && my >= by && my <= by + boxSize;
-            boolean isUnlocked = i + 1 <= maxUnlockedLevel;
+            boolean isUnlocked = i + 1 <= GameProgress.maxUnlockedLevel;
 
             float size = (isHovered && isUnlocked) ? boxSize * 1.1f : boxSize;
             float offset = (size - boxSize) / 2f;
@@ -108,10 +103,6 @@ public final class LevelSelectScene extends AbstractBaseScene {
 
     @Override
     public void renderHud() {
-        float totalWidth = totalLevels * boxSize + (totalLevels - 1) * gapX;
-        float startX = (W - totalWidth) / 2f;
-        float startY = H / 2f + 20f;
-
         // Title
         bigFont.setColor(EngineColor.WHITE);
         layout.setText(bigFont.bitmapFont, "SELECT LEVEL");
@@ -123,7 +114,7 @@ public final class LevelSelectScene extends AbstractBaseScene {
             float by = startY;
 
             String text = "LV " + (i + 1);
-            font.setColor(i + 1 <= maxUnlockedLevel ? EngineColor.WHITE : COL_LOCKED_TEXT);
+            font.setColor(i + 1 <= GameProgress.maxUnlockedLevel ? EngineColor.WHITE : COL_LOCKED_TEXT);
             layout.setText(font.bitmapFont, text);
             ctx.getRenderer().drawText(font, text, bx + boxSize / 2f - layout.width / 2f, by + boxSize / 2f + layout.height / 2f);
         }

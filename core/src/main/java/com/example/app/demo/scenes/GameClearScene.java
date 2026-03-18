@@ -19,7 +19,8 @@ public final class GameClearScene extends AbstractBaseScene {
     private final GlyphLayout layout = new GlyphLayout();
 
     private final float W, H;
-    private float btnX, btnY, btnW, btnH, bannerH, bannerY;
+    private static final float bannerH = 90f;
+    private final float btnX, btnY, btnW, btnH, bannerY;
 
     // Static colors for performance
     private static final EngineColor COL_BG = new EngineColor(0.04f, 0.04f, 0.10f, 1f);
@@ -41,7 +42,6 @@ public final class GameClearScene extends AbstractBaseScene {
         this.btnH = 54f;
         this.btnX = (W - btnW) / 2f;
         this.btnY = H / 2f - 100f;
-        this.bannerH = 90f;
     }
 
     @Override
@@ -134,7 +134,7 @@ public final class GameClearScene extends AbstractBaseScene {
     }
 
     private void restartGame() {
-        LevelSelectScene.maxUnlockedLevel = 1;
+        GameProgress.reset();
         while (ctx.getSceneManager().size() > 1) {
             ctx.getSceneManager().pop();
         }

@@ -21,10 +21,10 @@ public final class SettingsScene extends AbstractBaseScene {
 
     private final float W, H;
 
-    private float panelX, panelY;
-    private float btnCol, rightArrX;
-    private float row1Y, row2Y, row3Y, row4Y;
-    private float backX, backY, backW, backH;
+    private final float panelX, panelY;
+    private final float btnCol, rightArrX;
+    private final float row1Y, row2Y, row3Y, row4Y;
+    private final float backX, backY, backW, backH;
 
     private static final float PANEL_W = 420f;
     private static final float PANEL_H = 340f;
@@ -52,6 +52,19 @@ public final class SettingsScene extends AbstractBaseScene {
         this.ctx = ctx;
         this.W = ctx.getConfig().width;
         this.H = ctx.getConfig().height;
+        this.panelX = (W - PANEL_W) / 2f;
+        this.panelY = (H - PANEL_H) / 2f;
+        this.btnCol = panelX + PANEL_W - TOG_W - PAD;
+        this.rightArrX = btnCol + ARR_W + 50f;
+        float topY = panelY + PANEL_H - 90f;
+        this.row1Y = topY;
+        this.row2Y = topY - ROW_H;
+        this.row3Y = topY - ROW_H * 2f;
+        this.row4Y = topY - ROW_H * 3f;
+        this.backW = 160f;
+        this.backH = 40f;
+        this.backX = panelX + (PANEL_W - backW) / 2f;
+        this.backY = panelY + PAD;
     }
 
     @Override
@@ -67,23 +80,6 @@ public final class SettingsScene extends AbstractBaseScene {
         font = new LibGdxFont(generator.generateFont(smallParams));
 
         generator.dispose();
-
-        panelX = (W - PANEL_W) / 2f;
-        panelY = (H - PANEL_H) / 2f;
-
-        btnCol = panelX + PANEL_W - TOG_W - PAD;
-        rightArrX = btnCol + ARR_W + 50f;
-
-        float topY = panelY + PANEL_H - 90f;
-        row1Y = topY;
-        row2Y = topY - ROW_H;
-        row3Y = topY - ROW_H * 2f;
-        row4Y = topY - ROW_H * 3f;
-
-        backW = 160f;
-        backH = 40f;
-        backX = panelX + (PANEL_W - backW) / 2f;
-        backY = panelY + PAD;
 
         ctx.getIoManager().log("SettingsScene", "Loaded");
     }
