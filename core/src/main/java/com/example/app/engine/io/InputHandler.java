@@ -16,29 +16,30 @@ public class InputHandler {
         // Edge-detection history at start of the frame
         state.nextFrame();
 
-        // Process all bound keys
+        // Keyboard
         for (Map.Entry<Integer, InputAction> e : bindings.viewBindings().entrySet()) {
             int keyCode = e.getKey();
             InputAction action = e.getValue();
-            boolean down = Gdx.input.isKeyPressed(keyCode);
-            // Multiple keys may map to the same action
-            if (down) {
-                state.processInput(action, true);
+            if (Gdx.input.isKeyJustPressed(keyCode)) {
+                // Guarantee edge detection for fast keypresses
+                state.set(action, true, false);
+            } else {
+                state.processInput(action, Gdx.input.isKeyPressed(keyCode));
             }
         }
 
-        // Ensure actions with no active bound key are false, we only ever set true above
-        for (InputAction a : InputAction.values()) {
-            boolean anyDown = isAnyKeyDownForAction(a);
-            state.processInput(a, anyDown);
+        // Mouse
+        for (Map.Entry<Integer, InputAction> e : bindings.viewMouseBindings().entrySet()) {
+            int button = e.getKey();
+            InputAction action = e.getValue();
+            // Use isButtonJustPressed for mouse — catches fast clicks
+            if (Gdx.input.isButtonJustPressed(button)) {
+                // Manually set both current=true and previous=false to guarantee isJustPressed fires
+                state.set(action, true, false);
+            } else if (!Gdx.input.isButtonPressed(button)) {
+                state.processInput(action, false);
+            }
         }
-    }
-
-    private boolean isAnyKeyDownForAction(InputAction action) {
-        for (Map.Entry<Integer, InputAction> e : bindings.viewBindings().entrySet()) {
-            if (e.getValue() == action && Gdx.input.isKeyPressed(e.getKey())) return true;
-        }
-        return false;
     }
 
     public InputState getState() {

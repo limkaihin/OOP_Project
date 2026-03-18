@@ -2,89 +2,83 @@ package com.example.app.demo.scenes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+import com.example.app.demo.render.LibGdxFont;
+
 import com.example.app.engine.EngineContext;
 import com.example.app.engine.io.InputAction;
 import com.example.app.engine.scene.AbstractBaseScene;
 
-/**
- * Settings overlay — pushed on top of the current scene.
- * Press ESC (BACK) or click the Back button to pop back to the previous scene.
- */
 public final class SettingsScene extends AbstractBaseScene {
 
-    // ---- layout constants ----
-    private static final float PANEL_W  = 420f;
-    private static final float PANEL_H  = 340f;
-    private static final float VOL_STEP = 0.05f;   // 5 % per click
-    private static final float PAD      = 24f;
+    private static final float PANEL_W = 420f;
+    private static final float PANEL_H = 340f;
+    private static final float VOL_STEP = 0.05f;
+    private static final float PAD = 4f;
+    private static final float TOG_W = 90f;
+    private static final float TOG_H = 36f;
+    private static final float ARR_W = 40f;
+    private static final float ARR_H = 36f;
+    private static final float ROW_H = 58f;
 
-    // Button sizes — large enough to click comfortably
-    private static final float TOG_W  = 90f;
-    private static final float TOG_H  = 36f;
-    private static final float ARR_W  = 40f;
-    private static final float ARR_H  = 36f;
-
-    // Row height (spacing between rows)
-    private static final float ROW_H  = 58f;
+    private static final Color COL_OVERLAY = new Color(0f, 0f, 0f, 0.75f);
+    private static final Color COL_PANEL = new Color(0.12f, 0.13f, 0.18f, 1f);
+    private static final Color COL_BTN_OFF = new Color(0.60f, 0.20f, 0.20f, 1f);
+    private static final Color COL_BTN_ON = new Color(0.20f, 0.60f, 0.30f, 1f);
+    private static final Color COL_BTN_NAV = new Color(0.25f, 0.35f, 0.55f, 1f);
+    private static final Color COL_BTN_BCK = new Color(0.22f, 0.22f, 0.32f, 1f);
+    private static final Color COL_BTN_OFF_HOVER = new Color(COL_BTN_OFF).lerp(Color.WHITE, 0.2f);
+    private static final Color COL_BTN_ON_HOVER = new Color(COL_BTN_ON).lerp(Color.WHITE, 0.2f);
+    private static final Color COL_BTN_NAV_HOVER = new Color(COL_BTN_NAV).lerp(Color.WHITE, 0.2f);
+    private static final Color COL_BTN_BCK_HOVER = new Color(COL_BTN_BCK).lerp(Color.WHITE, 0.2f);
 
     private final EngineContext ctx;
-    private SpriteBatch batch;
-    private BitmapFont  titleFont;
-    private BitmapFont  font;
+    private LibGdxFont titleFont;
+    private LibGdxFont font;
+    private final GlyphLayout layout = new GlyphLayout();
 
-    // ---- computed coordinates (set in onLoad) ----
     private float panelX, panelY;
-
-    // Right-hand column x for buttons
-    private float btnCol;
-
-    // Row y-baselines (bottom of the hit box for each row)
+    private float btnCol, rightArrX;
     private float row1Y, row2Y, row3Y, row4Y;
-
-    // Back button
     private float backX, backY, backW, backH;
-
-    // Arrow right x positions
-    private float rightArrX;
 
     public SettingsScene(EngineContext ctx) {
         this.ctx = ctx;
     }
 
-    // ---------------------------------------------------------------- lifecycle
-
     @Override
     public void onLoad() {
-        batch     = new SpriteBatch();
-        titleFont = new BitmapFont();
-        font      = new BitmapFont();
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Oswald-Regular.ttf"));
 
-        titleFont.getData().setScale(2.0f);
-        titleFont.setColor(Color.WHITE);
-        font.getData().setScale(1.5f);
-        font.setColor(Color.WHITE);
+        FreeTypeFontGenerator.FreeTypeFontParameter titleParams = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        titleParams.size = 28;
+        titleFont = new LibGdxFont(generator.generateFont(titleParams));
+
+        FreeTypeFontGenerator.FreeTypeFontParameter smallParams = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        smallParams.size = 16;
+        font = new LibGdxFont(generator.generateFont(smallParams));
+
+        generator.dispose();
 
         float W = ctx.config.width;
         float H = ctx.config.height;
         panelX = (W - PANEL_W) / 2f;
         panelY = (H - PANEL_H) / 2f;
 
-        // Right column: where buttons start
-        btnCol   = panelX + PANEL_W - TOG_W - PAD;
-        rightArrX = btnCol + ARR_W + 50f;   // right arrow x (left arrow is btnCol)
+        btnCol = panelX + PANEL_W - TOG_W - PAD;
+        rightArrX = btnCol + ARR_W + 50f;
 
-        // Rows from top of panel downward (y = bottom edge of button)
         float topY = panelY + PANEL_H - 90f;
         row1Y = topY;
         row2Y = topY - ROW_H;
         row3Y = topY - ROW_H * 2f;
         row4Y = topY - ROW_H * 3f;
 
-        // Back button — centred near bottom
-        backW = 140f; backH = 40f;
+        backW = 160f;
+        backH = 40f;
         backX = panelX + (PANEL_W - backW) / 2f;
         backY = panelY + PAD;
 
@@ -93,151 +87,109 @@ public final class SettingsScene extends AbstractBaseScene {
 
     @Override
     public void onUnload() {
-        if (batch     != null) batch.dispose();
         if (titleFont != null) titleFont.dispose();
-        if (font      != null) font.dispose();
+        if (font != null) font.dispose();
     }
-
-    // ---------------------------------------------------------------- update
 
     @Override
     public void update(float dt) {
-        // Keyboard back
         if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.BACK)) {
             ctx.sceneManager.pop();
             return;
         }
 
-        if (!Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) return;
+        if (!ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.ACTION_1)) return;
 
-        // LibGDX mouse Y is top-down; convert to bottom-up to match our coordinate system
         float mx = Gdx.input.getX();
         float my = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-        // Music toggle
         if (hit(mx, my, btnCol, row1Y, TOG_W, TOG_H)) toggleMusic();
-
-        // SFX toggle
         if (hit(mx, my, btnCol, row2Y, TOG_W, TOG_H)) toggleSfx();
-
-        // Music volume < >
-        if (hit(mx, my, btnCol,    row3Y, ARR_W, ARR_H)) adjustMusicVol(-VOL_STEP);
+        if (hit(mx, my, btnCol, row3Y, ARR_W, ARR_H)) adjustMusicVol(-VOL_STEP);
         if (hit(mx, my, rightArrX, row3Y, ARR_W, ARR_H)) adjustMusicVol(+VOL_STEP);
-
-        // SFX volume < >
-        if (hit(mx, my, btnCol,    row4Y, ARR_W, ARR_H)) adjustSfxVol(-VOL_STEP);
+        if (hit(mx, my, btnCol, row4Y, ARR_W, ARR_H)) adjustSfxVol(-VOL_STEP);
         if (hit(mx, my, rightArrX, row4Y, ARR_W, ARR_H)) adjustSfxVol(+VOL_STEP);
-
-        // Back button
         if (hit(mx, my, backX, backY, backW, backH)) ctx.sceneManager.pop();
     }
 
-    // ---------------------------------------------------------------- render  (ShapeRenderer)
-
     @Override
     public void render() {
-        // Dim overlay
-        ctx.renderer.drawRect(0, 0, ctx.config.width, ctx.config.height,
-                new Color(0f, 0f, 0f, 0.58f));
+        float mx = Gdx.input.getX();
+        float my = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-        // Panel
-        ctx.renderer.drawRect(panelX, panelY, PANEL_W, PANEL_H,
-                new Color(0.10f, 0.10f, 0.16f, 1f));
-        // Top accent bar
-        ctx.renderer.drawRect(panelX, panelY + PANEL_H - 4f, PANEL_W, 4f,
-                new Color(0.4f, 0.6f, 1.0f, 1f));
+        ctx.renderer.drawRect(0, 0, ctx.config.width, ctx.config.height, COL_OVERLAY);
+        ctx.renderer.drawRect(panelX, panelY, PANEL_W, PANEL_H, COL_PANEL);
 
-        // Toggle buttons (Music, SFX)
+        boolean musHover = hit(mx, my, btnCol, row1Y, TOG_W, TOG_H);
         ctx.renderer.drawRect(btnCol, row1Y, TOG_W, TOG_H,
-                ctx.ioManager.isMusicEnabled() ? new Color(0.12f, 0.48f, 0.18f, 1f) : new Color(0.50f, 0.12f, 0.12f, 1f));
+            ctx.ioManager.isMusicEnabled()
+                ? (musHover ? COL_BTN_ON_HOVER : COL_BTN_ON)
+                : (musHover ? COL_BTN_OFF_HOVER : COL_BTN_OFF));
+
+        boolean sfxHover = hit(mx, my, btnCol, row2Y, TOG_W, TOG_H);
         ctx.renderer.drawRect(btnCol, row2Y, TOG_W, TOG_H,
-                ctx.ioManager.isSfxEnabled() ? new Color(0.12f, 0.48f, 0.18f, 1f) : new Color(0.50f, 0.12f, 0.12f, 1f));
+            ctx.ioManager.isSfxEnabled()
+                ? (sfxHover ? COL_BTN_ON_HOVER : COL_BTN_ON)
+                : (sfxHover ? COL_BTN_OFF_HOVER : COL_BTN_OFF));
 
-        // Arrow buttons (Music vol)
-        ctx.renderer.drawRect(btnCol,    row3Y, ARR_W, ARR_H, new Color(0.22f, 0.32f, 0.52f, 1f));
-        ctx.renderer.drawRect(rightArrX, row3Y, ARR_W, ARR_H, new Color(0.22f, 0.32f, 0.52f, 1f));
-        // Arrow buttons (SFX vol)
-        ctx.renderer.drawRect(btnCol,    row4Y, ARR_W, ARR_H, new Color(0.22f, 0.32f, 0.52f, 1f));
-        ctx.renderer.drawRect(rightArrX, row4Y, ARR_W, ARR_H, new Color(0.22f, 0.32f, 0.52f, 1f));
-
-        // Back button
-        ctx.renderer.drawRect(backX, backY, backW, backH, new Color(0.22f, 0.22f, 0.32f, 1f));
+        ctx.renderer.drawRect(btnCol, row3Y, ARR_W, ARR_H, hit(mx, my, btnCol, row3Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
+        ctx.renderer.drawRect(rightArrX, row3Y, ARR_W, ARR_H, hit(mx, my, rightArrX, row3Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
+        ctx.renderer.drawRect(btnCol, row4Y, ARR_W, ARR_H, hit(mx, my, btnCol, row4Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
+        ctx.renderer.drawRect(rightArrX, row4Y, ARR_W, ARR_H, hit(mx, my, rightArrX, row4Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
+        ctx.renderer.drawRect(backX, backY, backW, backH, hit(mx, my, backX, backY, backW, backH) ? COL_BTN_BCK_HOVER : COL_BTN_BCK);
     }
-
-    // ---------------------------------------------------------------- renderHud (SpriteBatch / BitmapFont)
 
     @Override
     public void renderHud() {
-        batch.begin();
-
         // Title
-        titleFont.setColor(new Color(0.75f, 0.88f, 1.0f, 1f));
-        titleFont.draw(batch, "SETTINGS", panelX + 130f, panelY + PANEL_H - 12f);
+        titleFont.setColor(Color.WHITE);
+        layout.setText(titleFont.bitmapFont, "SETTINGS");
+        ctx.renderer.drawText(titleFont, "SETTINGS", panelX + (PANEL_W - layout.width) / 2f, panelY + PANEL_H + 15f);
 
-        float labelX   = panelX + PAD;
-        // Text Y: BitmapFont draws from *top* of the glyph — centre it inside TOG_H
-        float textOff  = TOG_H - 8f;   // vertical offset to sit nicely inside the button
+        float labelX = panelX + PAD;
+        font.setColor(Color.LIGHT_GRAY);
+        drawCenteredY("Music", labelX, row1Y, TOG_H);
+        drawCenteredY("Sound FX", labelX, row2Y, TOG_H);
+        drawCenteredY("Music Vol", labelX, row3Y, ARR_H);
+        drawCenteredY("SFX Vol", labelX, row4Y, ARR_H);
 
-        // ---- Row labels ----
         font.setColor(Color.WHITE);
-        font.draw(batch, "Music",     labelX, row1Y + textOff);
-        font.draw(batch, "Sound FX",  labelX, row2Y + textOff);
-        font.draw(batch, "Music Vol", labelX, row3Y + textOff);
-        font.draw(batch, "SFX Vol",   labelX, row4Y + textOff);
+        drawCenteredInBox(ctx.ioManager.isMusicEnabled() ? "ON" : "OFF", btnCol, row1Y, TOG_W, TOG_H);
+        drawCenteredInBox(ctx.ioManager.isSfxEnabled() ? "ON" : "OFF", btnCol, row2Y, TOG_W, TOG_H);
+        drawCenteredInBox("<", btnCol, row3Y, ARR_W, ARR_H);
+        drawCenteredInBox(">", rightArrX, row3Y, ARR_W, ARR_H);
+        drawCenteredInBox("<", btnCol, row4Y, ARR_W, ARR_H);
+        drawCenteredInBox(">", rightArrX, row4Y, ARR_W, ARR_H);
 
-        // ---- Toggle labels ----
-        boolean musicOn = ctx.ioManager.isMusicEnabled();
-        boolean sfxOn   = ctx.ioManager.isSfxEnabled();
-
-        font.setColor(musicOn ? new Color(0.3f, 1f, 0.55f, 1f) : new Color(1f, 0.38f, 0.38f, 1f));
-        font.draw(batch, musicOn ? "  ON" : " OFF", btnCol + 10f, row1Y + textOff);
-
-        font.setColor(sfxOn ? new Color(0.3f, 1f, 0.55f, 1f) : new Color(1f, 0.38f, 0.38f, 1f));
-        font.draw(batch, sfxOn ? "  ON" : " OFF", btnCol + 10f, row2Y + textOff);
-
-        // ---- Arrow labels ----
-        font.setColor(Color.WHITE);
-        font.draw(batch, "  <", btnCol + 4f,     row3Y + textOff);
-        font.draw(batch, "  >", rightArrX + 4f,  row3Y + textOff);
-        font.draw(batch, "  <", btnCol + 4f,     row4Y + textOff);
-        font.draw(batch, "  >", rightArrX + 4f,  row4Y + textOff);
-
-        // ---- Volume percentages (between arrows) ----
-        font.setColor(new Color(0.95f, 0.82f, 0.25f, 1f));
+        font.setColor(new Color(0.95f, 0.85f, 0.45f, 1f));
         int mVol = Math.round(ctx.ioManager.getMusicVolume() * 100);
         int sVol = Math.round(ctx.ioManager.getSfxVolume()   * 100);
-        font.draw(batch, mVol + "%", btnCol + ARR_W + 8f, row3Y + textOff);
-        font.draw(batch, sVol + "%", btnCol + ARR_W + 8f, row4Y + textOff);
+        float midGapW = rightArrX - (btnCol + ARR_W);
+        drawCenteredInBox(mVol + "%", btnCol + ARR_W, row3Y, midGapW, ARR_H);
+        drawCenteredInBox(sVol + "%", btnCol + ARR_W, row4Y, midGapW, ARR_H);
 
-        // ---- Back button label ----
-        font.setColor(new Color(0.85f, 0.85f, 0.95f, 1f));
-        font.draw(batch, "  Back  (ESC)", backX + 8f, backY + backH - 6f);
-
-        batch.end();
+        font.setColor(Color.WHITE);
+        drawCenteredInBox("Back (ESC)", backX, backY, backW, backH);
     }
 
-    // ---------------------------------------------------------------- helpers
+    private void drawCenteredY(String text, float x, float boxY, float boxH) {
+        layout.setText(font.bitmapFont, text);
+        ctx.renderer.drawText(font, text, x, boxY + (boxH + layout.height) / 2f);
+    }
 
-    /** Returns true if the point (mx, my) is inside the rectangle. */
+    private void drawCenteredInBox(String text, float boxX, float boxY, float boxW, float boxH) {
+        layout.setText(font.bitmapFont, text);
+        float textX = boxX + (boxW - layout.width) / 2f;
+        float textY = boxY + (boxH + layout.height) / 2f;
+        ctx.renderer.drawText(font, text, textX, textY);
+    }
+
     private static boolean hit(float mx, float my, float bx, float by, float bw, float bh) {
         return mx >= bx && mx <= bx + bw && my >= by && my <= by + bh;
     }
 
-    private void toggleMusic() {
-        ctx.ioManager.setMusicEnabled(!ctx.ioManager.isMusicEnabled());
-    }
-
-    private void toggleSfx() {
-        ctx.ioManager.setSfxEnabled(!ctx.ioManager.isSfxEnabled());
-    }
-
-    private void adjustMusicVol(float delta) {
-        ctx.ioManager.setMusicVolume(
-                Math.max(0f, Math.min(1f, ctx.ioManager.getMusicVolume() + delta)));
-    }
-
-    private void adjustSfxVol(float delta) {
-        ctx.ioManager.setSfxVolume(
-                Math.max(0f, Math.min(1f, ctx.ioManager.getSfxVolume() + delta)));
-    }
+    private void toggleMusic() { ctx.ioManager.setMusicEnabled(!ctx.ioManager.isMusicEnabled()); }
+    private void toggleSfx() { ctx.ioManager.setSfxEnabled(!ctx.ioManager.isSfxEnabled()); }
+    private void adjustMusicVol(float d) { ctx.ioManager.setMusicVolume(Math.max(0f, Math.min(1f, ctx.ioManager.getMusicVolume() + d))); }
+    private void adjustSfxVol(float d) { ctx.ioManager.setSfxVolume(Math.max(0f, Math.min(1f, ctx.ioManager.getSfxVolume() + d))); }
 }

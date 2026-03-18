@@ -2,11 +2,12 @@ package com.example.app.demo.render;
 
 import java.util.*;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
+import com.example.app.engine.render.InterfaceFont;
 import com.example.app.engine.render.IRenderer;
 
 public class LibGdxRenderer implements IRenderer {
@@ -87,7 +88,9 @@ public class LibGdxRenderer implements IRenderer {
     }
 
     @Override
-    public void drawText(BitmapFont font, String text, float x, float y) {
+    public void drawText(InterfaceFont font, String text, float x, float y) {
+        if (!(font instanceof LibGdxFont)) return;
+        LibGdxFont libGdxFont = (LibGdxFont) font;
         if (inShapeMode) {
             shapes.end();
             inShapeMode = false;
@@ -95,7 +98,7 @@ public class LibGdxRenderer implements IRenderer {
         if (!batch.isDrawing()) {
             batch.begin();
         }
-        font.draw(batch, text, x, y);
+        libGdxFont.bitmapFont.draw(batch, text, x, y);
     }
 
     @Override

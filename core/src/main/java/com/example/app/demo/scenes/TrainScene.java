@@ -1,9 +1,16 @@
 package com.example.app.demo.scenes;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.MathUtils;
+
+import com.example.app.demo.render.LibGdxFont;
+
 import com.example.app.engine.EngineContext;
 import com.example.app.engine.collision.ColliderComponent;
 import com.example.app.engine.collision.CollisionEvent;
@@ -14,10 +21,6 @@ import com.example.app.engine.movement.TransformComponent;
 import com.example.app.engine.movement.VelocityComponent;
 import com.example.app.engine.scene.AbstractBaseScene;
 import com.example.app.engine.util.EventBus;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 public final class TrainScene extends AbstractBaseScene {
     // Constants
@@ -77,8 +80,9 @@ public final class TrainScene extends AbstractBaseScene {
     private final List<Entity> npcs = new ArrayList<>();
     private final Random rng = new Random();
 
-    private BitmapFont font;
-    private BitmapFont bigFont;
+    private LibGdxFont font;
+    private LibGdxFont bigFont;
+    private final GlyphLayout layout = new GlyphLayout();
 
     private int npcsRemaining;
     private float spawnTimer = 0f;
@@ -97,22 +101,21 @@ public final class TrainScene extends AbstractBaseScene {
     public TrainScene(EngineContext ctx, int level) {
         this.ctx = ctx;
         this.level = level;
-        this.initialNpcCount = Math.round(10f + ((level - 1)));
+        this.initialNpcCount = Math.round(10f + ((level - 1) * 2f));
         this.timeLimit = 15f - ((level + 1) * (10f / 9f));
     }
 
     // Lifecycle
     @Override
     public void onLoad() {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
-                com.badlogic.gdx.Gdx.files.internal("Oswald-Regular.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(com.badlogic.gdx.Gdx.files.internal("Oswald-Regular.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter smallParams = new FreeTypeFontGenerator.FreeTypeFontParameter();
         smallParams.size = 18;
-        font = generator.generateFont(smallParams);
+        font = new LibGdxFont(generator.generateFont(smallParams));
 
         FreeTypeFontGenerator.FreeTypeFontParameter bigParams = new FreeTypeFontGenerator.FreeTypeFontParameter();
         bigParams.size = 72;
-        bigFont = generator.generateFont(bigParams);
+        bigFont = new LibGdxFont(generator.generateFont(bigParams));
 
         generator.dispose();
         font.setColor(Color.WHITE);
@@ -169,13 +172,13 @@ public final class TrainScene extends AbstractBaseScene {
         if (postGameTimer > 2.5f) {
             if (won) {
                 LevelSelectScene.maxUnlockedLevel = Math.max(LevelSelectScene.maxUnlockedLevel, level + 1);
-                // Last level cleared → show game-clear screen
+                // Show game-clear screen
                 if (level >= 5) {
                     ctx.sceneManager.switchTo(new GameClearScene(ctx));
                     return;
                 }
             }
-            ctx.sceneManager.switchTo(new TransitionScene(ctx, new LevelSelectScene(ctx), 0.6f));
+            ctx.sceneManager.switchTo(new TransitionScene(ctx, new LevelSelectScene(ctx), 1.5f));
         }
     }
 
@@ -241,6 +244,7 @@ public final class TrainScene extends AbstractBaseScene {
     }
 
     private void triggerWin() {
+        if (won) return;
         won = true;
         ctx.ioManager.getOutputHandler().stopSound();
         ctx.ioManager.playSound("level_clear.mp3");
@@ -249,6 +253,7 @@ public final class TrainScene extends AbstractBaseScene {
     }
 
     private void triggerLoss() {
+        if (lost) return;
         lost = true;
         ctx.ioManager.getOutputHandler().stopSound();
         ctx.ioManager.playSound("level_fail.mp3");
@@ -366,9 +371,9 @@ public final class TrainScene extends AbstractBaseScene {
     private void drawWindows(float H) {
         float[] windowX = { 55f, 155f, 395f, 495f };
         for (float x : windowX) {
-            ctx.renderer.drawRect(x, 415f, 80f, 48f, COL_WIN_BORDER);
-            ctx.renderer.drawRect(x + 3f, 418f, 74f, 42f, COL_WIN_GLASS);
-            ctx.renderer.drawRect(x + 3f, 450f, 22f, 8f, COL_WIN_SHINE);
+            ctx.renderer.drawRect(x, H - DOOR_Y + 40f, 80f, 48f, COL_WIN_BORDER);
+            ctx.renderer.drawRect(x + 3f, H - DOOR_Y + 43f, 74f, 42f, COL_WIN_GLASS);
+            ctx.renderer.drawRect(x + 3f, H - DOOR_Y + 75f, 22f, 8f, COL_WIN_SHINE);
         }
     }
 
@@ -437,23 +442,33 @@ public final class TrainScene extends AbstractBaseScene {
 
     private void drawHudText(float W, float timeRemaining) {
         font.setColor(Color.WHITE);
-        ctx.renderer.drawText(font, "LVL " + level, W / 2f - 18f, 28f);
+        layout.setText(font.bitmapFont, "LVL " + level);
+        ctx.renderer.drawText(font, "LVL " + level, W / 2f - layout.width / 2f, 28f);
+
+        String timerStr = String.format("%.1fs", timeRemaining);
+        layout.setText(font.bitmapFont, timerStr);
         font.setColor(COL_TEXT_TIMER);
-        ctx.renderer.drawText(font, String.format("%.1fs", timeRemaining), W - 70f, 28f);
+        ctx.renderer.drawText(font, timerStr, W - layout.width - 10f, 28f);
     }
 
     private void drawMidScreenMessage(float W, float H) {
         float midY = H / 2f + 36f;
 
         if (!gameStarted) {
+            layout.setText(font.bitmapFont, "Avoid passengers, board the train!");
             font.setColor(COL_TEXT_INTRO);
-            ctx.renderer.drawText(font, "Avoid passengers, board the train!", W / 2f - 120f, H / 2f);
+            ctx.renderer.drawText(font, "Avoid passengers, board the train!",
+                W / 2f - layout.width / 2f, H / 2f + layout.height / 2f);
         } else if (won) {
+            layout.setText(bigFont.bitmapFont, "BOARDED!");
             bigFont.setColor(new Color(0.13f, 0.67f, 0.53f, 1f));
-            ctx.renderer.drawText(bigFont, "BOARDED!", W / 2f - 120f, midY);
+            ctx.renderer.drawText(bigFont, "BOARDED!",
+                W / 2f - layout.width / 2f, midY + layout.height / 2f);
         } else if (lost) {
+            layout.setText(bigFont.bitmapFont, "WASTED");
             bigFont.setColor(new Color(0.95f, 0.95f, 0.95f, 1f));
-            ctx.renderer.drawText(bigFont, "WASTED", W / 2f - 120f, midY);
+            ctx.renderer.drawText(bigFont, "WASTED",
+                W / 2f - layout.width / 2f, midY + layout.height / 2f);
         }
         font.setColor(Color.WHITE);
     }

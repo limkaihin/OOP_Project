@@ -1,77 +1,86 @@
 package com.example.app.demo.scenes;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+
+import com.example.app.demo.render.LibGdxFont;
 import com.example.app.engine.EngineContext;
 import com.example.app.engine.io.InputAction;
 import com.example.app.engine.scene.AbstractBaseScene;
 
-/**
- * Shown after the player clears the final level.
- * ESC = quit, click "Restart" = full game restart back to MenuScene.
- */
 public final class GameClearScene extends AbstractBaseScene {
 
     private final EngineContext ctx;
-    private SpriteBatch batch;
-    private BitmapFont  bigFont;
-    private BitmapFont  font;
+    private LibGdxFont font;
+    private LibGdxFont bigFont;
+    private final GlyphLayout layout = new GlyphLayout();
 
-    // Restart button hit-box
-    private float btnX, btnY, btnW, btnH;
+    private final float W;
+    private final float H;
+    private float btnX, btnY, btnW, btnH, bannerH, bannerY;
 
-    // Simple pulse animation
+    // Static colors for performance (no GC churn)
+    private static final Color COL_BG = new Color(0.04f, 0.04f, 0.10f, 1f);
+    private static final Color COL_BTN = new Color(0.18f, 0.45f, 0.22f, 1f);
+    private static final Color COL_SUBTEXT = new Color(0.85f, 0.85f, 0.95f, 1f);
+    private static final Color COL_HINT = new Color(0.6f, 0.6f, 0.7f, 1f);
+
     private float pulse = 0f;
 
     public GameClearScene(EngineContext ctx) {
         this.ctx = ctx;
+        this.W = ctx.config.width;
+        this.H = ctx.config.height;
+        this.bannerY = H / 2f + 100f;
+        this.btnW = 240f;
+        this.btnH = 54f;
+        this.btnX = (W - btnW) / 2f;
+        this.btnY = H / 2f - 100f;
+        this.bannerH = 90f;
     }
-
-    // ---------------------------------------------------------------- lifecycle
 
     @Override
     public void onLoad() {
-        batch   = new SpriteBatch();
-        bigFont = new BitmapFont();
-        font    = new BitmapFont();
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Oswald-Regular.ttf"));
+        
+        FreeTypeFontGenerator.FreeTypeFontParameter smallParams = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        smallParams.size = 18;
+        font = new LibGdxFont(generator.generateFont(smallParams));
 
-        bigFont.getData().setScale(3.5f);
-        font.getData().setScale(1.6f);
+        FreeTypeFontGenerator.FreeTypeFontParameter bigParams = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        bigParams.size = 72;
+        bigFont = new LibGdxFont(generator.generateFont(bigParams));
 
-        // Restart button centred on screen
+        generator.dispose();
+
         float W = ctx.config.width;
         float H = ctx.config.height;
-        btnW = 200f; btnH = 48f;
+        btnW = 240f;
+        btnH = 54f;
         btnX = (W - btnW) / 2f;
-        btnY = H / 2f - 80f;
+        btnY = H / 2f - 100f;
 
         ctx.ioManager.log("GameClearScene", "Loaded");
     }
 
     @Override
     public void onUnload() {
-        if (batch   != null) batch.dispose();
         if (bigFont != null) bigFont.dispose();
-        if (font    != null) font.dispose();
+        if (font != null) font.dispose();
     }
-
-    // ---------------------------------------------------------------- update
 
     @Override
     public void update(float dt) {
         pulse += dt;
 
-        // ESC → quit
         if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.BACK)) {
             Gdx.app.exit();
             return;
         }
 
-        // Mouse click on Restart button → full reset
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+        if (ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.ACTION_1)) {
             float mx = Gdx.input.getX();
             float my = Gdx.graphics.getHeight() - Gdx.input.getY();
             if (mx >= btnX && mx <= btnX + btnW && my >= btnY && my <= btnY + btnH) {
@@ -80,68 +89,65 @@ public final class GameClearScene extends AbstractBaseScene {
         }
     }
 
-    // ---------------------------------------------------------------- render
-
     @Override
     public void render() {
         float W = ctx.config.width;
         float H = ctx.config.height;
 
-        // Dark starry background
-        ctx.renderer.drawRect(0, 0, W, H, new Color(0.04f, 0.04f, 0.10f, 1f));
+        ctx.renderer.drawRect(0, 0, W, H, COL_BG);
 
-        // Pulsing gold banner behind title
-        float glow = 0.5f + 0.5f * (float) Math.sin(pulse * 2.5f);
-        ctx.renderer.drawRect(0, H / 2f + 30f, W, 70f,
-                new Color(0.55f * glow, 0.45f * glow, 0.05f * glow, 1f));
+        // Dark panel
+        ctx.renderer.drawRect(0, bannerY, W, bannerH, new Color(0.05f, 0.12f, 0.08f, 0.92f));
+        // Green accent line at top of panel
+        ctx.renderer.drawRect(0, bannerY + bannerH - 3f, W, 3f, new Color(0.13f, 0.67f, 0.53f, 1f));
+        // Green accent line at bottom
+        ctx.renderer.drawRect(0, bannerY, W, 3f, new Color(0.13f, 0.67f, 0.53f, 1f));
 
         // Restart button background
-        ctx.renderer.drawRect(btnX, btnY, btnW, btnH,
-                new Color(0.18f, 0.45f, 0.22f, 1f));
+        ctx.renderer.drawRect(btnX, btnY, btnW, btnH, COL_BTN);
     }
 
     @Override
     public void renderHud() {
         float W = ctx.config.width;
         float H = ctx.config.height;
-
-        batch.begin();
+        float bannerCenter = bannerY + bannerH / 2f;
 
         // Title
-        float glow = 0.5f + 0.5f * (float) Math.sin(pulse * 2.5f);
-        bigFont.setColor(new Color(1.0f, 0.85f + 0.15f * glow, 0.1f, 1f));
-        bigFont.draw(batch, "YOU WIN!", 130f, H / 2f + 95f);
+        bigFont.setColor(new Color(0.13f, 0.77f, 0.53f, 1f));
+        layout.setText(bigFont.bitmapFont, "YOU WIN!");
+        ctx.renderer.drawText(bigFont, "YOU WIN!", W / 2f - layout.width / 2f, bannerCenter + layout.height / 2f);
 
-        // Sub-text
-        font.setColor(new Color(0.85f, 0.85f, 0.95f, 1f));
-        font.draw(batch, "You beat all 5 levels!", 170f, H / 2f + 15f);
+        // Text
+        font.setColor(COL_SUBTEXT);
+        layout.setText(font.bitmapFont, "You beat all 5 levels!");
+        ctx.renderer.drawText(font, "You beat all 5 levels!", W / 2f - layout.width / 2f, H / 2f + 50f);
 
-        // Restart button label
+        // Restart button
         font.setColor(Color.WHITE);
-        font.draw(batch, "  Click to Restart", btnX + 10f, btnY + btnH - 8f);
+        drawCenteredInBox("Click to Restart", btnX, btnY, btnW, btnH);
 
         // ESC hint
-        font.setColor(new Color(0.6f, 0.6f, 0.7f, 1f));
-        font.getData().setScale(1.2f);
-        font.draw(batch, "Press ESC to Quit", W / 2f - 80f, btnY - 20f);
-        font.getData().setScale(1.6f);
-
-        batch.end();
+        font.setColor(COL_HINT);
+        layout.setText(font.bitmapFont, "Press ESC to Quit");
+        ctx.renderer.drawText(font, "Press ESC to Quit", W / 2f - layout.width / 2f, btnY - 30f);
+        font.setColor(Color.WHITE);
     }
 
-    // ---------------------------------------------------------------- helpers
+    private void drawCenteredInBox(String text, float boxX, float boxY, float boxW, float boxH) {
+        layout.setText(font.bitmapFont, text);
+        float textX = boxX + (boxW - layout.width) / 2f;
+        // Adding layout.height ensures the baseline is adjusted for vertical centering
+        float textY = boxY + (boxH + layout.height) / 2f;
+        ctx.renderer.drawText(font, text, textX, textY);
+    }
 
     private void restartGame() {
-        // Reset progression
         LevelSelectScene.maxUnlockedLevel = 1;
-
-        // Clear stack and go back to menu (switchTo pops the current scene first)
         while (ctx.sceneManager.size() > 1) {
             ctx.sceneManager.pop();
         }
         ctx.sceneManager.switchTo(new MenuScene(ctx));
-
-        // Restart background music
         ctx.ioManager.playMusic("music1.mp3");
     }
 }

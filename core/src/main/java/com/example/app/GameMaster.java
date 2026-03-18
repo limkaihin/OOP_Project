@@ -13,7 +13,7 @@ import com.example.app.demo.factory.PlayerFactory;
 import com.example.app.demo.factory.EntityFactory;
 import com.example.app.demo.render.LibGdxRenderer;
 import com.example.app.demo.scenes.MenuScene;
-import com.example.app.demo.scenes.TrainScene;
+import com.example.app.demo.scenes.SettingsScene;
 import com.example.app.engine.EngineConfig;
 import com.example.app.engine.EngineContext;
 import com.example.app.engine.collision.SimpleCollisionManager;
@@ -49,35 +49,45 @@ public class GameMaster extends ApplicationAdapter {
         InputBinding bindings = new InputBinding();
         bindings.bind(Input.Keys.UP, InputAction.VOLUME_UP);
         bindings.bind(Input.Keys.DOWN, InputAction.VOLUME_DOWN);
-
-        // Allow WASD input
         bindings.bind(Input.Keys.A, InputAction.MOVE_LEFT);
         bindings.bind(Input.Keys.D, InputAction.MOVE_RIGHT);
         bindings.bind(Input.Keys.W, InputAction.MOVE_UP);
         bindings.bind(Input.Keys.S, InputAction.MOVE_DOWN);
-
-        // Removed Space spawn obstacle
         bindings.bind(Input.Keys.ENTER, InputAction.CONFIRM);
         bindings.bind(Input.Keys.ESCAPE, InputAction.BACK);
         bindings.bind(Input.Keys.E, InputAction.OPEN_SETTINGS);
+        bindings.bindMouse(Input.Buttons.LEFT, InputAction.ACTION_1);
 
         InputHandler inputHandler = new InputHandler(bindings);
 
-        // Output
         AudioPlayer audioPlayer = new AudioPlayer();
         ErrorLogger errorLogger = new ErrorLogger();
         OutputHandler outputHandler = new OutputHandler(audioPlayer, errorLogger);
-
         IOManager ioManager = new IOManager(inputHandler, outputHandler);
 
-        // Entities
         EntityFactory playerFactory = new PlayerFactory(entityManager);
         EntityFactory enemyFactory = new EnemyFactory(entityManager);
 
-        ctx = new EngineContext(config, sceneManager, entityManager, movementManager, collisionManager, ioManager,
-                renderer, playerFactory, enemyFactory);
+        ctx = new EngineContext(config, sceneManager, entityManager, movementManager,
+                collisionManager, ioManager, renderer, playerFactory, enemyFactory);
 
-        // Start at Menu Scene
+        // Register global input handlers
+        ctx.addGlobalInputHandler(() -> {
+            if (ioManager.getInputHandler().getState().isJustPressed(InputAction.OPEN_SETTINGS)) {
+                Scene cur = ctx.sceneManager.current();
+                if (!(cur instanceof SettingsScene)) {
+                    ctx.sceneManager.push(new SettingsScene(ctx));
+                }
+            }
+        });
+
+        ctx.addGlobalInputHandler(() -> {
+            if (ioManager.getInputHandler().getState().isJustPressed(InputAction.PAUSE)) {
+                ctx.clock.togglePause();
+                ioManager.log("Engine", ctx.clock.isPaused() ? "Paused" : "Resumed");
+            }
+        });
+
         sceneManager.push(new MenuScene(ctx));
         ioManager.log("GameMaster", "Engine started");
         ioManager.getOutputHandler().playMusic("music1.mp3");
@@ -88,7 +98,6 @@ public class GameMaster extends ApplicationAdapter {
         float realDt = Gdx.graphics.getDeltaTime();
         ctx.update(realDt);
 
-        // Clear once
         ScreenUtils.clear(0.10f, 0.10f, 0.14f, 1f);
 
         Scene current = ctx.sceneManager.current();
@@ -103,13 +112,9 @@ public class GameMaster extends ApplicationAdapter {
 
     @Override
     public void dispose() {
-        if (ctx != null)
-            ctx.dispose();
-        if (shapes != null)
-            shapes.dispose();
-        if (batch != null)
-            batch.dispose();
-        if (font != null)
-            font.dispose();
+        if (ctx != null) ctx.dispose();
+        if (shapes != null) shapes.dispose();
+        if (batch != null) batch.dispose();
+        if (font != null) font.dispose();
     }
 }
