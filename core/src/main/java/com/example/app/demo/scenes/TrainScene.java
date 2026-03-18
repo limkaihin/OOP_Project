@@ -483,6 +483,8 @@ public final class TrainScene extends AbstractBaseScene {
         resolveCollision(player, npc);
 
         lives--;
+        ctx.getIoManager().playSound("hit.wav");
+        
         if (lives <= 0)
             triggerLoss();
     }
