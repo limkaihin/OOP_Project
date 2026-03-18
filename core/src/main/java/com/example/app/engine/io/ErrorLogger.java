@@ -43,17 +43,4 @@ public class ErrorLogger {
     public void setMaxErrors(int maxErrors) {
         this.maxErrors = Math.max(1, maxErrors);
     }
-    //exports the error log to a file
-    //if the file path is null, do nothing
-    public void exportToFile(String filePath) {
-        if (filePath == null) return;
-        try (FileWriter w = new FileWriter(filePath)) {
-            for (ErrorEntry e : errorLogs) {
-                w.write(e.toString());
-                w.write("\n");
-            }
-        } catch (IOException ex) {
-            System.err.println("[ERR][ErrorLogger] Failed to export: " + ex);
-        }
-    }
 }

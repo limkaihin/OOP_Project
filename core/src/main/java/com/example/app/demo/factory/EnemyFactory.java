@@ -1,28 +1,29 @@
 package com.example.app.demo.factory;
 
+import com.example.app.engine.collision.ColliderComponent;
 import com.example.app.engine.entity.Entity;
 import com.example.app.engine.entity.EntityManager;
+import com.example.app.engine.factory.EntityFactory;
 import com.example.app.engine.movement.TransformComponent;
-import com.example.app.engine.collision.ColliderComponent;
 import com.example.app.engine.movement.VelocityComponent;
 import com.example.app.engine.render.RenderableComponent;
 
 public class EnemyFactory implements EntityFactory {
     private final EntityManager em;
-    private static final String DEFAULT_TEXTURE_KEY = "passenger_npc_01.png";
+    private static final String DEFAULT_TEXTURE_KEY = "NPC";
     private static final float WIDTH = 24f;
     private static final float HEIGHT = 24f;
     private static final float COLLIDER_RADIUS = 12f;
- 
+
     public EnemyFactory(EntityManager em) {
         this.em = em;
     }
- 
+
     @Override
     public Entity create() {
         return create(400f, 300f, DEFAULT_TEXTURE_KEY);
     }
- 
+
     @Override
     public Entity create(float x, float y, String textureKey) {
         Entity npc = em.create();

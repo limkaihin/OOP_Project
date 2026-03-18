@@ -1,8 +1,12 @@
 package com.example.app.engine;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.example.app.engine.collision.CollisionEvent;
 import com.example.app.engine.collision.CollisionManager;
 import com.example.app.engine.entity.EntityManager;
+import com.example.app.engine.factory.EntityFactory;
 import com.example.app.engine.io.IOManager;
 import com.example.app.engine.movement.MovementManager;
 import com.example.app.engine.render.IRenderer;
@@ -10,26 +14,22 @@ import com.example.app.engine.scene.Scene;
 import com.example.app.engine.scene.SceneManager;
 import com.example.app.engine.util.EngineClock;
 import com.example.app.engine.util.EventBus;
-import com.example.app.demo.factory.EntityFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class EngineContext {
 
-    public final EntityFactory playerFactory;
-    public final EntityFactory enemyFactory;
+    private final EntityFactory playerFactory;
+    private final EntityFactory enemyFactory;
 
-    public final EngineConfig config;
-    public final SceneManager sceneManager;
-    public final EntityManager entityManager;
-    public final MovementManager movementManager;
-    public final CollisionManager collisionManager;
-    public final IOManager ioManager;
-    public IRenderer renderer;
+    private final EngineConfig config;
+    private final SceneManager sceneManager;
+    private final EntityManager entityManager;
+    private final MovementManager movementManager;
+    private final CollisionManager collisionManager;
+    private final IOManager ioManager;
+    private IRenderer renderer;
 
-    public final EngineClock clock;
-    public final EventBus<CollisionEvent> collisionEvents;
+    private final EngineClock clock;
+    private final EventBus<CollisionEvent> collisionEvents;
 
     private final List<Runnable> globalInputHandlers = new ArrayList<>();
 
@@ -49,13 +49,28 @@ public final class EngineContext {
         this.movementManager = movementManager;
         this.collisionManager = collisionManager;
         this.ioManager = ioManager;
+        this.renderer = renderer;
         this.playerFactory = playerFactory;
         this.enemyFactory = enemyFactory;
-        this.renderer = renderer;
         this.clock = new EngineClock(config.fixedDt);
         this.collisionEvents = new EventBus<>();
     }
 
+    // ---- Getters ----
+
+    public EngineConfig getConfig() { return config; }
+    public SceneManager getSceneManager() { return sceneManager; }
+    public EntityManager getEntityManager() { return entityManager; }
+    public MovementManager getMovementManager() { return movementManager; }
+    public CollisionManager getCollisionManager() { return collisionManager; }
+    public IOManager getIoManager() { return ioManager; }
+    public IRenderer getRenderer() { return renderer; }
+    public void setRenderer(IRenderer renderer) { this.renderer = renderer; }
+    public EngineClock getClock() { return clock; }
+    public EventBus<CollisionEvent> getCollisionEvents() { return collisionEvents; }
+    public EntityFactory getPlayerFactory() { return playerFactory; }
+    public EntityFactory getEnemyFactory() { return enemyFactory; }
+    
     public void addGlobalInputHandler(Runnable handler) {
         if (handler != null) globalInputHandlers.add(handler);
     }
@@ -63,7 +78,6 @@ public final class EngineContext {
     public void update(float realDt) {
         ioManager.update(realDt);
 
-        // Run global input handlers
         for (Runnable handler : globalInputHandlers) {
             handler.run();
         }

@@ -4,28 +4,37 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.Color;
 
 import com.example.app.demo.render.LibGdxFont;
 
 import com.example.app.engine.EngineContext;
-import com.example.app.engine.scene.AbstractBaseScene;
 import com.example.app.engine.io.InputAction;
+import com.example.app.engine.render.EngineColor;
+import com.example.app.engine.scene.AbstractBaseScene;
 
 public final class LevelSelectScene extends AbstractBaseScene {
+
     private final EngineContext ctx;
     private LibGdxFont font;
     private LibGdxFont bigFont;
     private final GlyphLayout layout = new GlyphLayout();
 
+    private final float W, H;
     private final float boxSize = 80f;
     private final float gapX = 20f;
     private final float gapY = 30f;
     public static int maxUnlockedLevel = 1;
     private final int totalLevels = 5;
 
+    private static final EngineColor COL_BG = new EngineColor(0.06f, 0.06f, 0.10f, 1f);
+    private static final EngineColor COL_UNLOCKED  = new EngineColor(0.20f, 0.55f, 0.30f, 1f);
+    private static final EngineColor COL_LOCKED = new EngineColor(0.30f, 0.30f, 0.35f, 1f);
+    private static final EngineColor COL_LOCKED_TEXT  = new EngineColor(0.55f, 0.55f, 0.60f, 1f);
+
     public LevelSelectScene(EngineContext ctx) {
         this.ctx = ctx;
+        this.W = ctx.getConfig().width;
+        this.H = ctx.getConfig().height;
     }
 
     @Override
@@ -41,29 +50,29 @@ public final class LevelSelectScene extends AbstractBaseScene {
         bigFont = new LibGdxFont(generator.generateFont(bigParams));
 
         generator.dispose();
-        font.setColor(Color.WHITE);
-        ctx.ioManager.log("LevelSelectScene", "Loaded (Max unlocked: " + maxUnlockedLevel + ")");
+        font.setColor(EngineColor.WHITE);
+        ctx.getIoManager().log("LevelSelectScene", "Loaded (Max unlocked: " + maxUnlockedLevel + ")");
     }
 
     @Override
     public void update(float dt) {
-        if (!ctx.ioManager.getInputHandler().getState().isJustPressed(InputAction.ACTION_1)) return;
+        if (!ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.ACTION_1)) return;
 
         int mx = Gdx.input.getX();
         int my = Gdx.graphics.getHeight() - Gdx.input.getY();
 
         float totalWidth = totalLevels * boxSize + (totalLevels - 1) * gapX;
-        float startX = (ctx.config.width - totalWidth) / 2f;
-        float startY = ctx.config.height / 2f + 20f;
+        float startX = (W - totalWidth) / 2f;
+        float startY = H / 2f + 20f;
 
         for (int i = 0; i < totalLevels; i++) {
             float bx = startX + i * (boxSize + gapX);
             float by = startY;
             if (mx >= bx && mx <= bx + boxSize && my >= by && my <= by + boxSize) {
                 if (i + 1 <= maxUnlockedLevel) {
-                    ctx.sceneManager.switchTo(new TransitionScene(ctx, new TrainScene(ctx, i + 1), 1.5f));
+                    ctx.getSceneManager().switchTo(new TransitionScene(ctx, new TrainScene(ctx, i + 1), 1.5f));
                 } else {
-                    ctx.ioManager.playSound("hit.wav");
+                    ctx.getIoManager().playSound("hit.wav");
                 }
             }
         }
@@ -71,9 +80,6 @@ public final class LevelSelectScene extends AbstractBaseScene {
 
     @Override
     public void render() {
-        float W = ctx.config.width;
-        float H = ctx.config.height;
-
         float totalWidth = totalLevels * boxSize + (totalLevels - 1) * gapX;
         float startX = (W - totalWidth) / 2f;
         float startY = H / 2f + 20f;
@@ -82,7 +88,7 @@ public final class LevelSelectScene extends AbstractBaseScene {
         int my = Gdx.graphics.getHeight() - Gdx.input.getY();
 
         // Background
-        ctx.renderer.drawRect(0, 0, W, H, new Color(0.06f, 0.06f, 0.10f, 1f));
+        ctx.getRenderer().drawRect(0, 0, W, H, COL_BG);
 
         // Level boxes
         for (int i = 0; i < totalLevels; i++) {
@@ -94,25 +100,22 @@ public final class LevelSelectScene extends AbstractBaseScene {
             float size = (isHovered && isUnlocked) ? boxSize * 1.1f : boxSize;
             float offset = (size - boxSize) / 2f;
 
-            Color boxColor = isUnlocked ? new Color(0.20f, 0.55f, 0.30f, 1f) : new Color(0.30f, 0.30f, 0.35f, 1f);
+            EngineColor boxColor = isUnlocked ? COL_UNLOCKED : COL_LOCKED;
 
-            ctx.renderer.drawRect(bx - offset, by - offset, size, size, boxColor);
+            ctx.getRenderer().drawRect(bx - offset, by - offset, size, size, boxColor);
         }
     }
 
     @Override
     public void renderHud() {
-        float W = ctx.config.width;
-        float H = ctx.config.height;
-
         float totalWidth = totalLevels * boxSize + (totalLevels - 1) * gapX;
         float startX = (W - totalWidth) / 2f;
         float startY = H / 2f + 20f;
 
         // Title
-        bigFont.setColor(Color.WHITE);
+        bigFont.setColor(EngineColor.WHITE);
         layout.setText(bigFont.bitmapFont, "SELECT LEVEL");
-        ctx.renderer.drawText(bigFont, "SELECT LEVEL", W / 2f - layout.width / 2f, startY + boxSize + 80f);
+        ctx.getRenderer().drawText(bigFont, "SELECT LEVEL", W / 2f - layout.width / 2f, startY + boxSize + 80f);
 
         // Level numbers inside boxes
         for (int i = 0; i < totalLevels; i++) {
@@ -120,17 +123,17 @@ public final class LevelSelectScene extends AbstractBaseScene {
             float by = startY;
 
             String text = "LV " + (i + 1);
-            font.setColor(i + 1 <= maxUnlockedLevel ? Color.WHITE : new Color(0.55f, 0.55f, 0.60f, 1f));
+            font.setColor(i + 1 <= maxUnlockedLevel ? EngineColor.WHITE : COL_LOCKED_TEXT);
             layout.setText(font.bitmapFont, text);
-            ctx.renderer.drawText(font, text, bx + boxSize / 2f - layout.width / 2f, by + boxSize / 2f + layout.height / 2f);
+            ctx.getRenderer().drawText(font, text, bx + boxSize / 2f - layout.width / 2f, by + boxSize / 2f + layout.height / 2f);
         }
 
         // Locked hint
-        font.setColor(new Color(0.55f, 0.55f, 0.60f, 1f));
+        font.setColor(COL_LOCKED_TEXT);
         layout.setText(font.bitmapFont, "Grey levels are locked");
-        ctx.renderer.drawText(font, "Grey levels are locked", W / 2f - layout.width / 2f, startY - 40f);
+        ctx.getRenderer().drawText(font, "Grey levels are locked", W / 2f - layout.width / 2f, startY - 40f);
 
-        font.setColor(Color.WHITE);
+        font.setColor(EngineColor.WHITE);
     }
 
     @Override

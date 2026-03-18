@@ -6,7 +6,6 @@ import java.util.Random;
 
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 
 import com.example.app.demo.render.LibGdxFont;
@@ -19,72 +18,30 @@ import com.example.app.engine.io.InputAction;
 import com.example.app.engine.io.InputState;
 import com.example.app.engine.movement.TransformComponent;
 import com.example.app.engine.movement.VelocityComponent;
+import com.example.app.engine.render.EngineColor;
 import com.example.app.engine.scene.AbstractBaseScene;
 import com.example.app.engine.util.EventBus;
 
 public final class TrainScene extends AbstractBaseScene {
-    // Constants
-    private static final float DOOR_X = 320f;
-    private static final float DOOR_Y = 105f; // height of train band
-    private static final float DOOR_WIDTH = 50f; // half-width of door gap
-    private static final float DOOR_OPEN_SPEED = 1.5f;
-    private static final float SPAWN_INTERVAL = 0.4f;
-    private static final int MAX_LIVES = 3;
-
-    // Train colours
-    private static final Color COL_TRAIN_BODY = new Color(0.95f, 0.94f, 0.92f, 1f);
-    private static final Color COL_TRAIN_PANEL = new Color(0.12f, 0.12f, 0.14f, 1f);
-    private static final Color COL_TRAIN_STRIPE = new Color(0.83f, 0.15f, 0.15f, 1f);
-    private static final Color COL_TRAIN_SHADOW = new Color(0.50f, 0.50f, 0.52f, 1f);
-    private static final Color COL_WIN_BORDER = new Color(0.15f, 0.15f, 0.18f, 1f);
-    private static final Color COL_WIN_GLASS = new Color(0.35f, 0.55f, 0.65f, 1f);
-    private static final Color COL_WIN_SHINE = new Color(0.60f, 0.78f, 0.88f, 0.7f);
-    private static final Color COL_DOOR_BG = new Color(0.73f, 0.73f, 0.75f, 1f);
-    private static final Color COL_DOOR_PANEL = new Color(0.82f, 0.82f, 0.84f, 1f);
-    private static final Color COL_DOOR_LINE = new Color(0.75f, 0.75f, 0.77f, 1f);
-    private static final Color COL_DOOR_FRAME = new Color(0.53f, 0.53f, 0.56f, 1f);
-    private static final Color COL_DOOR_SILL = new Color(0.96f, 0.77f, 0.09f, 1f);
-    private static final Color COL_TACTILE = new Color(0.94f, 0.75f, 0.06f, 1f);
-    private static final Color COL_BUMP = new Color(0.83f, 0.65f, 0.04f, 1f);
-    private static final Color COL_MARKER = new Color(0.83f, 0.18f, 0.18f, 0.7f);
-
-    // Platform colours
-    private static final Color COL_PLATFORM = new Color(0.83f, 0.81f, 0.78f, 1f);
-    private static final Color COL_GRID = new Color(0.75f, 0.73f, 0.70f, 1f);
-    private static final Color COL_SHADOW = new Color(0.60f, 0.59f, 0.57f, 1f);
-
-    // NPC colours
-    private static final Color COL_NPC_RED = new Color(0.77f, 0.36f, 0.36f, 1f);
-    private static final Color COL_NPC_RED_HI = new Color(0.85f, 0.44f, 0.44f, 1f);
-    private static final Color COL_NPC_ORG = new Color(0.72f, 0.44f, 0.25f, 1f);
-    private static final Color COL_NPC_ORG_HI = new Color(0.80f, 0.50f, 0.31f, 1f);
-
-    // Player colours
-    private static final Color COL_PLAYER = new Color(0.10f, 0.54f, 0.43f, 1f);
-    private static final Color COL_PLAYER_HI = new Color(0.13f, 0.67f, 0.53f, 1f);
-
-    // HUD colours
-    private static final Color COL_HUD_BG = new Color(0.10f, 0.10f, 0.16f, 0.88f);
-    private static final Color COL_HEART_ON = new Color(0.83f, 0.18f, 0.18f, 1f);
-    private static final Color COL_HEART_OFF = new Color(0.35f, 0.35f, 0.40f, 1f);
-    private static final Color COL_TEXT_TIMER = new Color(0.96f, 0.77f, 0.09f, 1f);
-    private static final Color COL_TEXT_INTRO = new Color(0f, 0f, 0f, 1f);
-
-    // State
+    
     private final EngineContext ctx;
-    private final int level;
-    private final int initialNpcCount;
-    private final float timeLimit;
-
-    private Entity player;
-    private final List<Entity> npcs = new ArrayList<>();
-    private final Random rng = new Random();
-
     private LibGdxFont font;
     private LibGdxFont bigFont;
     private final GlyphLayout layout = new GlyphLayout();
+    private final Random rng = new Random();
 
+    private final float W, H;
+
+    // Entities
+    private Entity player;
+    private final List<Entity> npcs = new ArrayList<>();
+    private EventBus<CollisionEvent>.Subscription collisionSub;
+
+    // Level Info
+    private final int level;
+    private final int initialNpcCount;
     private int npcsRemaining;
+    private final float timeLimit;
     private float spawnTimer = 0f;
     private int lives = MAX_LIVES;
     private float doorOpenAmount = 0f;
@@ -95,7 +52,52 @@ public final class TrainScene extends AbstractBaseScene {
     private boolean lost = false;
     private boolean gameStarted = false;
 
-    private EventBus<CollisionEvent>.Subscription collisionSub;
+    // Constants
+    private static final float DOOR_X = 320f;
+    private static final float DOOR_Y = 105f; // Height of train band
+    private static final float DOOR_WIDTH = 50f; // Half-width of door gap
+    private static final float DOOR_OPEN_SPEED = 1.5f;
+    private static final float SPAWN_INTERVAL = 0.4f;
+    private static final int MAX_LIVES = 3;
+
+    // Train colours
+    private static final EngineColor COL_TRAIN_BODY = new EngineColor(0.95f, 0.94f, 0.92f, 1f);
+    private static final EngineColor COL_TRAIN_PANEL = new EngineColor(0.12f, 0.12f, 0.14f, 1f);
+    private static final EngineColor COL_TRAIN_STRIPE = new EngineColor(0.83f, 0.15f, 0.15f, 1f);
+    private static final EngineColor COL_TRAIN_SHADOW = new EngineColor(0.50f, 0.50f, 0.52f, 1f);
+    private static final EngineColor COL_WIN_BORDER = new EngineColor(0.15f, 0.15f, 0.18f, 1f);
+    private static final EngineColor COL_WIN_GLASS = new EngineColor(0.35f, 0.55f, 0.65f, 1f);
+    private static final EngineColor COL_WIN_SHINE = new EngineColor(0.60f, 0.78f, 0.88f, 0.7f);
+    private static final EngineColor COL_DOOR_BG = new EngineColor(0.73f, 0.73f, 0.75f, 1f);
+    private static final EngineColor COL_DOOR_PANEL = new EngineColor(0.82f, 0.82f, 0.84f, 1f);
+    private static final EngineColor COL_DOOR_LINE = new EngineColor(0.75f, 0.75f, 0.77f, 1f);
+    private static final EngineColor COL_DOOR_FRAME = new EngineColor(0.53f, 0.53f, 0.56f, 1f);
+    private static final EngineColor COL_DOOR_SILL = new EngineColor(0.96f, 0.77f, 0.09f, 1f);
+    private static final EngineColor COL_TACTILE = new EngineColor(0.94f, 0.75f, 0.06f, 1f);
+    private static final EngineColor COL_BUMP = new EngineColor(0.83f, 0.65f, 0.04f, 1f);
+    private static final EngineColor COL_MARKER = new EngineColor(0.83f, 0.18f, 0.18f, 0.7f);
+
+    // Platform colours
+    private static final EngineColor COL_PLATFORM = new EngineColor(0.83f, 0.81f, 0.78f, 1f);
+    private static final EngineColor COL_GRID = new EngineColor(0.75f, 0.73f, 0.70f, 1f);
+    private static final EngineColor COL_SHADOW = new EngineColor(0.60f, 0.59f, 0.57f, 1f);
+
+    // NPC colours
+    private static final EngineColor COL_NPC_RED = new EngineColor(0.77f, 0.36f, 0.36f, 1f);
+    private static final EngineColor COL_NPC_RED_HI = new EngineColor(0.85f, 0.44f, 0.44f, 1f);
+    private static final EngineColor COL_NPC_ORG = new EngineColor(0.72f, 0.44f, 0.25f, 1f);
+    private static final EngineColor COL_NPC_ORG_HI = new EngineColor(0.80f, 0.50f, 0.31f, 1f);
+
+    // Player colours
+    private static final EngineColor COL_PLAYER = new EngineColor(0.10f, 0.54f, 0.43f, 1f);
+    private static final EngineColor COL_PLAYER_HI = new EngineColor(0.13f, 0.67f, 0.53f, 1f);
+
+    // HUD colours
+    private static final EngineColor COL_HUD_BG = new EngineColor(0.10f, 0.10f, 0.16f, 0.88f);
+    private static final EngineColor COL_HEART_ON = new EngineColor(0.83f, 0.18f, 0.18f, 1f);
+    private static final EngineColor COL_HEART_OFF = new EngineColor(0.35f, 0.35f, 0.40f, 1f);
+    private static final EngineColor COL_LOSTTEXT = new EngineColor(0.95f, 0.95f, 0.95f, 1f);
+    private static final EngineColor COL_ENDGAMEOVERLAY = new EngineColor(0.15f, 0.15f, 0.15f, 0.65f);
 
     // Constructor
     public TrainScene(EngineContext ctx, int level) {
@@ -103,6 +105,8 @@ public final class TrainScene extends AbstractBaseScene {
         this.level = level;
         this.initialNpcCount = Math.round(10f + ((level - 1) * 2f));
         this.timeLimit = 15f - ((level + 1) * (10f / 9f));
+        this.W = ctx.getConfig().width;
+        this.H = ctx.getConfig().height;
     }
 
     // Lifecycle
@@ -118,17 +122,17 @@ public final class TrainScene extends AbstractBaseScene {
         bigFont = new LibGdxFont(generator.generateFont(bigParams));
 
         generator.dispose();
-        font.setColor(Color.WHITE);
+        font.setColor(EngineColor.WHITE);
 
-        ctx.ioManager.playSound("alert.mp3");
-        ctx.ioManager.log("TrainScene", "Loaded (NPCs=" + initialNpcCount + ")");
+        ctx.getIoManager().playSound("alert.mp3");
+        ctx.getIoManager().log("TrainScene", "Loaded (NPCs=" + initialNpcCount + ")");
         setupWorld();
     }
 
     private void setupWorld() {
         npcsRemaining = initialNpcCount;
-        player = ctx.playerFactory.create(320f, 80f, "player");
-        collisionSub = ctx.collisionEvents.subscribe(this::onCollision);
+        player = ctx.getPlayerFactory().create(320f, 80f, "player");
+        collisionSub = ctx.getCollisionEvents().subscribe(this::onCollision);
     }
 
     @Override
@@ -140,7 +144,7 @@ public final class TrainScene extends AbstractBaseScene {
         if (bigFont != null)
             bigFont.dispose();
         for (Entity npc : npcs)
-            ctx.entityManager.destroy(npc);
+            ctx.getEntityManager().destroy(npc);
         npcs.clear();
     }
 
@@ -174,11 +178,11 @@ public final class TrainScene extends AbstractBaseScene {
                 LevelSelectScene.maxUnlockedLevel = Math.max(LevelSelectScene.maxUnlockedLevel, level + 1);
                 // Show game-clear screen
                 if (level >= 5) {
-                    ctx.sceneManager.switchTo(new GameClearScene(ctx));
+                    ctx.getSceneManager().switchTo(new GameClearScene(ctx));
                     return;
                 }
             }
-            ctx.sceneManager.switchTo(new TransitionScene(ctx, new LevelSelectScene(ctx), 1.5f));
+            ctx.getSceneManager().switchTo(new TransitionScene(ctx, new LevelSelectScene(ctx), 1.5f));
         }
     }
 
@@ -205,7 +209,7 @@ public final class TrainScene extends AbstractBaseScene {
         spawnTimer += dt;
         if (spawnTimer >= SPAWN_INTERVAL) {
             spawnTimer = 0f;
-            spawnNPC(DOOR_X, ctx.config.height - DOOR_Y + 50f);
+            spawnNPC(DOOR_X, H - DOOR_Y + 50f);
             npcsRemaining--;
         }
     }
@@ -214,7 +218,7 @@ public final class TrainScene extends AbstractBaseScene {
         if (player == null)
             return;
 
-        InputState in = ctx.ioManager.getInputHandler().getState();
+        InputState in = ctx.getIoManager().getInputHandler().getState();
         VelocityComponent pv = player.getComponent(VelocityComponent.class);
         pv.vx = 0;
         pv.vy = 0;
@@ -238,7 +242,7 @@ public final class TrainScene extends AbstractBaseScene {
             return;
         TransformComponent t = player.getComponent(TransformComponent.class);
         boolean nearDoor = Math.abs(t.x - DOOR_X) < 30f
-                && t.y > ctx.config.height - DOOR_Y - 30f;
+                && t.y > H - DOOR_Y - 30f;
         if (nearDoor)
             triggerWin();
     }
@@ -246,17 +250,17 @@ public final class TrainScene extends AbstractBaseScene {
     private void triggerWin() {
         if (won) return;
         won = true;
-        ctx.ioManager.getOutputHandler().stopSound();
-        ctx.ioManager.playSound("level_clear.mp3");
-        ctx.entityManager.destroy(player);
+        ctx.getIoManager().getOutputHandler().stopSound();
+        ctx.getIoManager().playSound("level_clear.mp3");
+        ctx.getEntityManager().destroy(player);
         player = null;
     }
 
     private void triggerLoss() {
         if (lost) return;
         lost = true;
-        ctx.ioManager.getOutputHandler().stopSound();
-        ctx.ioManager.playSound("level_fail.mp3");
+        ctx.getIoManager().getOutputHandler().stopSound();
+        ctx.getIoManager().playSound("level_fail.mp3");
     }
 
     private void updateNPCs() {
@@ -303,7 +307,7 @@ public final class TrainScene extends AbstractBaseScene {
     }
 
     private void spawnNPC(float x, float y) {
-        Entity npc = ctx.enemyFactory.create(x, y, "NPC");
+        Entity npc = ctx.getEnemyFactory().create(x, y, "NPC");
         float angle = MathUtils.PI + (rng.nextFloat() - 0.5f) * MathUtils.PI;
         float speed = 60f + rng.nextFloat() * 40f;
         VelocityComponent v = npc.getComponent(VelocityComponent.class);
@@ -315,9 +319,6 @@ public final class TrainScene extends AbstractBaseScene {
     // Render
     @Override
     public void render() {
-        float W = ctx.config.width;
-        float H = ctx.config.height;
-
         drawPlatform(W, H);
         drawNPCs();
         if (player != null)
@@ -327,11 +328,11 @@ public final class TrainScene extends AbstractBaseScene {
     }
 
     private void drawPlatform(float W, float H) {
-        ctx.renderer.drawRect(0, 0, W, H, COL_PLATFORM);
+        ctx.getRenderer().drawRect(0, 0, W, H, COL_PLATFORM);
         for (float y = 80f; y < H - DOOR_Y; y += 80f)
-            ctx.renderer.drawLine(0, y, W, y, COL_GRID);
+            ctx.getRenderer().drawLine(0, y, W, y, COL_GRID);
         for (float x = 80f; x < W; x += 80f)
-            ctx.renderer.drawLine(x, 0, x, H - DOOR_Y, COL_GRID);
+            ctx.getRenderer().drawLine(x, 0, x, H - DOOR_Y, COL_GRID);
     }
 
     private void drawNPCs() {
@@ -340,27 +341,27 @@ public final class TrainScene extends AbstractBaseScene {
             if (t == null)
                 continue;
             boolean orange = i % 2 == 0;
-            ctx.renderer.drawCircle(t.x + 2f, t.y - 2f, 14f, COL_SHADOW);
-            ctx.renderer.drawCircle(t.x, t.y, 13f, orange ? COL_NPC_ORG : COL_NPC_RED);
-            ctx.renderer.drawCircle(t.x, t.y, 7f, orange ? COL_NPC_ORG_HI : COL_NPC_RED_HI);
+            ctx.getRenderer().drawCircle(t.x + 2f, t.y - 2f, 14f, COL_SHADOW);
+            ctx.getRenderer().drawCircle(t.x, t.y, 13f, orange ? COL_NPC_ORG : COL_NPC_RED);
+            ctx.getRenderer().drawCircle(t.x, t.y, 7f, orange ? COL_NPC_ORG_HI : COL_NPC_RED_HI);
         }
     }
 
     private void drawPlayer() {
         TransformComponent pt = player.getComponent(TransformComponent.class);
-        ctx.renderer.drawCircle(pt.x + 2f, pt.y - 2f, 18f, COL_SHADOW);
-        ctx.renderer.drawCircle(pt.x, pt.y, 16f, COL_PLAYER);
-        ctx.renderer.drawCircle(pt.x, pt.y, 10f, COL_PLAYER_HI);
+        ctx.getRenderer().drawCircle(pt.x + 2f, pt.y - 2f, 18f, COL_SHADOW);
+        ctx.getRenderer().drawCircle(pt.x, pt.y, 16f, COL_PLAYER);
+        ctx.getRenderer().drawCircle(pt.x, pt.y, 10f, COL_PLAYER_HI);
     }
 
     private void drawTrain(float W, float H) {
         float trainY = H - DOOR_Y;
 
         // Main body
-        ctx.renderer.drawRect(0, trainY, W, DOOR_Y, COL_TRAIN_BODY);
-        ctx.renderer.drawRect(0, trainY, W, 28f, COL_TRAIN_PANEL);
-        ctx.renderer.drawRect(0, trainY + 28f, W, 12f, COL_TRAIN_STRIPE);
-        ctx.renderer.drawRect(0, trainY, W, 4f, COL_TRAIN_SHADOW);
+        ctx.getRenderer().drawRect(0, trainY, W, DOOR_Y, COL_TRAIN_BODY);
+        ctx.getRenderer().drawRect(0, trainY, W, 28f, COL_TRAIN_PANEL);
+        ctx.getRenderer().drawRect(0, trainY + 28f, W, 12f, COL_TRAIN_STRIPE);
+        ctx.getRenderer().drawRect(0, trainY, W, 4f, COL_TRAIN_SHADOW);
 
         drawWindows(H);
         drawDoor(trainY);
@@ -371,55 +372,53 @@ public final class TrainScene extends AbstractBaseScene {
     private void drawWindows(float H) {
         float[] windowX = { 55f, 155f, 395f, 495f };
         for (float x : windowX) {
-            ctx.renderer.drawRect(x, H - DOOR_Y + 40f, 80f, 48f, COL_WIN_BORDER);
-            ctx.renderer.drawRect(x + 3f, H - DOOR_Y + 43f, 74f, 42f, COL_WIN_GLASS);
-            ctx.renderer.drawRect(x + 3f, H - DOOR_Y + 75f, 22f, 8f, COL_WIN_SHINE);
+            ctx.getRenderer().drawRect(x, H - DOOR_Y + 40f, 80f, 48f, COL_WIN_BORDER);
+            ctx.getRenderer().drawRect(x + 3f, H - DOOR_Y + 43f, 74f, 42f, COL_WIN_GLASS);
+            ctx.getRenderer().drawRect(x + 3f, H - DOOR_Y + 75f, 22f, 8f, COL_WIN_SHINE);
         }
     }
 
     private void drawDoor(float trainY) {
         // Background
-        ctx.renderer.drawRect(DOOR_X - DOOR_WIDTH - 4f, trainY, DOOR_WIDTH * 2f + 8f, DOOR_Y, COL_DOOR_BG);
+        ctx.getRenderer().drawRect(DOOR_X - DOOR_WIDTH - 4f, trainY, DOOR_WIDTH * 2f + 8f, DOOR_Y, COL_DOOR_BG);
 
         // Animated panels
         float panelWidth = DOOR_WIDTH * (1f - doorOpenAmount);
-        ctx.renderer.drawRect(DOOR_X - DOOR_WIDTH, trainY, panelWidth, DOOR_Y - 8f, COL_DOOR_PANEL);
-        ctx.renderer.drawRect(DOOR_X - DOOR_WIDTH + panelWidth * 0.6f, trainY, 2f, DOOR_Y - 8f, COL_DOOR_LINE);
-        ctx.renderer.drawRect(DOOR_X + DOOR_WIDTH - panelWidth, trainY, panelWidth, DOOR_Y - 8f, COL_DOOR_PANEL);
-        ctx.renderer.drawRect(DOOR_X + DOOR_WIDTH - panelWidth * 0.4f, trainY, 2f, DOOR_Y - 8f, COL_DOOR_LINE);
+        ctx.getRenderer().drawRect(DOOR_X - DOOR_WIDTH, trainY, panelWidth, DOOR_Y - 8f, COL_DOOR_PANEL);
+        ctx.getRenderer().drawRect(DOOR_X - DOOR_WIDTH + panelWidth * 0.6f, trainY, 2f, DOOR_Y - 8f, COL_DOOR_LINE);
+        ctx.getRenderer().drawRect(DOOR_X + DOOR_WIDTH - panelWidth, trainY, panelWidth, DOOR_Y - 8f, COL_DOOR_PANEL);
+        ctx.getRenderer().drawRect(DOOR_X + DOOR_WIDTH - panelWidth * 0.4f, trainY, 2f, DOOR_Y - 8f, COL_DOOR_LINE);
 
         // Frames and sill
-        ctx.renderer.drawRect(DOOR_X - DOOR_WIDTH - 6f, trainY, 6f, DOOR_Y, COL_DOOR_FRAME);
-        ctx.renderer.drawRect(DOOR_X + DOOR_WIDTH, trainY, 6f, DOOR_Y, COL_DOOR_FRAME);
-        ctx.renderer.drawRect(DOOR_X - DOOR_WIDTH - 6f, trainY, DOOR_WIDTH * 2f + 12f, 9f, COL_DOOR_SILL);
+        ctx.getRenderer().drawRect(DOOR_X - DOOR_WIDTH - 6f, trainY, 6f, DOOR_Y, COL_DOOR_FRAME);
+        ctx.getRenderer().drawRect(DOOR_X + DOOR_WIDTH, trainY, 6f, DOOR_Y, COL_DOOR_FRAME);
+        ctx.getRenderer().drawRect(DOOR_X - DOOR_WIDTH - 6f, trainY, DOOR_WIDTH * 2f + 12f, 9f, COL_DOOR_SILL);
     }
 
     private void drawTactileStrip(float W, float H) {
-        ctx.renderer.drawRect(0, H - DOOR_Y - 10f, W, 10f, COL_TACTILE);
+        ctx.getRenderer().drawRect(0, H - DOOR_Y - 10f, W, 10f, COL_TACTILE);
         for (float x = 20f; x < W; x += 25f)
-            ctx.renderer.drawCircle(x, H - DOOR_Y - 5f, 3.5f, COL_BUMP);
+            ctx.getRenderer().drawCircle(x, H - DOOR_Y - 5f, 3.5f, COL_BUMP);
     }
 
     private void drawWaitingMarkers(float H) {
         float mx = DOOR_X - DOOR_WIDTH - 6f;
         float my = H - DOOR_Y - 26f;
         float mw = DOOR_WIDTH * 2f + 12f;
-        ctx.renderer.drawRect(mx, my, mw, 5f, COL_MARKER);
-        ctx.renderer.drawRect(mx, my, 5f, 22f, COL_MARKER);
-        ctx.renderer.drawRect(DOOR_X + DOOR_WIDTH + 1f, my, 5f, 22f, COL_MARKER);
+        ctx.getRenderer().drawRect(mx, my, mw, 5f, COL_MARKER);
+        ctx.getRenderer().drawRect(mx, my, 5f, 22f, COL_MARKER);
+        ctx.getRenderer().drawRect(DOOR_X + DOOR_WIDTH + 1f, my, 5f, 22f, COL_MARKER);
     }
 
     private void drawEndGameOverlay(float W, float H) {
         if (lost) {
-            ctx.renderer.drawRect(0, 0, W, H, new Color(0.15f, 0.15f, 0.15f, 0.65f));
+            ctx.getRenderer().drawRect(0, 0, W, H, COL_ENDGAMEOVERLAY);
         }
     }
 
     // HUD
     @Override
     public void renderHud() {
-        float W = ctx.config.width;
-        float H = ctx.config.height;
         float timeRemaining = Math.max(0, timeLimit - gameTimer);
 
         drawHudBar(W);
@@ -427,28 +426,28 @@ public final class TrainScene extends AbstractBaseScene {
         drawHudText(W, timeRemaining);
         drawMidScreenMessage(W, H);
 
-        font.setColor(Color.WHITE);
+        font.setColor(EngineColor.WHITE);
     }
 
     private void drawHudBar(float W) {
-        ctx.renderer.drawRect(0, 0, W, 42f, COL_HUD_BG);
+        ctx.getRenderer().drawRect(0, 0, W, 42f, COL_HUD_BG);
     }
 
     private void drawLives(float W) {
         for (int i = 0; i < MAX_LIVES; i++) {
-            ctx.renderer.drawCircle(20f + i * 22f, 19f, 9f, i < lives ? COL_HEART_ON : COL_HEART_OFF);
+            ctx.getRenderer().drawCircle(20f + i * 22f, 19f, 9f, i < lives ? COL_HEART_ON : COL_HEART_OFF);
         }
     }
 
     private void drawHudText(float W, float timeRemaining) {
-        font.setColor(Color.WHITE);
+        font.setColor(EngineColor.WHITE);
         layout.setText(font.bitmapFont, "LVL " + level);
-        ctx.renderer.drawText(font, "LVL " + level, W / 2f - layout.width / 2f, 28f);
+        ctx.getRenderer().drawText(font, "LVL " + level, W / 2f - layout.width / 2f, 28f);
 
         String timerStr = String.format("%.1fs", timeRemaining);
         layout.setText(font.bitmapFont, timerStr);
-        font.setColor(COL_TEXT_TIMER);
-        ctx.renderer.drawText(font, timerStr, W - layout.width - 10f, 28f);
+        font.setColor(COL_DOOR_SILL);
+        ctx.getRenderer().drawText(font, timerStr, W - layout.width - 10f, 28f);
     }
 
     private void drawMidScreenMessage(float W, float H) {
@@ -456,21 +455,21 @@ public final class TrainScene extends AbstractBaseScene {
 
         if (!gameStarted) {
             layout.setText(font.bitmapFont, "Avoid passengers, board the train!");
-            font.setColor(COL_TEXT_INTRO);
-            ctx.renderer.drawText(font, "Avoid passengers, board the train!",
+            font.setColor(EngineColor.BLACK);
+            ctx.getRenderer().drawText(font, "Avoid passengers, board the train!",
                 W / 2f - layout.width / 2f, H / 2f + layout.height / 2f);
         } else if (won) {
             layout.setText(bigFont.bitmapFont, "BOARDED!");
-            bigFont.setColor(new Color(0.13f, 0.67f, 0.53f, 1f));
-            ctx.renderer.drawText(bigFont, "BOARDED!",
+            bigFont.setColor(COL_PLAYER_HI);
+            ctx.getRenderer().drawText(bigFont, "BOARDED!",
                 W / 2f - layout.width / 2f, midY + layout.height / 2f);
         } else if (lost) {
-            layout.setText(bigFont.bitmapFont, "WASTED");
-            bigFont.setColor(new Color(0.95f, 0.95f, 0.95f, 1f));
-            ctx.renderer.drawText(bigFont, "WASTED",
+            layout.setText(bigFont.bitmapFont, "YOU LOST!");
+            bigFont.setColor(COL_LOSTTEXT);
+            ctx.getRenderer().drawText(bigFont, "YOU LOST!",
                 W / 2f - layout.width / 2f, midY + layout.height / 2f);
         }
-        font.setColor(Color.WHITE);
+        font.setColor(EngineColor.WHITE);
     }
 
     // Collision
@@ -536,14 +535,14 @@ public final class TrainScene extends AbstractBaseScene {
 
         float r = (c.type == ColliderComponent.ColShapeType.CIRCLE) ? c.radius : Math.max(c.halfWidth, c.halfHeight);
         float minX = r;
-        float maxX = ctx.config.width - r;
+        float maxX = W - r;
         float minY = r;
-        float maxY = ctx.config.height - r;
+        float maxY = H - r;
 
         if (!isPlayer) {
-            maxY = ctx.config.height - DOOR_Y - r;
+            maxY = H - DOOR_Y - r;
         } else {
-            float ceiling = ctx.config.height - DOOR_Y - r;
+            float ceiling = H - DOOR_Y - r;
             boolean inGap = Math.abs(t.x - DOOR_X) < DOOR_WIDTH - r;
             if (t.y > ceiling && !inGap) {
                 t.y = ceiling;

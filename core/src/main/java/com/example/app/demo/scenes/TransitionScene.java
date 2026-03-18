@@ -1,10 +1,10 @@
 package com.example.app.demo.scenes;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Interpolation;
 import com.example.app.demo.render.LibGdxFont;
+import com.example.app.engine.render.EngineColor;
 import com.example.app.engine.EngineContext;
 import com.example.app.engine.scene.AbstractBaseScene;
 import com.example.app.engine.scene.Scene;
@@ -19,7 +19,6 @@ public final class TransitionScene extends AbstractBaseScene {
     private final float W;
     private final float H;
     private static final float HALF = 0.5f;
-    private static final Color COL_BLACK = new Color(0f, 0f, 0f, 1f);
 
     private LibGdxFont font;
     private final GlyphLayout layout = new GlyphLayout();
@@ -34,8 +33,8 @@ public final class TransitionScene extends AbstractBaseScene {
         this.ctx = ctx;
         this.next = next;
         this.duration = Math.max(0.8f, durationSeconds); // minimum 0.8s for text to be readable
-        this.W = ctx.config.width;
-        this.H = ctx.config.height;
+        this.W = ctx.getConfig().width;
+        this.H = ctx.getConfig().height;
     }
 
     @Override
@@ -47,7 +46,7 @@ public final class TransitionScene extends AbstractBaseScene {
         font = new LibGdxFont(generator.generateFont(params));
         generator.dispose();
 
-        ctx.ioManager.log("TransitionScene", "Transitioning to: " + next.getClass().getSimpleName());
+        ctx.getIoManager().log("TransitionScene", "Transitioning to: " + next.getClass().getSimpleName());
     }
 
     @Override
@@ -68,7 +67,7 @@ public final class TransitionScene extends AbstractBaseScene {
 
         if (t >= duration && !switched) {
             switched = true;
-            ctx.sceneManager.switchTo(next);
+            ctx.getSceneManager().switchTo(next);
         }
     }
 
@@ -85,7 +84,7 @@ public final class TransitionScene extends AbstractBaseScene {
             alpha = 1f - Interpolation.fade.apply((progress - HALF) / HALF);
         }
 
-        ctx.renderer.drawRect(0, 0, W, H, new Color(0f, 0f, 0f, alpha));
+        ctx.getRenderer().drawRect(0, 0, W, H, new EngineColor(0f, 0f, 0f, alpha));
     }
 
     @Override
@@ -105,9 +104,9 @@ public final class TransitionScene extends AbstractBaseScene {
 
         // Loading text
         String text = loadingFrames[dotCount];
-        font.setColor(new Color(0.85f, 0.85f, 0.85f, visibility));
+        font.setColor(new EngineColor(0.85f, 0.85f, 0.85f, visibility));
         layout.setText(font.bitmapFont, text);
-        ctx.renderer.drawText(font, text, W / 2f - layout.width / 2f,  H / 2f + layout.height / 2f);
+        ctx.getRenderer().drawText(font, text, W / 2f - layout.width / 2f,  H / 2f + layout.height / 2f);
 
         // Small progress bar at bottom
         float barW = W * 0.4f;
@@ -116,8 +115,8 @@ public final class TransitionScene extends AbstractBaseScene {
         float barY = H / 2f - 30f;
 
         // Background track
-        ctx.renderer.drawRect(barX, barY, barW, barH, new Color(0.3f, 0.3f, 0.3f, visibility));
+        ctx.getRenderer().drawRect(barX, barY, barW, barH, new EngineColor(0.3f, 0.3f, 0.3f, visibility));
         // Filled portion
-        ctx.renderer.drawRect(barX, barY, barW * progress, barH, new Color(0.13f, 0.67f, 0.53f, visibility));
+        ctx.getRenderer().drawRect(barX, barY, barW * progress, barH, new EngineColor(0.13f, 0.67f, 0.53f, visibility));
     }
 }

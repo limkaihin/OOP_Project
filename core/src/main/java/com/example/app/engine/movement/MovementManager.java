@@ -5,8 +5,8 @@ import com.example.app.engine.entity.EntityManager;
 
 public class MovementManager {
 
-    private float gravity = 0f;      // units/sec^2 applied to vy
-    private float maxSpeed = 0f;     // 0 = no clamp
+    private float gravity = 0f; // units/sec^2 applied to vy
+    private float maxSpeed = 0f; // 0 = no clamp
 
     public MovementManager() {}
 
@@ -28,12 +28,6 @@ public class MovementManager {
             if (e == null) continue;
             moveEntity(dt, e);
         }
-    }
-
-    // Backward-compatible update signature used by older code
-    public void update(float dt, EntityManager entityManager) {
-        if (entityManager == null) return;
-        update(dt, entityManager.getAll());
     }
 
     // Updates a single entity's velocity and position

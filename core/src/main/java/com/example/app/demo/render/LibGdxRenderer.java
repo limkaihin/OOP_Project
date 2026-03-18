@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import com.example.app.engine.render.EngineColor;
 import com.example.app.engine.render.InterfaceFont;
 import com.example.app.engine.render.IRenderer;
 
@@ -16,6 +17,15 @@ public class LibGdxRenderer implements IRenderer {
     private final Map<String, Texture> textures = new HashMap<>();
     private final Map<String, ShapeDrawer> drawers = new HashMap<>();
     private boolean inShapeMode = false;
+
+    // Reusable LibGdx Color
+    private final Color gdxColor = new Color();
+
+    // Convert EngineColor to LibGdx
+    private Color toGdx(EngineColor c) {
+        gdxColor.set(c.r, c.g, c.b, c.a);
+        return gdxColor;
+    }
 
     private void initDrawers() {
         drawers.put("PLAYER", (x, y, radius, w, h) -> {
@@ -69,10 +79,9 @@ public class LibGdxRenderer implements IRenderer {
             shapeDrawer.draw(x, y, radius, w, h);
             return;
         }
- 
+
         Texture tex = textures.get(key);
         if (tex != null) {
-            // Switch from ShapeRenderer to SpriteBatch
             if (inShapeMode) {
                 shapes.end();
                 inShapeMode = false;
@@ -83,7 +92,7 @@ public class LibGdxRenderer implements IRenderer {
             batch.draw(tex, x - w / 2, y - h / 2, w, h);
             return;
         }
- 
+
         Gdx.app.log("LibGdxRenderer", "No drawer or texture found for key: " + key);
     }
 
@@ -102,36 +111,35 @@ public class LibGdxRenderer implements IRenderer {
     }
 
     @Override
-    public void drawRect(float x, float y, float w, float h, Color color) {
+    public void drawRect(float x, float y, float w, float h, EngineColor color) {
         if (!inShapeMode) {
             if (batch.isDrawing()) batch.end();
             shapes.begin(ShapeRenderer.ShapeType.Filled);
             inShapeMode = true;
         }
-        shapes.setColor(color);
+        shapes.setColor(toGdx(color));
         shapes.rect(x, y, w, h);
     }
 
     @Override
-    public void drawCircle(float x, float y, float radius, Color color) {
+    public void drawCircle(float x, float y, float radius, EngineColor color) {
         if (!inShapeMode) {
             if (batch.isDrawing()) batch.end();
             shapes.begin(ShapeRenderer.ShapeType.Filled);
             inShapeMode = true;
         }
-        shapes.setColor(color);
+        shapes.setColor(toGdx(color));
         shapes.circle(x, y, radius, 20);
     }
 
     @Override
-    public void drawLine(float x1, float y1, float x2, float y2, Color color) {
+    public void drawLine(float x1, float y1, float x2, float y2, EngineColor color) {
         if (!inShapeMode) {
             if (batch.isDrawing()) batch.end();
             shapes.begin(ShapeRenderer.ShapeType.Filled);
             inShapeMode = true;
         }
-        shapes.setColor(color);
-        // Draw as a 1px tall/wide rect instead of switching to Line mode
+        shapes.setColor(toGdx(color));
         if (x1 == x2) {
             shapes.rect(x1, Math.min(y1, y2), 1f, Math.abs(y2 - y1));
         } else {
@@ -153,7 +161,7 @@ public class LibGdxRenderer implements IRenderer {
         Texture t = textures.remove(key);
         if (t != null) t.dispose();
     }
- 
+
     public void unloadAllTextures() {
         for (Texture t : textures.values()) t.dispose();
         textures.clear();
@@ -164,12 +172,11 @@ public class LibGdxRenderer implements IRenderer {
             batch.end();
         }
     }
- 
+
     public void dispose() {
         unloadAllTextures();
     }
 
-    // Helper for Hash Map
     interface ShapeDrawer {
         void draw(float x, float y, float radius, float w, float h);
     }

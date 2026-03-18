@@ -1,4 +1,5 @@
-package com.example.app.demo.factory;
+package com.example.app.engine.factory;
+
 import com.example.app.engine.entity.Entity;
 
 public interface EntityFactory {
