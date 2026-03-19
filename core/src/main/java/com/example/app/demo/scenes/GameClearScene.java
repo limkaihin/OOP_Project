@@ -135,7 +135,7 @@ public final class GameClearScene extends AbstractBaseScene {
     private void drawCenteredInBox(String text, float boxX, float boxY, float boxW, float boxH) {
         layout.setText(font.bitmapFont, text);
         float textX = boxX + (boxW - layout.width) / 2f;
-        // Adding layout.height ensures the baseline is adjusted for vertical centering
+        // Adjusted for vertical centering
         float textY = boxY + (boxH + layout.height) / 2f;
         ctx.getRenderer().drawText(font, text, textX, textY);
     }

@@ -52,7 +52,7 @@ public final class LevelSelectScene extends AbstractBaseScene {
 
         generator.dispose();
         font.setColor(EngineColor.WHITE);
-        ctx.getIoManager().log("LevelSelectScene", "Loaded (Max unlocked: " + GameProgress.maxUnlockedLevel + ")");
+        ctx.getIoManager().log("LevelSelectScene", "Loaded (Max unlocked: " + ctx.getProgress().getMaxUnlockedLevel() + ")");
     }
 
     @Override
@@ -66,7 +66,7 @@ public final class LevelSelectScene extends AbstractBaseScene {
             float bx = startX + i * (boxSize + gapX);
             float by = startY;
             if (mx >= bx && mx <= bx + boxSize && my >= by && my <= by + boxSize) {
-                if (i + 1 <= GameProgress.maxUnlockedLevel) {
+                if (i + 1 <= ctx.getProgress().getMaxUnlockedLevel()) {
                     ctx.getSceneManager().switchTo(new TransitionScene(ctx, new TrainScene(ctx, i + 1), 1.5f));
                 } else {
                     ctx.getIoManager().playSound("hit.wav");
@@ -88,7 +88,7 @@ public final class LevelSelectScene extends AbstractBaseScene {
             float bx = startX + i * (boxSize + gapX);
             float by = startY;
             boolean isHovered = mx >= bx && mx <= bx + boxSize && my >= by && my <= by + boxSize;
-            boolean isUnlocked = i + 1 <= GameProgress.maxUnlockedLevel;
+            boolean isUnlocked = i + 1 <= ctx.getProgress().getMaxUnlockedLevel();
 
             float size = (isHovered && isUnlocked) ? boxSize * 1.1f : boxSize;
             float offset = (size - boxSize) / 2f;
@@ -112,7 +112,7 @@ public final class LevelSelectScene extends AbstractBaseScene {
             float by = startY;
 
             String text = "LV " + (i + 1);
-            font.setColor(i + 1 <= GameProgress.maxUnlockedLevel ? EngineColor.WHITE : COL_LOCKED_TEXT);
+            font.setColor(i + 1 <= ctx.getProgress().getMaxUnlockedLevel() ? EngineColor.WHITE : COL_LOCKED_TEXT);
             layout.setText(font.bitmapFont, text);
             ctx.getRenderer().drawText(font, text, bx + boxSize / 2f - layout.width / 2f, by + boxSize / 2f + layout.height / 2f);
         }

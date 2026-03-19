@@ -3,6 +3,7 @@ package com.example.app.engine;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.app.engine.progress.IProgress;
 import com.example.app.engine.collision.CollisionEvent;
 import com.example.app.engine.collision.CollisionManager;
 import com.example.app.engine.entity.EntityManager;
@@ -17,16 +18,17 @@ import com.example.app.engine.util.EventBus;
 
 public final class EngineContext {
 
-    private final EntityFactory playerFactory;
-    private final EntityFactory enemyFactory;
-
     private final EngineConfig config;
+    private final IProgress progressTracker;
     private final SceneManager sceneManager;
     private final EntityManager entityManager;
     private final MovementManager movementManager;
     private final CollisionManager collisionManager;
     private final IOManager ioManager;
     private IRenderer renderer;
+
+    private final EntityFactory playerFactory;
+    private final EntityFactory enemyFactory;
 
     private final EngineClock clock;
     private final EventBus<CollisionEvent> collisionEvents;
@@ -42,7 +44,8 @@ public final class EngineContext {
             IOManager ioManager,
             IRenderer renderer,
             EntityFactory playerFactory,
-            EntityFactory enemyFactory) {
+            EntityFactory enemyFactory,
+            IProgress progressTracker) {
         this.config = config;
         this.sceneManager = sceneManager;
         this.entityManager = entityManager;
@@ -52,6 +55,7 @@ public final class EngineContext {
         this.renderer = renderer;
         this.playerFactory = playerFactory;
         this.enemyFactory = enemyFactory;
+        this.progressTracker = progressTracker;
         this.clock = new EngineClock(config.fixedDt);
         this.collisionEvents = new EventBus<>();
     }
@@ -59,6 +63,7 @@ public final class EngineContext {
     // ---- Getters ----
 
     public EngineConfig getConfig() { return config; }
+    public IProgress getProgress() { return progressTracker; }
     public SceneManager getSceneManager() { return sceneManager; }
     public EntityManager getEntityManager() { return entityManager; }
     public MovementManager getMovementManager() { return movementManager; }

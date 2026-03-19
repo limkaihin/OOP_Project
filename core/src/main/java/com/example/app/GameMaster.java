@@ -15,6 +15,8 @@ import com.example.app.demo.factory.PlayerFactory;
 import com.example.app.demo.render.LibGdxRenderer;
 import com.example.app.demo.scenes.MenuScene;
 import com.example.app.demo.scenes.SettingsScene;
+import com.example.app.demo.progress.GameProgress;
+import com.example.app.engine.progress.IProgress;
 import com.example.app.engine.EngineConfig;
 import com.example.app.engine.EngineContext;
 import com.example.app.engine.collision.SimpleCollisionManager;
@@ -68,11 +70,12 @@ public class GameMaster extends ApplicationAdapter {
         OutputHandler outputHandler = new OutputHandler(audioPlayer, errorLogger);
         IOManager ioManager = new IOManager(inputHandler, outputHandler);
 
+        IProgress progressTracker = new GameProgress();
         EntityFactory playerFactory = new PlayerFactory(entityManager);
         EntityFactory enemyFactory = new EnemyFactory(entityManager);
 
         ctx = new EngineContext(config, sceneManager, entityManager, movementManager,
-                collisionManager, ioManager, renderer, playerFactory, enemyFactory);
+                collisionManager, ioManager, renderer, playerFactory, enemyFactory, progressTracker);
 
         ctx.addGlobalInputHandler(() -> {
             if (ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.BACK)) {
