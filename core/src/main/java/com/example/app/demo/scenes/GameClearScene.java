@@ -68,12 +68,7 @@ public final class GameClearScene extends AbstractBaseScene {
     @Override
     public void update(float dt) {
         pulse += dt;
-
-        if (ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.BACK)) {
-            Gdx.app.exit();
-            return;
-        }
-
+        
         if (ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.ACTION_1)) {
             float mx = ctx.getIoManager().getInputHandler().getMouseX();
             float my = ctx.getIoManager().getInputHandler().getMouseY();

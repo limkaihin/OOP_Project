@@ -15,6 +15,7 @@ import com.example.app.demo.factory.PlayerFactory;
 import com.example.app.demo.render.LibGdxRenderer;
 import com.example.app.demo.scenes.MenuScene;
 import com.example.app.demo.scenes.SettingsScene;
+import com.example.app.demo.scenes.GameClearScene;
 import com.example.app.demo.progress.GameProgress;
 import com.example.app.engine.progress.IProgress;
 import com.example.app.engine.EngineConfig;
@@ -81,7 +82,10 @@ public class GameMaster extends ApplicationAdapter {
             if (ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.BACK)) {
                 Scene cur = ctx.getSceneManager().current();
                 
-                if (!(cur instanceof SettingsScene)) {
+                if (cur instanceof GameClearScene) {
+                    Gdx.app.exit();
+                    return;
+                } else if (!(cur instanceof SettingsScene)) {
                     ctx.getClock().togglePause();
                     ctx.getSceneManager().push(new SettingsScene(ctx));
                     ctx.getIoManager().log("Engine", ctx.getClock().isPaused() ? "Paused" : "Resumed");
