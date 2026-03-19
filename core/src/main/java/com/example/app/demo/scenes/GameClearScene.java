@@ -85,17 +85,26 @@ public final class GameClearScene extends AbstractBaseScene {
 
     @Override
     public void render() {
+        float mx = ctx.getIoManager().getInputHandler().getMouseX();
+        float my = ctx.getIoManager().getInputHandler().getMouseY();
+
         ctx.getRenderer().drawRect(0, 0, W, H, COL_BG);
 
-        // Dark panel
+        // Dark panel and accents
         ctx.getRenderer().drawRect(0, bannerY, W, bannerH, COL_PANEL);
-        // Green accent line at top of panel
         ctx.getRenderer().drawRect(0, bannerY + bannerH - 3f, W, 3f, COL_ACCENT);
-        // Green accent line at bottom
         ctx.getRenderer().drawRect(0, bannerY, W, 3f, COL_ACCENT);
 
-        // Restart button background
-        ctx.getRenderer().drawRect(btnX, btnY, btnW, btnH, COL_BTN);
+        boolean isHovered = mx >= btnX && mx <= btnX + btnW && my >= btnY && my <= btnY + btnH;
+        
+        float currentW = isHovered ? btnW * 1.1f : btnW;
+        float currentH = isHovered ? btnH * 1.1f : btnH;
+        
+        float offX = (currentW - btnW) / 2f;
+        float offY = (currentH - btnH) / 2f;
+
+        // Restart Button
+        ctx.getRenderer().drawRect(btnX - offX, btnY - offY, currentW, currentH, COL_BTN);
     }
 
     @Override

@@ -60,7 +60,6 @@ public class GameMaster extends ApplicationAdapter {
         bindings.bind(Input.Keys.S, InputAction.MOVE_DOWN);
         bindings.bind(Input.Keys.ENTER, InputAction.CONFIRM);
         bindings.bind(Input.Keys.ESCAPE, InputAction.BACK);
-        bindings.bind(Input.Keys.E, InputAction.OPEN_SETTINGS);
         bindings.bindMouse(Input.Buttons.LEFT, InputAction.ACTION_1);
 
         InputHandler inputHandler = new InputHandler(bindings);
@@ -76,24 +75,24 @@ public class GameMaster extends ApplicationAdapter {
                 collisionManager, ioManager, renderer, playerFactory, enemyFactory);
 
         ctx.addGlobalInputHandler(() -> {
-            if (ioManager.getInputHandler().getState().isJustPressed(InputAction.OPEN_SETTINGS)) {
+            if (ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.BACK)) {
                 Scene cur = ctx.getSceneManager().current();
+                
                 if (!(cur instanceof SettingsScene)) {
+                    ctx.getClock().togglePause();
                     ctx.getSceneManager().push(new SettingsScene(ctx));
+                    ctx.getIoManager().log("Engine", ctx.getClock().isPaused() ? "Paused" : "Resumed");
+                } else {
+                    ctx.getClock().togglePause();
+                    ctx.getSceneManager().pop();
+                    ctx.getIoManager().log("Engine", ctx.getClock().isPaused() ? "Paused" : "Resumed");
                 }
             }
         });
 
-        ctx.addGlobalInputHandler(() -> {
-            if (ioManager.getInputHandler().getState().isJustPressed(InputAction.PAUSE)) {
-                ctx.getClock().togglePause();
-                ioManager.log("Engine", ctx.getClock().isPaused() ? "Paused" : "Resumed");
-            }
-        });
-
         ctx.getSceneManager().push(new MenuScene(ctx));
-        ioManager.log("GameMaster", "Engine started");
-        ioManager.getOutputHandler().playMusic("music1.mp3");
+        ctx.getIoManager().log("GameMaster", "Engine started");
+        ctx.getIoManager().getOutputHandler().playMusic("music1.mp3");
     }
 
     @Override

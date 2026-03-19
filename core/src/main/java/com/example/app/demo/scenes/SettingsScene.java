@@ -23,6 +23,7 @@ public final class SettingsScene extends AbstractBaseScene {
     private final float btnCol, rightArrX;
     private final float row1Y, row2Y, row3Y, row4Y;
     private final float backX, backY, backW, backH;
+    private final float quitX, quitY, quitW, quitH;
 
     private static final float PANEL_W = 420f;
     private static final float PANEL_H = 340f;
@@ -33,6 +34,7 @@ public final class SettingsScene extends AbstractBaseScene {
     private static final float ARR_W = 40f;
     private static final float ARR_H = 36f;
     private static final float ROW_H = 58f;
+    private static final float BTN_GAP_BACK_QUIT = 10f;
 
     private static final EngineColor COL_OVERLAY = new EngineColor(0f, 0f, 0f, 0.75f);
     private static final EngineColor COL_PANEL = new EngineColor(0.12f, 0.13f, 0.18f, 1f);
@@ -41,10 +43,12 @@ public final class SettingsScene extends AbstractBaseScene {
     private static final EngineColor COL_BTN_NAV = new EngineColor(0.25f, 0.35f, 0.55f, 1f);
     private static final EngineColor COL_BTN_BCK = new EngineColor(0.22f, 0.22f, 0.32f, 1f);
     private static final EngineColor COL_BTN_OFF_HOVER = new EngineColor(0.68f, 0.36f, 0.36f, 1f);
-    private static final EngineColor COL_BTN_ON_HOVER  = new EngineColor(0.36f, 0.68f, 0.44f, 1f);
+    private static final EngineColor COL_BTN_ON_HOVER = new EngineColor(0.36f, 0.68f, 0.44f, 1f);
     private static final EngineColor COL_BTN_NAV_HOVER = new EngineColor(0.40f, 0.48f, 0.64f, 1f);
     private static final EngineColor COL_BTN_BCK_HOVER = new EngineColor(0.38f, 0.38f, 0.46f, 1f);
     private static final EngineColor COL_VOL = new EngineColor(0.95f, 0.85f, 0.45f, 1f);
+    private static final EngineColor COL_BTN_QUIT = new EngineColor(0.5f, 0.15f, 0.15f, 1f);
+    private static final EngineColor COL_BTN_QUIT_HOVER = new EngineColor(0.7f, 0.2f, 0.2f, 1f);
 
     public SettingsScene(EngineContext ctx) {
         this.ctx = ctx;
@@ -59,10 +63,15 @@ public final class SettingsScene extends AbstractBaseScene {
         this.row2Y = topY - ROW_H;
         this.row3Y = topY - ROW_H * 2f;
         this.row4Y = topY - ROW_H * 3f;
-        this.backW = 160f;
+        float totalBottomW = PANEL_W - (PAD * 2f);
+        this.backW = (totalBottomW - BTN_GAP_BACK_QUIT) / 2f;
         this.backH = 40f;
-        this.backX = panelX + (PANEL_W - backW) / 2f;
+        this.backX = panelX + PAD;
         this.backY = panelY + PAD;
+        this.quitW = backW;
+        this.quitH = backH;
+        this.quitX = backX + backW + BTN_GAP_BACK_QUIT;
+        this.quitY = backY;
     }
 
     @Override
@@ -90,23 +99,27 @@ public final class SettingsScene extends AbstractBaseScene {
 
     @Override
     public void update(float dt) {
-        if (ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.BACK)) {
-            ctx.getSceneManager().pop();
-            return;
-        }
-
-        if (!ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.ACTION_1)) return;
-
         float mx = ctx.getIoManager().getInputHandler().getMouseX();
         float my = ctx.getIoManager().getInputHandler().getMouseY();
 
-        if (hit(mx, my, btnCol, row1Y, TOG_W, TOG_H)) toggleMusic();
-        if (hit(mx, my, btnCol, row2Y, TOG_W, TOG_H)) toggleSfx();
-        if (hit(mx, my, btnCol, row3Y, ARR_W, ARR_H)) adjustMusicVol(-VOL_STEP);
-        if (hit(mx, my, rightArrX, row3Y, ARR_W, ARR_H)) adjustMusicVol(+VOL_STEP);
-        if (hit(mx, my, btnCol, row4Y, ARR_W, ARR_H)) adjustSfxVol(-VOL_STEP);
-        if (hit(mx, my, rightArrX, row4Y, ARR_W, ARR_H)) adjustSfxVol(+VOL_STEP);
-        if (hit(mx, my, backX, backY, backW, backH)) ctx.getSceneManager().pop();
+        if (ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.ACTION_1)) {
+            if (hit(mx, my, backX, backY, backW, backH)) {
+                ctx.getClock().togglePause();
+                ctx.getSceneManager().pop();
+                ctx.getIoManager().log("Engine", ctx.getClock().isPaused() ? "Paused" : "Resumed");
+            }
+
+            if (hit(mx, my, quitX, quitY, quitW, quitH)) {
+                Gdx.app.exit();
+            }
+
+            if (hit(mx, my, btnCol, row1Y, TOG_W, TOG_H)) toggleMusic();
+            if (hit(mx, my, btnCol, row2Y, TOG_W, TOG_H)) toggleSfx();
+            if (hit(mx, my, btnCol, row3Y, ARR_W, ARR_H)) adjustMusicVol(-VOL_STEP);
+            if (hit(mx, my, rightArrX, row3Y, ARR_W, ARR_H)) adjustMusicVol(+VOL_STEP);
+            if (hit(mx, my, btnCol, row4Y, ARR_W, ARR_H)) adjustSfxVol(-VOL_STEP);
+            if (hit(mx, my, rightArrX, row4Y, ARR_W, ARR_H)) adjustSfxVol(+VOL_STEP);
+        }
     }
 
     @Override
@@ -134,6 +147,8 @@ public final class SettingsScene extends AbstractBaseScene {
         ctx.getRenderer().drawRect(btnCol, row4Y, ARR_W, ARR_H, hit(mx, my, btnCol, row4Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
         ctx.getRenderer().drawRect(rightArrX, row4Y, ARR_W, ARR_H, hit(mx, my, rightArrX, row4Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
         ctx.getRenderer().drawRect(backX, backY, backW, backH, hit(mx, my, backX, backY, backW, backH) ? COL_BTN_BCK_HOVER : COL_BTN_BCK);
+        ctx.getRenderer().drawRect(backX, backY, backW, backH, hit(mx, my, backX, backY, backW, backH) ? COL_BTN_BCK_HOVER : COL_BTN_BCK);
+        ctx.getRenderer().drawRect(quitX, quitY, quitW, quitH, hit(mx, my, quitX, quitY, quitW, quitH) ? COL_BTN_QUIT_HOVER : COL_BTN_QUIT);
     }
 
     @Override
@@ -167,6 +182,7 @@ public final class SettingsScene extends AbstractBaseScene {
 
         font.setColor(EngineColor.WHITE);
         drawCenteredInBox("Back (ESC)", backX, backY, backW, backH);
+        drawCenteredInBox("Quit Game", quitX, quitY, quitW, quitH);
     }
 
     private void drawCenteredY(String text, float x, float boxY, float boxH) {
