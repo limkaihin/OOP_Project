@@ -3,13 +3,10 @@ package com.example.app.demo.scenes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.MathUtils;
-
 import com.example.app.demo.render.LibGdxFont;
-
 import com.example.app.engine.EngineContext;
 import com.example.app.engine.collision.ColliderComponent;
 import com.example.app.engine.collision.CollisionEvent;

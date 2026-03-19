@@ -3,9 +3,7 @@ package com.example.app.demo.scenes;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-
 import com.example.app.demo.render.LibGdxFont;
-
 import com.example.app.engine.EngineContext;
 import com.example.app.engine.io.InputAction;
 import com.example.app.engine.render.EngineColor;
@@ -77,8 +75,8 @@ public final class GameClearScene extends AbstractBaseScene {
         }
 
         if (ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.ACTION_1)) {
-            float mx = Gdx.input.getX();
-            float my = Gdx.graphics.getHeight() - Gdx.input.getY();
+            float mx = ctx.getIoManager().getInputHandler().getMouseX();
+            float my = ctx.getIoManager().getInputHandler().getMouseY();
             if (mx >= btnX && mx <= btnX + btnW && my >= btnY && my <= btnY + btnH) {
                 restartGame();
             }

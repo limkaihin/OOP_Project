@@ -5,6 +5,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.example.app.demo.factory.EnemyFactory;
 import com.example.app.demo.factory.PlayerFactory;
@@ -27,11 +31,17 @@ public class GameMaster extends ApplicationAdapter {
     private SpriteBatch batch;
     private ShapeRenderer shapes;
     private EngineContext ctx;
+    private final Vector3 mouseVec = new Vector3();
+    private OrthographicCamera camera;
+    private Viewport viewport;
 
     @Override
     public void create() {
         batch  = new SpriteBatch();
         shapes = new ShapeRenderer();
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(640, 480, camera);
+        viewport.apply();
 
         IRenderer renderer = new LibGdxRenderer(shapes, batch);
         EngineConfig config = new EngineConfig(640, 480, "Board The Train!");
@@ -88,10 +98,18 @@ public class GameMaster extends ApplicationAdapter {
 
     @Override
     public void render() {
+        mouseVec.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+        viewport.unproject(mouseVec);
+        ctx.getIoManager().getInputHandler().setMousePosition(mouseVec.x, mouseVec.y);
+
         float realDt = Gdx.graphics.getDeltaTime();
         ctx.update(realDt);
 
         ScreenUtils.clear(0.10f, 0.10f, 0.14f, 1f);
+
+        viewport.apply();
+        shapes.setProjectionMatrix(camera.combined);
+        batch.setProjectionMatrix(camera.combined);
 
         Scene current = ctx.getSceneManager().current();
         if (current != null) {
@@ -108,5 +126,11 @@ public class GameMaster extends ApplicationAdapter {
         if (ctx != null) ctx.dispose();
         if (shapes != null) shapes.dispose();
         if (batch != null) batch.dispose();
+    }
+
+    // Resize
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height, true);
     }
 }

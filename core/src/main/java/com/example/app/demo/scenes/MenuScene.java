@@ -3,9 +3,7 @@ package com.example.app.demo.scenes;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-
 import com.example.app.demo.render.LibGdxFont;
-
 import com.example.app.engine.EngineContext;
 import com.example.app.engine.io.InputAction;
 import com.example.app.engine.render.EngineColor;

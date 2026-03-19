@@ -7,9 +7,17 @@ public class InputHandler {
 
     private final InputBinding bindings;
     private final InputState state = new InputState();
-    //to split up the InputHandler into input status checking and input binding
+    private float mouseX = 0f;
+    private float mouseY = 0f;
+
+    // Split up InputHandler into input status checking and input binding
     public InputHandler(InputBinding bindings) {
         this.bindings = (bindings == null) ? new InputBinding() : bindings;
+    }
+
+    public void setMousePosition(float x, float y) {
+        this.mouseX = x;
+        this.mouseY = y;
     }
 
     public void update(float deltaTime) {
@@ -45,6 +53,12 @@ public class InputHandler {
     public InputState getState() {
         return state;
     }
+
+    // Returns mouse X position in game space
+    public float getMouseX() { return mouseX; }
+ 
+    // Returns mouse Y position in game space
+    public float getMouseY() { return mouseY; }
 
     // Optional hook for tests or platforms without polling.
     public void setKeyState(int keyCode, boolean isPressed) {

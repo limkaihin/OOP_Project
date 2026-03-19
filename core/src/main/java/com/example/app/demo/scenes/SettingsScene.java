@@ -4,9 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-
 import com.example.app.demo.render.LibGdxFont;
-
 import com.example.app.engine.EngineContext;
 import com.example.app.engine.io.InputAction;
 import com.example.app.engine.render.EngineColor;
@@ -99,8 +97,8 @@ public final class SettingsScene extends AbstractBaseScene {
 
         if (!ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.ACTION_1)) return;
 
-        float mx = Gdx.input.getX();
-        float my = Gdx.graphics.getHeight() - Gdx.input.getY();
+        float mx = ctx.getIoManager().getInputHandler().getMouseX();
+        float my = ctx.getIoManager().getInputHandler().getMouseY();
 
         if (hit(mx, my, btnCol, row1Y, TOG_W, TOG_H)) toggleMusic();
         if (hit(mx, my, btnCol, row2Y, TOG_W, TOG_H)) toggleSfx();
@@ -113,8 +111,8 @@ public final class SettingsScene extends AbstractBaseScene {
 
     @Override
     public void render() {
-        float mx = Gdx.input.getX();
-        float my = Gdx.graphics.getHeight() - Gdx.input.getY();
+        float mx = ctx.getIoManager().getInputHandler().getMouseX();
+        float my = ctx.getIoManager().getInputHandler().getMouseY();
 
         ctx.getRenderer().drawRect(0, 0, W, H, COL_OVERLAY);
         ctx.getRenderer().drawRect(panelX, panelY, PANEL_W, PANEL_H, COL_PANEL);

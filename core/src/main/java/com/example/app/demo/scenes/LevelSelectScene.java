@@ -4,9 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-
 import com.example.app.demo.render.LibGdxFont;
-
 import com.example.app.engine.EngineContext;
 import com.example.app.engine.io.InputAction;
 import com.example.app.engine.render.EngineColor;
@@ -61,8 +59,8 @@ public final class LevelSelectScene extends AbstractBaseScene {
     public void update(float dt) {
         if (!ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.ACTION_1)) return;
 
-        int mx = Gdx.input.getX();
-        int my = Gdx.graphics.getHeight() - Gdx.input.getY();
+        float mx = ctx.getIoManager().getInputHandler().getMouseX();
+        float my = ctx.getIoManager().getInputHandler().getMouseY();
 
         for (int i = 0; i < totalLevels; i++) {
             float bx = startX + i * (boxSize + gapX);
@@ -79,8 +77,8 @@ public final class LevelSelectScene extends AbstractBaseScene {
 
     @Override
     public void render() {
-        int mx = Gdx.input.getX();
-        int my = Gdx.graphics.getHeight() - Gdx.input.getY();
+        float mx = ctx.getIoManager().getInputHandler().getMouseX();
+        float my = ctx.getIoManager().getInputHandler().getMouseY();
 
         // Background
         ctx.getRenderer().drawRect(0, 0, W, H, COL_BG);
