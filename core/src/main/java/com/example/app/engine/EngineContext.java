@@ -63,20 +63,53 @@ public final class EngineContext {
 
     // ---- Getters ----
 
-    public EngineConfig getConfig() { return config; }
-    public IProgress getProgress() { return progressTracker; }
-    public SceneManager getSceneManager() { return sceneManager; }
-    public EntityManager getEntityManager() { return entityManager; }
-    public MovementManager getMovementManager() { return movementManager; }
-    public CollisionManager getCollisionManager() { return collisionManager; }
-    public IOManager getIoManager() { return ioManager; }
-    public IRenderer getRenderer() { return renderer; }
-    public void setRenderer(IRenderer renderer) { this.renderer = renderer; }
-    public EngineClock getClock() { return clock; }
-    public EventBus<CollisionEvent> getCollisionEvents() { return collisionEvents; }
-    
+    public EngineConfig getConfig() {
+        return config;
+    }
+
+    public IProgress getProgress() {
+        return progressTracker;
+    }
+
+    public SceneManager getSceneManager() {
+        return sceneManager;
+    }
+
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
+
+    public MovementManager getMovementManager() {
+        return movementManager;
+    }
+
+    public CollisionManager getCollisionManager() {
+        return collisionManager;
+    }
+
+    public IOManager getIoManager() {
+        return ioManager;
+    }
+
+    public IRenderer getRenderer() {
+        return renderer;
+    }
+
+    public void setRenderer(IRenderer renderer) {
+        this.renderer = renderer;
+    }
+
+    public EngineClock getClock() {
+        return clock;
+    }
+
+    public EventBus<CollisionEvent> getCollisionEvents() {
+        return collisionEvents;
+    }
+
     public void addGlobalInputHandler(Runnable handler) {
-        if (handler != null) globalInputHandlers.add(handler);
+        if (handler != null)
+            globalInputHandlers.add(handler);
     }
 
     public void addFactory(String key, EntityFactory factory) {

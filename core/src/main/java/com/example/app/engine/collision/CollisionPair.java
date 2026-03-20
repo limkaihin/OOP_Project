@@ -11,8 +11,10 @@ public final class CollisionPair {
     private final Entity b;
 
     public CollisionPair(Entity a, Entity b) {
-        if (a == null) throw new IllegalArgumentException("a cannot be null");
-        if (b == null) throw new IllegalArgumentException("b cannot be null");
+        if (a == null)
+            throw new IllegalArgumentException("a cannot be null");
+        if (b == null)
+            throw new IllegalArgumentException("b cannot be null");
         this.a = a;
         this.b = b;
     }

@@ -12,7 +12,8 @@ public class SceneManager {
     }
 
     public Scene current() {
-        if (scenes.isEmpty()) return null;
+        if (scenes.isEmpty())
+            return null;
         return scenes.get(scenes.size() - 1);
     }
 
@@ -22,7 +23,8 @@ public class SceneManager {
     }
 
     public void push(Scene scene) {
-        if (scene == null) return;
+        if (scene == null)
+            return;
         scenes.add(scene);
         scene.onLoad();
         scene.onEnter();
@@ -30,7 +32,8 @@ public class SceneManager {
 
     public void pop() {
         Scene cur = current();
-        if (cur == null) return;
+        if (cur == null)
+            return;
         cur.onExit();
         cur.onUnload();
         scenes.remove(scenes.size() - 1);

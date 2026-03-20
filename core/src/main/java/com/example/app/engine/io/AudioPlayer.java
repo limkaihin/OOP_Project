@@ -6,20 +6,23 @@ import java.util.List;
 public class AudioPlayer {
 
     private boolean musicEnabled = true;
-    private boolean sfxEnabled   = true;
+    private boolean sfxEnabled = true;
 
     private float musicVolume = 0.5f;
-    private float sfxVolume   = 0.5f;
+    private float sfxVolume = 0.5f;
 
     private Sound currentMusic;
     private String lastMusicFilePath;
     private final List<Sound> activeSounds = new ArrayList<>();
 
-    public AudioPlayer() {}
+    public AudioPlayer() {
+    }
 
     // ---------------------------------------------------------------- music
 
-    public boolean isMusicEnabled() { return musicEnabled; }
+    public boolean isMusicEnabled() {
+        return musicEnabled;
+    }
 
     public void setMusicEnabled(boolean enabled) {
         this.musicEnabled = enabled;
@@ -31,16 +34,20 @@ public class AudioPlayer {
         }
     }
 
-    public float getMusicVolume() { return musicVolume; }
+    public float getMusicVolume() {
+        return musicVolume;
+    }
 
     public void setMusicVolume(float volume) {
         this.musicVolume = Math.max(0f, Math.min(1f, volume));
-        if (currentMusic != null) currentMusic.setVolume(this.musicVolume);
+        if (currentMusic != null)
+            currentMusic.setVolume(this.musicVolume);
     }
 
     public void playMusic(String filePath) {
         lastMusicFilePath = filePath;
-        if (!musicEnabled) return;
+        if (!musicEnabled)
+            return;
         playMusicInternal(filePath);
     }
 
@@ -60,26 +67,35 @@ public class AudioPlayer {
         }
     }
 
-    public String getLastMusicFilePath() { return lastMusicFilePath; }
+    public String getLastMusicFilePath() {
+        return lastMusicFilePath;
+    }
 
-    public Sound getCurrentMusic() { return currentMusic; }
+    public Sound getCurrentMusic() {
+        return currentMusic;
+    }
 
     // ---------------------------------------------------------------- sfx
 
-    public boolean isSfxEnabled() { return sfxEnabled; }
+    public boolean isSfxEnabled() {
+        return sfxEnabled;
+    }
 
     public void setSfxEnabled(boolean enabled) {
         this.sfxEnabled = enabled;
     }
 
-    public float getSfxVolume() { return sfxVolume; }
+    public float getSfxVolume() {
+        return sfxVolume;
+    }
 
     public void setSfxVolume(float volume) {
         this.sfxVolume = Math.max(0f, Math.min(1f, volume));
     }
 
     public void playSound(String filePath) {
-        if (!sfxEnabled) return;
+        if (!sfxEnabled)
+            return;
         Sound sound = new Sound(filePath);
         if (sound != null) {
             sound.setVolume(sfxVolume);
@@ -90,29 +106,42 @@ public class AudioPlayer {
 
     public void stopSound() {
         // Legacy helper — stops all active oneshot sounds
-        for (Sound s : activeSounds) s.stop();
+        for (Sound s : activeSounds)
+            s.stop();
         activeSounds.clear();
     }
 
-    // ---------------------------------------------------------------- legacy master volume helpers (kept for backward compatibility)
+    // ---------------------------------------------------------------- legacy
+    // master volume helpers (kept for backward compatibility)
 
     /** Returns music volume (was "masterVolume"). */
-    public float getMasterVolume() { return musicVolume; }
+    public float getMasterVolume() {
+        return musicVolume;
+    }
 
     public void setMasterVolume(float volume) {
         setMusicVolume(volume);
         setSfxVolume(volume);
     }
 
-    public void increaseVolume(float amount) { setMusicVolume(musicVolume + amount); }
-    public void decreaseVolume(float amount) { setMusicVolume(musicVolume - amount); }
-    public int getVolumePercentage()         { return (int)(musicVolume * 100); }
+    public void increaseVolume(float amount) {
+        setMusicVolume(musicVolume + amount);
+    }
+
+    public void decreaseVolume(float amount) {
+        setMusicVolume(musicVolume - amount);
+    }
+
+    public int getVolumePercentage() {
+        return (int) (musicVolume * 100);
+    }
 
     // ----------------------------------------------------------------
 
     public void dispose() {
         stopMusic();
-        for (Sound s : activeSounds) s.dispose();
+        for (Sound s : activeSounds)
+            s.dispose();
         activeSounds.clear();
     }
 }

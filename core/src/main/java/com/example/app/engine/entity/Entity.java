@@ -22,10 +22,10 @@ public final class Entity {
     }
 
     public <T extends Component> void addComponent(Class<T> type, T component) {
-        if (type == null){
-             throw new IllegalArgumentException("type cannot be null");
+        if (type == null) {
+            throw new IllegalArgumentException("type cannot be null");
         }
-        if (component == null){ 
+        if (component == null) {
             throw new IllegalArgumentException("component cannot be null");
         }
         components.put(type, component);
@@ -33,7 +33,7 @@ public final class Entity {
 
     public <T extends Component> T getComponent(Class<T> type) {
         Object c = components.get(type);
-        if (c == null){
+        if (c == null) {
             return null;
         }
         return type.cast(c);

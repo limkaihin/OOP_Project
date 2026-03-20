@@ -13,7 +13,7 @@ public class Sound {
 
     private com.badlogic.gdx.audio.Sound gdxSound;
 
-    //initializes the sound
+    // initializes the sound
     public Sound(String filePath) {
         this.filePath = filePath;
         try {
@@ -26,12 +26,12 @@ public class Sound {
         }
     }
 
-    //get the file path
+    // get the file path
     public String getFilePath() {
         return filePath;
     }
 
-    //plays the sound
+    // plays the sound
     public void play() {
         if (gdxSound == null)
             return;
@@ -43,7 +43,7 @@ public class Sound {
         playing = true;
     }
 
-    //stop the sound
+    // stop the sound
     public void stop() {
         if (gdxSound == null || soundId == -1)
             return;
@@ -51,7 +51,7 @@ public class Sound {
         playing = false;
     }
 
-    //set the volume
+    // set the volume
     public void setVolume(float volume) {
         this.volume = Math.max(0f, Math.min(1f, volume));
         // Update volume if currently playing
@@ -60,17 +60,17 @@ public class Sound {
         }
     }
 
-    //get the volume
+    // get the volume
     public float getVolume() {
         return volume;
     }
 
-    //check if the sound is playing
+    // check if the sound is playing
     public boolean isPlaying() {
         return playing && soundId != -1;
     }
 
-    //dispose the sound
+    // dispose the sound
     public void dispose() {
         stop();
         if (gdxSound != null) {

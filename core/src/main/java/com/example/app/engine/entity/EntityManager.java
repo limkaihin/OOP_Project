@@ -7,7 +7,8 @@ public class EntityManager {
     private final List<Entity> entities = new ArrayList<>();
     private final Set<Integer> pendingDestroyIds = new HashSet<>();
 
-    public EntityManager() {}
+    public EntityManager() {
+    }
 
     public Entity create() {
         Entity e = new Entity(idGen.nextId());
@@ -30,9 +31,10 @@ public class EntityManager {
         }
 
         // Remove entities
-        for (Iterator<Entity> it = entities.iterator(); it.hasNext(); ) {
+        for (Iterator<Entity> it = entities.iterator(); it.hasNext();) {
             Entity e = it.next();
-            if (pendingDestroyIds.contains(e.getId())) it.remove();
+            if (pendingDestroyIds.contains(e.getId()))
+                it.remove();
         }
         pendingDestroyIds.clear();
     }

@@ -42,7 +42,8 @@ public class InputHandler {
             InputAction action = e.getValue();
             // Use isButtonJustPressed for mouse — catches fast clicks
             if (Gdx.input.isButtonJustPressed(button)) {
-                // Manually set both current=true and previous=false to guarantee isJustPressed fires
+                // Manually set both current=true and previous=false to guarantee isJustPressed
+                // fires
                 state.set(action, true, false);
             } else if (!Gdx.input.isButtonPressed(button)) {
                 state.processInput(action, false);
@@ -55,10 +56,14 @@ public class InputHandler {
     }
 
     // Returns mouse X position in game space
-    public float getMouseX() { return mouseX; }
- 
+    public float getMouseX() {
+        return mouseX;
+    }
+
     // Returns mouse Y position in game space
-    public float getMouseY() { return mouseY; }
+    public float getMouseY() {
+        return mouseY;
+    }
 
     // Optional hook for tests or platforms without polling.
     public void setKeyState(int keyCode, boolean isPressed) {

@@ -1,7 +1,8 @@
 package com.example.app.engine.util;
 
 public final class Mathf {
-    private Mathf() { }
+    private Mathf() {
+    }
 
     public static float clamp(float v, float min, float max) {
         return Math.max(min, Math.min(max, v));

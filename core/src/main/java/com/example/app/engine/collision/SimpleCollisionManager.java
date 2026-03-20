@@ -23,7 +23,8 @@ public final class SimpleCollisionManager implements CollisionManager {
     }
 
     public void addListener(CollisionListener listener) {
-        if (listener != null) listeners.add(listener);
+        if (listener != null)
+            listeners.add(listener);
     }
 
     public void setResolver(CollisionResolver resolver) {
@@ -38,10 +39,12 @@ public final class SimpleCollisionManager implements CollisionManager {
         grid.clear();
 
         for (Entity e : entities) {
-            if (e == null) continue;
+            if (e == null)
+                continue;
             ColliderComponent c = e.getComponent(ColliderComponent.class);
             TransformComponent t = e.getComponent(TransformComponent.class);
-            if (c == null || t == null) continue;
+            if (c == null || t == null)
+                continue;
 
             collidables.add(e);
             byId.put(e.getId(), e);
@@ -54,25 +57,31 @@ public final class SimpleCollisionManager implements CollisionManager {
         for (PairKey pk : candidates) {
             Entity a = byId.get(pk.a);
             Entity b = byId.get(pk.b);
-            if (a == null || b == null) continue;
+            if (a == null || b == null)
+                continue;
 
             ColliderComponent ca = a.getComponent(ColliderComponent.class);
             ColliderComponent cb = b.getComponent(ColliderComponent.class);
-            if (ca == null || cb == null) continue;
+            if (ca == null || cb == null)
+                continue;
 
-            if (!passesFilter(ca, cb)) continue;
+            if (!passesFilter(ca, cb))
+                continue;
 
             TransformComponent ta = a.getComponent(TransformComponent.class);
             TransformComponent tb = b.getComponent(TransformComponent.class);
-            if (ta == null || tb == null) continue;
+            if (ta == null || tb == null)
+                continue;
 
             CollisionManifold manifold = intersect(ta, ca, tb, cb);
-            if (manifold == null) continue;
+            if (manifold == null)
+                continue;
 
             CollisionEvent evt = new CollisionEvent(new CollisionPair(a, b), manifold);
             events.add(evt);
 
-            for (CollisionListener l : listeners) l.onCollision(evt);
+            for (CollisionListener l : listeners)
+                l.onCollision(evt);
 
             if (resolver != null && !ca.isTrigger && !cb.isTrigger) {
                 resolver.resolve(a, b, manifold);
@@ -88,7 +97,8 @@ public final class SimpleCollisionManager implements CollisionManager {
         return ab && ba;
     }
 
-    private CollisionManifold intersect(TransformComponent ta, ColliderComponent ca, TransformComponent tb, ColliderComponent cb) {
+    private CollisionManifold intersect(TransformComponent ta, ColliderComponent ca, TransformComponent tb,
+            ColliderComponent cb) {
         float ax = ta.x + ca.offsetX;
         float ay = ta.y + ca.offsetY;
         float bx = tb.x + cb.offsetX;
@@ -108,7 +118,8 @@ public final class SimpleCollisionManager implements CollisionManager {
 
         if (ca.type == ColliderComponent.ColShapeType.AABB && cb.type == ColliderComponent.ColShapeType.CIRCLE) {
             CollisionManifold m = circleAabb(bx, by, cb.radius, ax, ay, ca.halfWidth, ca.halfHeight);
-            if (m == null) return null;
+            if (m == null)
+                return null;
             return new CollisionManifold(-m.normalX, -m.normalY, m.penetration);
         }
 
@@ -118,22 +129,26 @@ public final class SimpleCollisionManager implements CollisionManager {
     private CollisionManifold circleCircle(float ax, float ay, float ar, float bx, float by, float br) {
         float dx = bx - ax, dy = by - ay;
         float r = ar + br;
-        float dist2 = dx*dx + dy*dy;
-        if (dist2 > r*r) return null;
+        float dist2 = dx * dx + dy * dy;
+        if (dist2 > r * r)
+            return null;
 
-        float dist = (float)Math.sqrt(Math.max(dist2, 1e-8f));
+        float dist = (float) Math.sqrt(Math.max(dist2, 1e-8f));
         float nx = dx / dist, ny = dy / dist;
         return new CollisionManifold(nx, ny, r - dist);
     }
 
-    private CollisionManifold aabbAabb(float ax, float ay, float ahw, float ahh, float bx, float by, float bhw, float bhh) {
+    private CollisionManifold aabbAabb(float ax, float ay, float ahw, float ahh, float bx, float by, float bhw,
+            float bhh) {
         float dx = bx - ax;
         float px = (ahw + bhw) - Math.abs(dx);
-        if (px <= 0) return null;
+        if (px <= 0)
+            return null;
 
         float dy = by - ay;
         float py = (ahh + bhh) - Math.abs(dy);
-        if (py <= 0) return null;
+        if (py <= 0)
+            return null;
 
         if (px < py) {
             float nx = (dx < 0) ? -1f : 1f;
@@ -150,10 +165,11 @@ public final class SimpleCollisionManager implements CollisionManager {
 
         float dx = closestX - cx;
         float dy = closestY - cy;
-        float dist2 = dx*dx + dy*dy;
-        if (dist2 > cr*cr) return null;
+        float dist2 = dx * dx + dy * dy;
+        if (dist2 > cr * cr)
+            return null;
 
-        float dist = (float)Math.sqrt(Math.max(dist2, 1e-8f));
+        float dist = (float) Math.sqrt(Math.max(dist2, 1e-8f));
         float nx = (dist > 0f) ? (dx / dist) : 0f;
         float ny = (dist > 0f) ? (dy / dist) : 1f;
 

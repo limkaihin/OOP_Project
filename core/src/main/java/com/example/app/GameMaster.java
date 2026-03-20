@@ -40,7 +40,7 @@ public class GameMaster extends ApplicationAdapter {
 
     @Override
     public void create() {
-        batch  = new SpriteBatch();
+        batch = new SpriteBatch();
         shapes = new ShapeRenderer();
         camera = new OrthographicCamera();
         viewport = new FitViewport(640, 480, camera);
@@ -81,7 +81,7 @@ public class GameMaster extends ApplicationAdapter {
         ctx.addGlobalInputHandler(() -> {
             if (ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.BACK)) {
                 Scene cur = ctx.getSceneManager().current();
-                
+
                 if (cur instanceof GameClearScene) {
                     Gdx.app.exit();
                     return;
@@ -132,9 +132,12 @@ public class GameMaster extends ApplicationAdapter {
 
     @Override
     public void dispose() {
-        if (ctx != null) ctx.dispose();
-        if (shapes != null) shapes.dispose();
-        if (batch != null) batch.dispose();
+        if (ctx != null)
+            ctx.dispose();
+        if (shapes != null)
+            shapes.dispose();
+        if (batch != null)
+            batch.dispose();
     }
 
     // Resize

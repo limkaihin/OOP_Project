@@ -9,8 +9,10 @@ public final class CollisionEvent {
     private final CollisionManifold manifold;
 
     public CollisionEvent(CollisionPair pair, CollisionManifold manifold) {
-        if (pair == null) throw new IllegalArgumentException("pair cannot be null");
-        if (manifold == null) throw new IllegalArgumentException("manifold cannot be null");
+        if (pair == null)
+            throw new IllegalArgumentException("pair cannot be null");
+        if (manifold == null)
+            throw new IllegalArgumentException("manifold cannot be null");
         this.pair = pair;
         this.manifold = manifold;
     }

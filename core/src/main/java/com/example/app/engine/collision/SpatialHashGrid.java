@@ -18,7 +18,9 @@ public final class SpatialHashGrid {
         this.cellSize = cellSize;
     }
 
-    public void clear() { buckets.clear(); }
+    public void clear() {
+        buckets.clear();
+    }
 
     public void insert(Entity e, TransformComponent t, ColliderComponent c) {
         float minX, minY, maxX, maxY;
@@ -27,11 +29,15 @@ public final class SpatialHashGrid {
         float py = t.y + c.offsetY;
 
         if (c.type == ColliderComponent.ColShapeType.CIRCLE) {
-            minX = px - c.radius; maxX = px + c.radius;
-            minY = py - c.radius; maxY = py + c.radius;
+            minX = px - c.radius;
+            maxX = px + c.radius;
+            minY = py - c.radius;
+            maxY = py + c.radius;
         } else { // AABB
-            minX = px - c.halfWidth;  maxX = px + c.halfWidth;
-            minY = py - c.halfHeight; maxY = py + c.halfHeight;
+            minX = px - c.halfWidth;
+            maxX = px + c.halfWidth;
+            minY = py - c.halfHeight;
+            maxY = py + c.halfHeight;
         }
 
         int x0 = worldToCell(minX), x1 = worldToCell(maxX);
@@ -63,10 +69,10 @@ public final class SpatialHashGrid {
     }
 
     private int worldToCell(float v) {
-        return (int)Math.floor(v / cellSize);
+        return (int) Math.floor(v / cellSize);
     }
 
     private long pack(int x, int y) {
-        return (((long)x) << 32) ^ (y & 0xffffffffL);
+        return (((long) x) << 32) ^ (y & 0xffffffffL);
     }
 }

@@ -16,10 +16,11 @@ public final class EngineConfig {
     public final float collisionCellSize;
 
     public EngineConfig(int width, int height, String title) {
-        this(width, height, title, true, 60, 1f/60f, 5, 64f);
+        this(width, height, title, true, 60, 1f / 60f, 5, 64f);
     }
 
-    public EngineConfig(int width, int height, String title, boolean vsync, int targetFps, float fixedDt, int maxSubSteps, float collisionCellSize) {
+    public EngineConfig(int width, int height, String title, boolean vsync, int targetFps, float fixedDt,
+            int maxSubSteps, float collisionCellSize) {
         this.width = width;
         this.height = height;
         this.title = title;

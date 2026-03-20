@@ -12,14 +12,23 @@ public class ErrorEntry {
         this.message = message;
     }
 
-    public long getTimestamp() { return timestamp; }
-    public String getTag() { return tag; }
-    public String getMessage() { return message; }
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 
     public String formattedTimeStamp() {
         return String.valueOf(timestamp);
     }
-    //returns the error entry as a string
+
+    // returns the error entry as a string
     @Override
     public String toString() {
         return "[" + formattedTimeStamp() + "][" + tag + "] " + message;
