@@ -92,8 +92,10 @@ public final class SettingsScene extends AbstractBaseScene {
 
     @Override
     public void onUnload() {
-        if (titleFont != null) titleFont.dispose();
-        if (font != null) font.dispose();
+        if (titleFont != null)
+            titleFont.dispose();
+        if (font != null)
+            font.dispose();
     }
 
     @Override
@@ -112,12 +114,18 @@ public final class SettingsScene extends AbstractBaseScene {
                 Gdx.app.exit();
             }
 
-            if (hit(mx, my, btnCol, row1Y, TOG_W, TOG_H)) toggleMusic();
-            if (hit(mx, my, btnCol, row2Y, TOG_W, TOG_H)) toggleSfx();
-            if (hit(mx, my, btnCol, row3Y, ARR_W, ARR_H)) adjustMusicVol(-VOL_STEP);
-            if (hit(mx, my, rightArrX, row3Y, ARR_W, ARR_H)) adjustMusicVol(+VOL_STEP);
-            if (hit(mx, my, btnCol, row4Y, ARR_W, ARR_H)) adjustSfxVol(-VOL_STEP);
-            if (hit(mx, my, rightArrX, row4Y, ARR_W, ARR_H)) adjustSfxVol(+VOL_STEP);
+            if (hit(mx, my, btnCol, row1Y, TOG_W, TOG_H))
+                toggleMusic();
+            if (hit(mx, my, btnCol, row2Y, TOG_W, TOG_H))
+                toggleSfx();
+            if (hit(mx, my, btnCol, row3Y, ARR_W, ARR_H))
+                adjustMusicVol(-VOL_STEP);
+            if (hit(mx, my, rightArrX, row3Y, ARR_W, ARR_H))
+                adjustMusicVol(+VOL_STEP);
+            if (hit(mx, my, btnCol, row4Y, ARR_W, ARR_H))
+                adjustSfxVol(-VOL_STEP);
+            if (hit(mx, my, rightArrX, row4Y, ARR_W, ARR_H))
+                adjustSfxVol(+VOL_STEP);
         }
     }
 
@@ -131,23 +139,30 @@ public final class SettingsScene extends AbstractBaseScene {
 
         boolean musHover = hit(mx, my, btnCol, row1Y, TOG_W, TOG_H);
         ctx.getRenderer().drawRect(btnCol, row1Y, TOG_W, TOG_H,
-            ctx.getIoManager().isMusicEnabled()
-                ? (musHover ? COL_BTN_ON_HOVER : COL_BTN_ON)
-                : (musHover ? COL_BTN_OFF_HOVER : COL_BTN_OFF));
+                ctx.getIoManager().isMusicEnabled()
+                        ? (musHover ? COL_BTN_ON_HOVER : COL_BTN_ON)
+                        : (musHover ? COL_BTN_OFF_HOVER : COL_BTN_OFF));
 
         boolean sfxHover = hit(mx, my, btnCol, row2Y, TOG_W, TOG_H);
         ctx.getRenderer().drawRect(btnCol, row2Y, TOG_W, TOG_H,
-            ctx.getIoManager().isSfxEnabled()
-                ? (sfxHover ? COL_BTN_ON_HOVER : COL_BTN_ON)
-                : (sfxHover ? COL_BTN_OFF_HOVER : COL_BTN_OFF));
+                ctx.getIoManager().isSfxEnabled()
+                        ? (sfxHover ? COL_BTN_ON_HOVER : COL_BTN_ON)
+                        : (sfxHover ? COL_BTN_OFF_HOVER : COL_BTN_OFF));
 
-        ctx.getRenderer().drawRect(btnCol, row3Y, ARR_W, ARR_H, hit(mx, my, btnCol, row3Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
-        ctx.getRenderer().drawRect(rightArrX, row3Y, ARR_W, ARR_H, hit(mx, my, rightArrX, row3Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
-        ctx.getRenderer().drawRect(btnCol, row4Y, ARR_W, ARR_H, hit(mx, my, btnCol, row4Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
-        ctx.getRenderer().drawRect(rightArrX, row4Y, ARR_W, ARR_H, hit(mx, my, rightArrX, row4Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
-        ctx.getRenderer().drawRect(backX, backY, backW, backH, hit(mx, my, backX, backY, backW, backH) ? COL_BTN_BCK_HOVER : COL_BTN_BCK);
-        ctx.getRenderer().drawRect(backX, backY, backW, backH, hit(mx, my, backX, backY, backW, backH) ? COL_BTN_BCK_HOVER : COL_BTN_BCK);
-        ctx.getRenderer().drawRect(quitX, quitY, quitW, quitH, hit(mx, my, quitX, quitY, quitW, quitH) ? COL_BTN_QUIT_HOVER : COL_BTN_QUIT);
+        ctx.getRenderer().drawRect(btnCol, row3Y, ARR_W, ARR_H,
+                hit(mx, my, btnCol, row3Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
+        ctx.getRenderer().drawRect(rightArrX, row3Y, ARR_W, ARR_H,
+                hit(mx, my, rightArrX, row3Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
+        ctx.getRenderer().drawRect(btnCol, row4Y, ARR_W, ARR_H,
+                hit(mx, my, btnCol, row4Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
+        ctx.getRenderer().drawRect(rightArrX, row4Y, ARR_W, ARR_H,
+                hit(mx, my, rightArrX, row4Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
+        ctx.getRenderer().drawRect(backX, backY, backW, backH,
+                hit(mx, my, backX, backY, backW, backH) ? COL_BTN_BCK_HOVER : COL_BTN_BCK);
+        ctx.getRenderer().drawRect(backX, backY, backW, backH,
+                hit(mx, my, backX, backY, backW, backH) ? COL_BTN_BCK_HOVER : COL_BTN_BCK);
+        ctx.getRenderer().drawRect(quitX, quitY, quitW, quitH,
+                hit(mx, my, quitX, quitY, quitW, quitH) ? COL_BTN_QUIT_HOVER : COL_BTN_QUIT);
     }
 
     @Override
@@ -155,7 +170,8 @@ public final class SettingsScene extends AbstractBaseScene {
         // Title
         titleFont.setColor(EngineColor.WHITE);
         layout.setText(titleFont.bitmapFont, "SETTINGS");
-        ctx.getRenderer().drawText(titleFont, "SETTINGS", panelX + (PANEL_W - layout.width) / 2f, panelY + PANEL_H + 15f);
+        ctx.getRenderer().drawText(titleFont, "SETTINGS", panelX + (PANEL_W - layout.width) / 2f,
+                panelY + PANEL_H + 15f);
 
         float labelX = panelX + PAD;
         font.setColor(EngineColor.LIGHT_GRAY);
@@ -174,7 +190,7 @@ public final class SettingsScene extends AbstractBaseScene {
 
         font.setColor(COL_VOL);
         int mVol = Math.round(ctx.getIoManager().getMusicVolume() * 100);
-        int sVol = Math.round(ctx.getIoManager().getSfxVolume()   * 100);
+        int sVol = Math.round(ctx.getIoManager().getSfxVolume() * 100);
         float midGapW = rightArrX - (btnCol + ARR_W);
         drawCenteredInBox(mVol + "%", btnCol + ARR_W, row3Y, midGapW, ARR_H);
         drawCenteredInBox(sVol + "%", btnCol + ARR_W, row4Y, midGapW, ARR_H);
@@ -200,8 +216,19 @@ public final class SettingsScene extends AbstractBaseScene {
         return mx >= bx && mx <= bx + bw && my >= by && my <= by + bh;
     }
 
-    private void toggleMusic() { ctx.getIoManager().setMusicEnabled(!ctx.getIoManager().isMusicEnabled()); }
-    private void toggleSfx() { ctx.getIoManager().setSfxEnabled(!ctx.getIoManager().isSfxEnabled()); }
-    private void adjustMusicVol(float d) { ctx.getIoManager().setMusicVolume(Math.max(0f, Math.min(1f, ctx.getIoManager().getMusicVolume() + d))); }
-    private void adjustSfxVol(float d) { ctx.getIoManager().setSfxVolume(Math.max(0f, Math.min(1f, ctx.getIoManager().getSfxVolume() + d))); }
+    private void toggleMusic() {
+        ctx.getIoManager().setMusicEnabled(!ctx.getIoManager().isMusicEnabled());
+    }
+
+    private void toggleSfx() {
+        ctx.getIoManager().setSfxEnabled(!ctx.getIoManager().isSfxEnabled());
+    }
+
+    private void adjustMusicVol(float d) {
+        ctx.getIoManager().setMusicVolume(Math.max(0f, Math.min(1f, ctx.getIoManager().getMusicVolume() + d)));
+    }
+
+    private void adjustSfxVol(float d) {
+        ctx.getIoManager().setSfxVolume(Math.max(0f, Math.min(1f, ctx.getIoManager().getSfxVolume() + d)));
+    }
 }

@@ -51,7 +51,8 @@ public final class TransitionScene extends AbstractBaseScene {
 
     @Override
     public void onUnload() {
-        if (font != null) font.dispose();
+        if (font != null)
+            font.dispose();
     }
 
     @Override
@@ -96,17 +97,18 @@ public final class TransitionScene extends AbstractBaseScene {
         if (progress > 0.3f && progress < 0.7f) {
             float mid = (progress - 0.3f) / 0.4f;
             visibility = mid <= 0.5f
-                ? Interpolation.fade.apply(mid / 0.5f)
-                : Interpolation.fade.apply((1f - mid) / 0.5f);
+                    ? Interpolation.fade.apply(mid / 0.5f)
+                    : Interpolation.fade.apply((1f - mid) / 0.5f);
         }
 
-        if (visibility <= 0.01f) return;
+        if (visibility <= 0.01f)
+            return;
 
         // Loading text
         String text = loadingFrames[dotCount];
         font.setColor(new EngineColor(0.85f, 0.85f, 0.85f, visibility));
         layout.setText(font.bitmapFont, text);
-        ctx.getRenderer().drawText(font, text, W / 2f - layout.width / 2f,  H / 2f + layout.height / 2f);
+        ctx.getRenderer().drawText(font, text, W / 2f - layout.width / 2f, H / 2f + layout.height / 2f);
 
         // Small progress bar at bottom
         float barW = W * 0.4f;

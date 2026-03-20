@@ -50,12 +50,14 @@ public final class LevelSelectScene extends AbstractBaseScene {
 
         generator.dispose();
         font.setColor(EngineColor.WHITE);
-        ctx.getIoManager().log("LevelSelectScene", "Loaded (Max unlocked: " + ctx.getProgress().getMaxUnlockedLevel() + ")");
+        ctx.getIoManager().log("LevelSelectScene",
+                "Loaded (Max unlocked: " + ctx.getProgress().getMaxUnlockedLevel() + ")");
     }
 
     @Override
     public void update(float dt) {
-        if (!ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.ACTION_1)) return;
+        if (!ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.ACTION_1))
+            return;
 
         float mx = ctx.getIoManager().getInputHandler().getMouseX();
         float my = ctx.getIoManager().getInputHandler().getMouseY();
@@ -112,7 +114,8 @@ public final class LevelSelectScene extends AbstractBaseScene {
             String text = "LV " + (i + 1);
             font.setColor(i + 1 <= ctx.getProgress().getMaxUnlockedLevel() ? EngineColor.WHITE : COL_LOCKED_TEXT);
             layout.setText(font.bitmapFont, text);
-            ctx.getRenderer().drawText(font, text, bx + boxSize / 2f - layout.width / 2f, by + boxSize / 2f + layout.height / 2f);
+            ctx.getRenderer().drawText(font, text, bx + boxSize / 2f - layout.width / 2f,
+                    by + boxSize / 2f + layout.height / 2f);
         }
 
         // Locked hint
@@ -125,7 +128,9 @@ public final class LevelSelectScene extends AbstractBaseScene {
 
     @Override
     public void onUnload() {
-        if (font != null) font.dispose();
-        if (bigFont != null) bigFont.dispose();
+        if (font != null)
+            font.dispose();
+        if (bigFont != null)
+            bigFont.dispose();
     }
 }

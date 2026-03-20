@@ -1,4 +1,4 @@
-package com.example.app.demo.scenes;
+package com.example.app.demo.game;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.example.app.engine.EngineContext;
@@ -22,8 +22,8 @@ public class NPCController {
     private final int level;
 
     // Pushy NPC
-    private static final int PUSHY_NPC_COUNT  = 3;
-    // Wander NPC
+    private static final int PUSHY_NPC_COUNT = 3;
+    // Wandering NPC
     private static final float WANDER_TURN_CHANCE = 0.02f;
 
     private static final EngineColor COL_SHADOW = new EngineColor(0.60f, 0.59f, 0.57f, 1f);
@@ -55,7 +55,8 @@ public class NPCController {
             Entity npc = npcs.get(i);
             TransformComponent t = npc.getComponent(TransformComponent.class);
             VelocityComponent v = npc.getComponent(VelocityComponent.class);
-            if (t == null || v == null) continue;
+            if (t == null || v == null)
+                continue;
 
             if (i % PUSHY_NPC_COUNT == 0) {
                 updatePushy(t, v, player);
@@ -64,12 +65,14 @@ public class NPCController {
             }
 
             keepInsideBounds(npc);
-            if (v.vy > 0) v.vy = -v.vy; // NPCs never move upward toward the train
+            if (v.vy > 0)
+                v.vy = -v.vy; // NPCs always move downwards
         }
     }
 
     private void updatePushy(TransformComponent t, VelocityComponent v, Entity player) {
-        if (player == null) return;
+        if (player == null)
+            return;
         TransformComponent pt = player.getComponent(TransformComponent.class);
         float dx = pt.x - t.x;
         float dy = pt.y - t.y;
@@ -94,18 +97,22 @@ public class NPCController {
         TransformComponent t = npc.getComponent(TransformComponent.class);
         ColliderComponent c = npc.getComponent(ColliderComponent.class);
         VelocityComponent v = npc.getComponent(VelocityComponent.class);
-        if (t == null || c == null) return;
+        if (t == null || c == null)
+            return;
 
         float r = (c.type == ColliderComponent.ColShapeType.CIRCLE)
-                ? c.radius : Math.max(c.halfWidth, c.halfHeight);
+                ? c.radius
+                : Math.max(c.halfWidth, c.halfHeight);
 
         float oldX = t.x, oldY = t.y;
         t.x = Math.max(r, Math.min(W - r, t.x));
         t.y = Math.max(r, Math.min(H - doorY - r, t.y));
 
         if (v != null) {
-            if (t.x != oldX) v.vx = -v.vx;
-            if (t.y != oldY) v.vy = -v.vy;
+            if (t.x != oldX)
+                v.vx = -v.vx;
+            if (t.y != oldY)
+                v.vy = -v.vy;
         }
     }
 
@@ -124,7 +131,8 @@ public class NPCController {
     public void drawAll() {
         for (int i = 0; i < npcs.size(); i++) {
             TransformComponent t = npcs.get(i).getComponent(TransformComponent.class);
-            if (t == null) continue;
+            if (t == null)
+                continue;
             boolean orange = i % 2 == 0;
             ctx.getRenderer().drawCircle(t.x + 2f, t.y - 2f, 14f, COL_SHADOW);
             ctx.getRenderer().drawCircle(t.x, t.y, 13f, orange ? COL_NPC_ORG : COL_NPC_RED);
@@ -133,9 +141,12 @@ public class NPCController {
     }
 
     public void destroyAll() {
-        for (Entity npc : npcs) ctx.getEntityManager().destroy(npc);
+        for (Entity npc : npcs)
+            ctx.getEntityManager().destroy(npc);
         npcs.clear();
     }
 
-    public List<Entity> getAll() { return npcs; }
+    public List<Entity> getAll() {
+        return npcs;
+    }
 }

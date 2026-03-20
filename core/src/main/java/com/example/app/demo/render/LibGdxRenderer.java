@@ -58,8 +58,10 @@ public class LibGdxRenderer implements IRenderer {
 
     @Override
     public void begin() {
-        if (inShapeMode) shapes.end();
-        if (batch.isDrawing()) batch.end();
+        if (inShapeMode)
+            shapes.end();
+        if (batch.isDrawing())
+            batch.end();
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         inShapeMode = true;
     }
@@ -98,7 +100,8 @@ public class LibGdxRenderer implements IRenderer {
 
     @Override
     public void drawText(InterfaceFont font, String text, float x, float y) {
-        if (!(font instanceof LibGdxFont)) return;
+        if (!(font instanceof LibGdxFont))
+            return;
         LibGdxFont libGdxFont = (LibGdxFont) font;
         if (inShapeMode) {
             shapes.end();
@@ -113,7 +116,8 @@ public class LibGdxRenderer implements IRenderer {
     @Override
     public void drawRect(float x, float y, float w, float h, EngineColor color) {
         if (!inShapeMode) {
-            if (batch.isDrawing()) batch.end();
+            if (batch.isDrawing())
+                batch.end();
             shapes.begin(ShapeRenderer.ShapeType.Filled);
             inShapeMode = true;
         }
@@ -124,7 +128,8 @@ public class LibGdxRenderer implements IRenderer {
     @Override
     public void drawCircle(float x, float y, float radius, EngineColor color) {
         if (!inShapeMode) {
-            if (batch.isDrawing()) batch.end();
+            if (batch.isDrawing())
+                batch.end();
             shapes.begin(ShapeRenderer.ShapeType.Filled);
             inShapeMode = true;
         }
@@ -135,7 +140,8 @@ public class LibGdxRenderer implements IRenderer {
     @Override
     public void drawLine(float x1, float y1, float x2, float y2, EngineColor color) {
         if (!inShapeMode) {
-            if (batch.isDrawing()) batch.end();
+            if (batch.isDrawing())
+                batch.end();
             shapes.begin(ShapeRenderer.ShapeType.Filled);
             inShapeMode = true;
         }
@@ -159,11 +165,13 @@ public class LibGdxRenderer implements IRenderer {
 
     public void unloadTexture(String key) {
         Texture t = textures.remove(key);
-        if (t != null) t.dispose();
+        if (t != null)
+            t.dispose();
     }
 
     public void unloadAllTextures() {
-        for (Texture t : textures.values()) t.dispose();
+        for (Texture t : textures.values())
+            t.dispose();
         textures.clear();
     }
 

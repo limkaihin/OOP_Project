@@ -34,7 +34,7 @@ public final class MenuScene extends AbstractBaseScene {
         FreeTypeFontGenerator.FreeTypeFontParameter smallParams = new FreeTypeFontGenerator.FreeTypeFontParameter();
         smallParams.size = 18;
         font = new LibGdxFont(generator.generateFont(smallParams));
-        
+
         FreeTypeFontGenerator.FreeTypeFontParameter bigParams = new FreeTypeFontGenerator.FreeTypeFontParameter();
         bigParams.size = 72;
         bigFont = new LibGdxFont(generator.generateFont(bigParams));
@@ -67,16 +67,16 @@ public final class MenuScene extends AbstractBaseScene {
 
         // Instructions
         String[] lines = {
-            "Avoid passengers and board the train before time runs out!",
-            "Levels progressively get harder!",
-            "",
-            "How to Play:",
-            "WASD - Move your character",
-            "3 Hits - Game over",
-            "E - Open music settings",
-            "",
-            "Can you beat all the levels?",
-            "Press ENTER to Start!"
+                "Avoid passengers and board the train before time runs out!",
+                "Levels progressively get harder!",
+                "",
+                "How to Play:",
+                "WASD - Move your character",
+                "3 Hits - Game over",
+                "E - Open music settings",
+                "",
+                "Can you beat all the levels?",
+                "Press ENTER to Start!"
         };
 
         float lineY = H - 160f;
@@ -86,9 +86,9 @@ public final class MenuScene extends AbstractBaseScene {
                 continue;
             }
             layout.setText(font.bitmapFont, line);
-            font.setColor(line.startsWith("Press") 
-                ? COL_PRESSTEXT 
-                : EngineColor.WHITE);
+            font.setColor(line.startsWith("Press")
+                    ? COL_PRESSTEXT
+                    : EngineColor.WHITE);
             ctx.getRenderer().drawText(font, line, W / 2f - layout.width / 2f, lineY);
             lineY -= layout.height + 10f;
         }
@@ -98,7 +98,9 @@ public final class MenuScene extends AbstractBaseScene {
 
     @Override
     public void onUnload() {
-        if (font != null) font.dispose();
-        if (bigFont != null) bigFont.dispose();
+        if (font != null)
+            font.dispose();
+        if (bigFont != null)
+            bigFont.dispose();
     }
 }

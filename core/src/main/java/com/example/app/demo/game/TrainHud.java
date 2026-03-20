@@ -1,4 +1,4 @@
-package com.example.app.demo.scenes;
+package com.example.app.demo.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -15,24 +15,21 @@ public class TrainHud {
 
     private static final int MAX_LIVES = 3;
 
-    private static final EngineColor COL_HUD_BG    = new EngineColor(0.10f, 0.10f, 0.16f, 0.88f);
-    private static final EngineColor COL_HEART_ON  = new EngineColor(0.83f, 0.18f, 0.18f, 1f);
+    private static final EngineColor COL_HUD_BG = new EngineColor(0.10f, 0.10f, 0.16f, 0.88f);
+    private static final EngineColor COL_HEART_ON = new EngineColor(0.83f, 0.18f, 0.18f, 1f);
     private static final EngineColor COL_HEART_OFF = new EngineColor(0.35f, 0.35f, 0.40f, 1f);
-    private static final EngineColor COL_TIMER     = new EngineColor(0.96f, 0.77f, 0.09f, 1f);
+    private static final EngineColor COL_TIMER = new EngineColor(0.96f, 0.77f, 0.09f, 1f);
     private static final EngineColor COL_PLAYER_HI = new EngineColor(0.13f, 0.67f, 0.53f, 1f);
     private static final EngineColor COL_LOST_TEXT = new EngineColor(0.95f, 0.95f, 0.95f, 1f);
 
     public void load() {
-        FreeTypeFontGenerator generator =
-                new FreeTypeFontGenerator(Gdx.files.internal("Oswald-Regular.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Oswald-Regular.ttf"));
 
-        FreeTypeFontGenerator.FreeTypeFontParameter smallParams =
-                new FreeTypeFontGenerator.FreeTypeFontParameter();
+        FreeTypeFontGenerator.FreeTypeFontParameter smallParams = new FreeTypeFontGenerator.FreeTypeFontParameter();
         smallParams.size = 18;
         font = new LibGdxFont(generator.generateFont(smallParams));
 
-        FreeTypeFontGenerator.FreeTypeFontParameter bigParams =
-                new FreeTypeFontGenerator.FreeTypeFontParameter();
+        FreeTypeFontGenerator.FreeTypeFontParameter bigParams = new FreeTypeFontGenerator.FreeTypeFontParameter();
         bigParams.size = 72;
         bigFont = new LibGdxFont(generator.generateFont(bigParams));
 
@@ -41,12 +38,14 @@ public class TrainHud {
     }
 
     public void dispose() {
-        if (font != null)    font.dispose();
-        if (bigFont != null) bigFont.dispose();
+        if (font != null)
+            font.dispose();
+        if (bigFont != null)
+            bigFont.dispose();
     }
 
     public void render(IRenderer renderer, int level, float timeRemaining, int lives,
-                       boolean won, boolean lost, boolean gameStarted, float W, float H) {
+            boolean won, boolean lost, boolean gameStarted, float W, float H) {
         drawHudBar(renderer, W);
         drawLives(renderer, lives);
         drawHudText(renderer, level, timeRemaining, W);
@@ -77,7 +76,7 @@ public class TrainHud {
     }
 
     private void drawMidScreenMessage(IRenderer renderer, boolean won, boolean lost,
-                                      boolean gameStarted, float W, float H) {
+            boolean gameStarted, float W, float H) {
         float midY = H / 2f + 36f;
 
         if (!gameStarted) {

@@ -25,11 +25,9 @@ public final class GameClearScene extends AbstractBaseScene {
     private static final EngineColor COL_BTN = new EngineColor(0.18f, 0.45f, 0.22f, 1f);
     private static final EngineColor COL_SUBTEXT = new EngineColor(0.85f, 0.85f, 0.95f, 1f);
     private static final EngineColor COL_HINT = new EngineColor(0.6f, 0.6f, 0.7f, 1f);
-    private static final EngineColor COL_PANEL  = new EngineColor(0.05f, 0.12f, 0.08f, 0.92f);
+    private static final EngineColor COL_PANEL = new EngineColor(0.05f, 0.12f, 0.08f, 0.92f);
     private static final EngineColor COL_ACCENT = new EngineColor(0.13f, 0.67f, 0.53f, 1f);
-    private static final EngineColor COL_WINTEXT  = new EngineColor(0.13f, 0.77f, 0.53f, 1f);
-
-    private float pulse = 0f;
+    private static final EngineColor COL_WINTEXT = new EngineColor(0.13f, 0.77f, 0.53f, 1f);
 
     public GameClearScene(EngineContext ctx) {
         this.ctx = ctx;
@@ -45,7 +43,7 @@ public final class GameClearScene extends AbstractBaseScene {
     @Override
     public void onLoad() {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Oswald-Regular.ttf"));
-        
+
         FreeTypeFontGenerator.FreeTypeFontParameter smallParams = new FreeTypeFontGenerator.FreeTypeFontParameter();
         smallParams.size = 18;
         font = new LibGdxFont(generator.generateFont(smallParams));
@@ -61,14 +59,14 @@ public final class GameClearScene extends AbstractBaseScene {
 
     @Override
     public void onUnload() {
-        if (bigFont != null) bigFont.dispose();
-        if (font != null) font.dispose();
+        if (bigFont != null)
+            bigFont.dispose();
+        if (font != null)
+            font.dispose();
     }
 
     @Override
     public void update(float dt) {
-        pulse += dt;
-        
         if (ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.ACTION_1)) {
             float mx = ctx.getIoManager().getInputHandler().getMouseX();
             float my = ctx.getIoManager().getInputHandler().getMouseY();
@@ -91,10 +89,10 @@ public final class GameClearScene extends AbstractBaseScene {
         ctx.getRenderer().drawRect(0, bannerY, W, 3f, COL_ACCENT);
 
         boolean isHovered = mx >= btnX && mx <= btnX + btnW && my >= btnY && my <= btnY + btnH;
-        
+
         float currentW = isHovered ? btnW * 1.1f : btnW;
         float currentH = isHovered ? btnH * 1.1f : btnH;
-        
+
         float offX = (currentW - btnW) / 2f;
         float offY = (currentH - btnH) / 2f;
 

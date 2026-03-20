@@ -6,7 +6,7 @@ public class GameProgress implements IProgress {
     private int maxUnlockedLevel = 1;
 
     @Override
-    public int getMaxUnlockedLevel() { 
+    public int getMaxUnlockedLevel() {
         return maxUnlockedLevel;
     }
 

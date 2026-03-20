@@ -1,5 +1,10 @@
 package com.example.app.demo.scenes;
 
+import com.example.app.demo.game.NPCController;
+import com.example.app.demo.game.PlayerController;
+import com.example.app.demo.game.TrainLayout;
+import com.example.app.demo.game.TrainHud;
+import com.example.app.demo.game.TrainRenderer;
 import com.example.app.engine.EngineContext;
 import com.example.app.engine.collision.CollisionEvent;
 import com.example.app.engine.entity.Entity;
@@ -50,8 +55,9 @@ public final class TrainScene extends AbstractBaseScene {
         float W = ctx.getConfig().width;
         float H = ctx.getConfig().height;
 
-        this.playerController = new PlayerController(ctx, W, H,TrainRenderer.DOOR_X, TrainRenderer.DOOR_WIDTH, TrainRenderer.DOOR_Y);
-        this.npcController = new NPCController(ctx, W, H, TrainRenderer.DOOR_Y, level);
+        this.playerController = new PlayerController(ctx, W, H, TrainLayout.DOOR_X, TrainLayout.DOOR_WIDTH,
+                TrainLayout.DOOR_Y);
+        this.npcController = new NPCController(ctx, W, H, TrainLayout.DOOR_Y, level);
         this.trainRenderer = new TrainRenderer(ctx.getRenderer());
         this.trainHud = new TrainHud();
     }
@@ -70,7 +76,8 @@ public final class TrainScene extends AbstractBaseScene {
 
     @Override
     public void onUnload() {
-        if (collisionSub != null) collisionSub.cancel();
+        if (collisionSub != null)
+            collisionSub.cancel();
         trainHud.dispose();
         playerController.destroy();
         npcController.destroyAll();
@@ -80,15 +87,22 @@ public final class TrainScene extends AbstractBaseScene {
 
     @Override
     public void update(float dt) {
-        if (!gameStarted) { updateIntro(dt);    return; }
-        if (won || lost) { updatePostGame(dt); return; }
+        if (!gameStarted) {
+            updateIntro(dt);
+            return;
+        }
+        if (won || lost) {
+            updatePostGame(dt);
+            return;
+        }
         updateGame(dt);
     }
 
     private void updateIntro(float dt) {
         introTimer += dt;
         doorOpenAmount = Math.min(1f, introTimer / 2f);
-        if (introTimer > 2f) gameStarted = true;
+        if (introTimer > 2f)
+            gameStarted = true;
     }
 
     private void updatePostGame(float dt) {
@@ -111,27 +125,33 @@ public final class TrainScene extends AbstractBaseScene {
             doorOpenAmount = Math.max(0.2f, doorOpenAmount - dt * 0.3f);
 
         gameTimer += dt;
-        if (gameTimer > timeLimit) { triggerLoss(); return; }
+        if (gameTimer > timeLimit) {
+            triggerLoss();
+            return;
+        }
 
         updateSpawner(dt);
         playerController.update();
-        if (playerController.isWon()) triggerWin();
+        if (playerController.isWon())
+            triggerWin();
         npcController.updateAll(playerController.getPlayer());
     }
 
     private void updateSpawner(float dt) {
-        if (npcsRemaining <= 0) return;
+        if (npcsRemaining <= 0)
+            return;
         spawnTimer += dt;
         if (spawnTimer >= SPAWN_INTERVAL) {
             spawnTimer = 0f;
             float H = ctx.getConfig().height;
-            npcController.spawnOne(TrainRenderer.DOOR_X, H - TrainRenderer.DOOR_Y + 50f);
+            npcController.spawnOne(TrainLayout.DOOR_X, H - TrainLayout.DOOR_Y + 50f);
             npcsRemaining--;
         }
     }
 
     private void triggerWin() {
-        if (won) return;
+        if (won)
+            return;
         won = true;
         playerController.destroy();
         npcController.destroyAll();
@@ -141,7 +161,8 @@ public final class TrainScene extends AbstractBaseScene {
     }
 
     private void triggerLoss() {
-        if (lost) return;
+        if (lost)
+            return;
         lost = true;
         playerController.destroy();
         npcController.destroyAll();
@@ -174,17 +195,22 @@ public final class TrainScene extends AbstractBaseScene {
         Entity a = event.getPair().getA();
         Entity b = event.getPair().getB();
         Entity player = playerController.getPlayer();
-        if (player == null) return;
+        if (player == null)
+            return;
 
         Entity npc;
-        if (a == player && npcController.getAll().contains(b)) npc = b;
-        else if (b == player && npcController.getAll().contains(a)) npc = a;
-        else return;
+        if (a == player && npcController.getAll().contains(b))
+            npc = b;
+        else if (b == player && npcController.getAll().contains(a))
+            npc = a;
+        else
+            return;
 
         resolveCollision(player, npc);
         lives--;
         ctx.getIoManager().playSound("hit.wav");
-        if (lives <= 0) triggerLoss();
+        if (lives <= 0)
+            triggerLoss();
     }
 
     private void resolveCollision(Entity player, Entity npc) {
@@ -193,7 +219,8 @@ public final class TrainScene extends AbstractBaseScene {
         float dx = pt.x - nt.x;
         float dy = pt.y - nt.y;
         float dist = (float) Math.sqrt(dx * dx + dy * dy);
-        if (dist == 0) dist = 0.001f;
+        if (dist == 0)
+            dist = 0.001f;
 
         playerController.applyCollisionPush(dx, dy, dist, level);
         npcController.applyCollisionPush(npc, dx, dy, dist, level);
