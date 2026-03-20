@@ -61,8 +61,7 @@ public final class EngineContext {
         return registerFactory.get(key);
     }
 
-    // ---- Getters ----
-
+    // Getters
     public EngineConfig getConfig() {
         return config;
     }

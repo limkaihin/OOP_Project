@@ -10,7 +10,7 @@ public class InputHandler {
     private float mouseX = 0f;
     private float mouseY = 0f;
 
-    // Split up InputHandler into input status checking and input binding
+    // Split InputHandler into input status checking and input binding
     public InputHandler(InputBinding bindings) {
         this.bindings = (bindings == null) ? new InputBinding() : bindings;
     }
@@ -40,10 +40,8 @@ public class InputHandler {
         for (Map.Entry<Integer, InputAction> e : bindings.viewMouseBindings().entrySet()) {
             int button = e.getKey();
             InputAction action = e.getValue();
-            // Use isButtonJustPressed for mouse — catches fast clicks
+            // Catches fast clicks
             if (Gdx.input.isButtonJustPressed(button)) {
-                // Manually set both current=true and previous=false to guarantee isJustPressed
-                // fires
                 state.set(action, true, false);
             } else if (!Gdx.input.isButtonPressed(button)) {
                 state.processInput(action, false);

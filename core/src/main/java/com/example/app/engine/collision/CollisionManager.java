@@ -4,9 +4,9 @@ import com.example.app.engine.entity.Entity;
 import java.util.List;
 
 public interface CollisionManager {
-    /**
-     * Runs collision detection (and optional resolution) for the current frame.
-     * Returns detected collisions (useful for debugging/metrics).
-     */
+    /*--------------------------------------------------------------------------
+    Runs collision detection for the current frame
+    Returns detected collisions
+    --------------------------------------------------------------------------*/
     List<CollisionEvent> update(float dt, Iterable<Entity> entities);
 }

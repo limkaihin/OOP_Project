@@ -18,7 +18,7 @@ public class AudioPlayer {
     public AudioPlayer() {
     }
 
-    // ---------------------------------------------------------------- music
+    // Music
 
     public boolean isMusicEnabled() {
         return musicEnabled;
@@ -75,7 +75,7 @@ public class AudioPlayer {
         return currentMusic;
     }
 
-    // ---------------------------------------------------------------- sfx
+    // Sfx
 
     public boolean isSfxEnabled() {
         return sfxEnabled;
@@ -111,10 +111,8 @@ public class AudioPlayer {
         activeSounds.clear();
     }
 
-    // ---------------------------------------------------------------- legacy
-    // master volume helpers (kept for backward compatibility)
-
-    /** Returns music volume (was "masterVolume"). */
+    // Legacy master volume helpers
+    // Returns music volume (was "masterVolume")
     public float getMasterVolume() {
         return musicVolume;
     }
@@ -135,8 +133,6 @@ public class AudioPlayer {
     public int getVolumePercentage() {
         return (int) (musicVolume * 100);
     }
-
-    // ----------------------------------------------------------------
 
     public void dispose() {
         stopMusic();

@@ -10,7 +10,7 @@ public class IOManager {
         this.outputHandler = (outputHandler == null) ? new OutputHandler(null, null) : outputHandler;
     }
 
-    // ---- input ----
+    // Input
     public InputHandler getInputHandler() {
         return inputHandler;
     }
@@ -19,7 +19,7 @@ public class IOManager {
         inputHandler.update(deltaTime);
     }
 
-    // ---- output ----
+    // Output
     public OutputHandler getOutputHandler() {
         return outputHandler;
     }
@@ -36,7 +36,7 @@ public class IOManager {
         outputHandler.error(tag, message, throwable);
     }
 
-    // ---- music ----
+    // Music
     public void playMusic(String filePath) {
         outputHandler.playMusic(filePath);
     }
@@ -61,7 +61,7 @@ public class IOManager {
         outputHandler.setMusicVolume(v);
     }
 
-    // ---- sfx ----
+    // Sfx
     public void playSound(String filePath) {
         outputHandler.playSound(filePath);
     }
@@ -81,8 +81,7 @@ public class IOManager {
     public void setSfxVolume(float v) {
         outputHandler.setSfxVolume(v);
     }
-
-    // ---- dispose ----
+    
     public void dispose() {
         outputHandler.dispose();
     }

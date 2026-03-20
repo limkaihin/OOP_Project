@@ -23,11 +23,11 @@ public final class EngineClock {
         stepRequested = true;
     }
 
-    /**
-     * Returns how many fixed updates to run this frame.
-     * If not paused: accumulates real dt and returns floor(accumulator/fixedDt).
-     * If paused: returns 1 only when stepRequested is true.
-     **/
+    /*----------------------------------------------------------------------
+    Returns number of fixed updates to run the frame
+    Not paused: Accumulates real dt and returns floor (accumulator/fixedDt)
+    Paused: Returns 1 only when stepRequested is true
+    ----------------------------------------------------------------------*/
     public int consumeSteps(float realDt, int maxSteps) {
         if (paused) {
             if (stepRequested) {

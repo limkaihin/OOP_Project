@@ -10,7 +10,7 @@ public class OutputHandler {
         this.errorLogger = (errorLogger == null) ? new ErrorLogger() : errorLogger;
     }
 
-    // ---- logging ----
+    // Logging
     public void log(String tag, String message) {
         errorLogger.log(tag, message);
     }
@@ -23,7 +23,7 @@ public class OutputHandler {
         errorLogger.error(tag, message, throwable);
     }
 
-    // ---- music ----
+    // Music
     public void playMusic(String filePath) {
         audioPlayer.playMusic(filePath);
     }
@@ -48,7 +48,7 @@ public class OutputHandler {
         audioPlayer.setMusicVolume(v);
     }
 
-    // ---- sfx ----
+    // Sfx
     public void playSound(String filePath) {
         audioPlayer.playSound(filePath);
     }
@@ -73,12 +73,12 @@ public class OutputHandler {
         audioPlayer.setSfxVolume(v);
     }
 
-    // ---- legacy volume ----
+    // Legacy volume
     public void setVolume(float volume) {
         audioPlayer.setMasterVolume(volume);
     }
 
-    // ---- accessors ----
+    // Accessors
     public AudioPlayer getAudioPlayer() {
         return audioPlayer;
     }

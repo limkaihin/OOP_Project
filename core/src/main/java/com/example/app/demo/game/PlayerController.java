@@ -93,7 +93,7 @@ public class PlayerController {
                 ? c.radius
                 : Math.max(c.halfWidth, c.halfHeight);
 
-        // Let the player pass through the door gap to board
+        // Let player pass through the door gap to board
         float ceiling = H - doorY - r;
         boolean inGap = Math.abs(t.x - doorX) < doorWidth - r;
         if (t.y > ceiling && !inGap) {

@@ -1,9 +1,5 @@
 package com.example.app.engine.collision;
 
-/**
- * Data object for a collision occurrence.
- * Java 8/11 friendly (no record).
- */
 public final class CollisionEvent {
     private final CollisionPair pair;
     private final CollisionManifold manifold;

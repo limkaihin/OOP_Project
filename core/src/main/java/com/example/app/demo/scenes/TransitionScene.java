@@ -23,7 +23,7 @@ public final class TransitionScene extends AbstractBaseScene {
     private LibGdxFont font;
     private final GlyphLayout layout = new GlyphLayout();
 
-    // Dot animation state
+    // Dot animation
     private int dotCount = 0;
     private float dotTimer = 0f;
     private static final float dotInterval = 0.4f;
@@ -32,7 +32,7 @@ public final class TransitionScene extends AbstractBaseScene {
     public TransitionScene(EngineContext ctx, Scene next, float durationSeconds) {
         this.ctx = ctx;
         this.next = next;
-        this.duration = Math.max(0.8f, durationSeconds); // minimum 0.8s for text to be readable
+        this.duration = Math.max(0.8f, durationSeconds); // Minimum 0.8s for text to be readable
         this.W = ctx.getConfig().width;
         this.H = ctx.getConfig().height;
     }
@@ -85,7 +85,7 @@ public final class TransitionScene extends AbstractBaseScene {
             alpha = 1f - Interpolation.fade.apply((progress - HALF) / HALF);
         }
 
-        ctx.getRenderer().drawRect(0, 0, W, H, new EngineColor(0f, 0f, 0f, alpha));
+        ctx.getRenderer().drawRect(0, 0, W, H, new EngineColor(0.10f, 0.10f, 0.14f, alpha));
     }
 
     @Override

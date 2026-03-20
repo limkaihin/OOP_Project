@@ -12,7 +12,7 @@ public final class EngineConfig {
     public final float fixedDt;
     public final int maxSubSteps;
 
-    // Broadphase collision grid cell size (engine-tunable, not demo-specific)
+    // Broadphase collision grid cell size
     public final float collisionCellSize;
 
     public EngineConfig(int width, int height, String title) {

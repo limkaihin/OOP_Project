@@ -1,6 +1,6 @@
 package com.example.app.engine.io;
 
-// One logged error entry.
+// Logged error entry.
 public class ErrorEntry {
     private final long timestamp;
     private final String tag;
@@ -28,7 +28,7 @@ public class ErrorEntry {
         return String.valueOf(timestamp);
     }
 
-    // returns the error entry as a string
+    // Returns the error entry as a string
     @Override
     public String toString() {
         return "[" + formattedTimeStamp() + "][" + tag + "] " + message;

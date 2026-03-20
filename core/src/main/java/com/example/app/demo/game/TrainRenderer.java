@@ -74,7 +74,7 @@ public class TrainRenderer {
     }
 
     private void drawDoor(float trainY, float doorOpenAmount) {
-        // Background recess
+        // Background
         renderer.drawRect(TrainLayout.DOOR_X - TrainLayout.DOOR_WIDTH - 4f, trainY, TrainLayout.DOOR_WIDTH * 2f + 8f,
                 TrainLayout.DOOR_Y, COL_DOOR_BG);
 

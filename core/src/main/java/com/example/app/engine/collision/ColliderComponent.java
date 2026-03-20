@@ -2,22 +2,18 @@ package com.example.app.engine.collision;
 
 import com.example.app.engine.components.Component;
 
-/**
- * Generic collider component (non-contextual).
- * Supports Circle and AABB shapes.
- */
 public final class ColliderComponent implements Component {
 
     public enum ColShapeType {
         CIRCLE, AABB
     }
 
-    // Collision filtering (generic)
-    public int layer = 1; // "I am in these layers"
-    public int mask = ~0; // "I collide with these layers"
+    // Collision filtering
+    public int layer = 1; // In layer
+    public int mask = ~0; // Collide with layers"
     public boolean isTrigger = false;
 
-    // Offset from transform position (optional)
+    // Offset from transform position
     public float offsetX = 0f;
     public float offsetY = 0f;
 
@@ -27,7 +23,7 @@ public final class ColliderComponent implements Component {
     // Circle
     public float radius;
 
-    // AABB (half extents)
+    // Half-extents
     public float halfWidth;
     public float halfHeight;
 

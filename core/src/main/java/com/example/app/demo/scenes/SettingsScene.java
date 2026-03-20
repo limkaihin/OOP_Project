@@ -19,6 +19,7 @@ public final class SettingsScene extends AbstractBaseScene {
     private final float W, H;
 
     private final float panelX, panelY;
+    private final float volLeftX;
     private final float btnCol, rightArrX;
     private final float row1Y, row2Y, row3Y, row4Y;
     private final float backX, backY, backW, backH;
@@ -35,8 +36,7 @@ public final class SettingsScene extends AbstractBaseScene {
     private static final float ROW_H = 58f;
     private static final float BTN_GAP_BACK_QUIT = 10f;
 
-    private static final EngineColor COL_OVERLAY = new EngineColor(0f, 0f, 0f, 0.75f);
-    private static final EngineColor COL_PANEL = new EngineColor(0.12f, 0.13f, 0.18f, 1f);
+    private static final EngineColor COL_PANEL = new EngineColor(0.10f, 0.10f, 0.14f, 1f);
     private static final EngineColor COL_BTN_OFF = new EngineColor(0.60f, 0.20f, 0.20f, 1f);
     private static final EngineColor COL_BTN_ON = new EngineColor(0.20f, 0.60f, 0.30f, 1f);
     private static final EngineColor COL_BTN_NAV = new EngineColor(0.25f, 0.35f, 0.55f, 1f);
@@ -56,7 +56,8 @@ public final class SettingsScene extends AbstractBaseScene {
         this.panelX = (W - PANEL_W) / 2f;
         this.panelY = (H - PANEL_H) / 2f;
         this.btnCol = panelX + PANEL_W - TOG_W - PAD;
-        this.rightArrX = btnCol + ARR_W + 50f;
+        this.rightArrX = panelX + PANEL_W - PAD - ARR_W;
+        this.volLeftX  = rightArrX - 60f - ARR_W;
         float topY = panelY + PANEL_H - 90f;
         this.row1Y = topY;
         this.row2Y = topY - ROW_H;
@@ -118,11 +119,11 @@ public final class SettingsScene extends AbstractBaseScene {
                 toggleMusic();
             if (hit(mx, my, btnCol, row2Y, TOG_W, TOG_H))
                 toggleSfx();
-            if (hit(mx, my, btnCol, row3Y, ARR_W, ARR_H))
+            if (hit(mx, my, volLeftX, row3Y, ARR_W, ARR_H))
                 adjustMusicVol(-VOL_STEP);
             if (hit(mx, my, rightArrX, row3Y, ARR_W, ARR_H))
                 adjustMusicVol(+VOL_STEP);
-            if (hit(mx, my, btnCol, row4Y, ARR_W, ARR_H))
+            if (hit(mx, my, volLeftX, row4Y, ARR_W, ARR_H))
                 adjustSfxVol(-VOL_STEP);
             if (hit(mx, my, rightArrX, row4Y, ARR_W, ARR_H))
                 adjustSfxVol(+VOL_STEP);
@@ -134,7 +135,6 @@ public final class SettingsScene extends AbstractBaseScene {
         float mx = ctx.getIoManager().getInputHandler().getMouseX();
         float my = ctx.getIoManager().getInputHandler().getMouseY();
 
-        ctx.getRenderer().drawRect(0, 0, W, H, COL_OVERLAY);
         ctx.getRenderer().drawRect(panelX, panelY, PANEL_W, PANEL_H, COL_PANEL);
 
         boolean musHover = hit(mx, my, btnCol, row1Y, TOG_W, TOG_H);
@@ -149,12 +149,12 @@ public final class SettingsScene extends AbstractBaseScene {
                         ? (sfxHover ? COL_BTN_ON_HOVER : COL_BTN_ON)
                         : (sfxHover ? COL_BTN_OFF_HOVER : COL_BTN_OFF));
 
-        ctx.getRenderer().drawRect(btnCol, row3Y, ARR_W, ARR_H,
-                hit(mx, my, btnCol, row3Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
+        ctx.getRenderer().drawRect(volLeftX,  row3Y, ARR_W, ARR_H,
+                hit(mx, my, volLeftX,  row3Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
         ctx.getRenderer().drawRect(rightArrX, row3Y, ARR_W, ARR_H,
                 hit(mx, my, rightArrX, row3Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
-        ctx.getRenderer().drawRect(btnCol, row4Y, ARR_W, ARR_H,
-                hit(mx, my, btnCol, row4Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
+        ctx.getRenderer().drawRect(volLeftX,  row4Y, ARR_W, ARR_H,
+                hit(mx, my, volLeftX,  row4Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
         ctx.getRenderer().drawRect(rightArrX, row4Y, ARR_W, ARR_H,
                 hit(mx, my, rightArrX, row4Y, ARR_W, ARR_H) ? COL_BTN_NAV_HOVER : COL_BTN_NAV);
         ctx.getRenderer().drawRect(backX, backY, backW, backH,
@@ -183,17 +183,17 @@ public final class SettingsScene extends AbstractBaseScene {
         font.setColor(EngineColor.WHITE);
         drawCenteredInBox(ctx.getIoManager().isMusicEnabled() ? "ON" : "OFF", btnCol, row1Y, TOG_W, TOG_H);
         drawCenteredInBox(ctx.getIoManager().isSfxEnabled() ? "ON" : "OFF", btnCol, row2Y, TOG_W, TOG_H);
-        drawCenteredInBox("<", btnCol, row3Y, ARR_W, ARR_H);
+        drawCenteredInBox("<", volLeftX, row3Y, ARR_W, ARR_H);
         drawCenteredInBox(">", rightArrX, row3Y, ARR_W, ARR_H);
-        drawCenteredInBox("<", btnCol, row4Y, ARR_W, ARR_H);
+        drawCenteredInBox("<", volLeftX, row4Y, ARR_W, ARR_H);
         drawCenteredInBox(">", rightArrX, row4Y, ARR_W, ARR_H);
 
         font.setColor(COL_VOL);
         int mVol = Math.round(ctx.getIoManager().getMusicVolume() * 100);
         int sVol = Math.round(ctx.getIoManager().getSfxVolume() * 100);
-        float midGapW = rightArrX - (btnCol + ARR_W);
-        drawCenteredInBox(mVol + "%", btnCol + ARR_W, row3Y, midGapW, ARR_H);
-        drawCenteredInBox(sVol + "%", btnCol + ARR_W, row4Y, midGapW, ARR_H);
+        float midGapW = rightArrX - (volLeftX + ARR_W);
+        drawCenteredInBox(mVol + "%", volLeftX + ARR_W, row3Y, midGapW, ARR_H);
+        drawCenteredInBox(sVol + "%", volLeftX + ARR_W, row4Y, midGapW, ARR_H);
 
         font.setColor(EngineColor.WHITE);
         drawCenteredInBox("Back (ESC)", backX, backY, backW, backH);

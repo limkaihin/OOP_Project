@@ -16,7 +16,7 @@ public final class TrainScene extends AbstractBaseScene {
 
     private final EngineContext ctx;
 
-    // Delegates — each owns one responsibility
+    // Delegation of responsibilities
     private final PlayerController playerController;
     private final NPCController npcController;
     private final TrainRenderer trainRenderer;
@@ -24,13 +24,11 @@ public final class TrainScene extends AbstractBaseScene {
 
     private EventBus<CollisionEvent>.Subscription collisionSub;
 
-    // Level configuration
+    // Level
     private final int level;
     private final int initialNpcCount;
     private final float timeLimit;
     private int npcsRemaining;
-
-    // Frame state
     private float spawnTimer = 0f;
     private float introTimer = 0f;
     private float gameTimer = 0f;
@@ -62,8 +60,6 @@ public final class TrainScene extends AbstractBaseScene {
         this.trainHud = new TrainHud();
     }
 
-    // ---- Lifecycle ----
-
     @Override
     public void onLoad() {
         trainHud.load();
@@ -82,8 +78,6 @@ public final class TrainScene extends AbstractBaseScene {
         playerController.destroy();
         npcController.destroyAll();
     }
-
-    // ---- Update ----
 
     @Override
     public void update(float dt) {
@@ -170,8 +164,6 @@ public final class TrainScene extends AbstractBaseScene {
         ctx.getIoManager().playSound("level_fail.mp3");
     }
 
-    // ---- Render ----
-
     @Override
     public void render() {
         float W = ctx.getConfig().width;
@@ -188,8 +180,6 @@ public final class TrainScene extends AbstractBaseScene {
         float H = ctx.getConfig().height;
         trainHud.render(ctx.getRenderer(), level, timeRemaining, lives, won, lost, gameStarted, W, H);
     }
-
-    // ---- Collision ----
 
     private void onCollision(CollisionEvent event) {
         Entity a = event.getPair().getA();

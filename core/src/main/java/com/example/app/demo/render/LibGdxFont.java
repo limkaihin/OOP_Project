@@ -16,7 +16,7 @@ public final class LibGdxFont implements InterfaceFont {
         bitmapFont.setColor(color);
     }
 
-    // Overload to accept EngineColor
+    // Overload for EngineColor
     public void setColor(EngineColor color) {
         bitmapFont.setColor(color.r, color.g, color.b, color.a);
     }

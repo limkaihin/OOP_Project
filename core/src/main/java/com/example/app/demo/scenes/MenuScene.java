@@ -18,7 +18,7 @@ public final class MenuScene extends AbstractBaseScene {
 
     private final float W, H;
 
-    private static final EngineColor COL_BG = new EngineColor(0.06f, 0.06f, 0.10f, 1f);
+    private static final EngineColor COL_BG = new EngineColor(0.10f, 0.10f, 0.14f, 1f);
     private static final EngineColor COL_PRESSTEXT = new EngineColor(0.96f, 0.77f, 0.09f, 1f);
 
     public MenuScene(EngineContext ctx) {

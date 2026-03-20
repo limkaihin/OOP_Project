@@ -9,9 +9,9 @@ import java.util.*;
 public final class SimpleCollisionManager implements CollisionManager {
 
     private final List<CollisionListener> listeners = new ArrayList<>();
-    private CollisionResolver resolver; // optional
+    private CollisionResolver resolver;
 
-    // Broadphase grid (cell size configured via EngineConfig)
+    // Broadphase grid
     private final SpatialHashGrid grid;
 
     public SimpleCollisionManager() {

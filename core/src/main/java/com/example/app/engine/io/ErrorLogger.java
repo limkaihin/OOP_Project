@@ -15,12 +15,12 @@ public class ErrorLogger {
         this.maxErrors = Math.max(1, maxErrors);
     }
 
-    // logs a message
+    // Logs a message
     public void log(String tag, String message) {
         System.out.println("[LOG][" + tag + "] " + message);
     }
 
-    // logs an error
+    // Logs an error
     public void error(String tag, String message) {
         add(new ErrorEntry(tag, message));
         System.err.println("[ERR][" + tag + "] " + message);
@@ -31,7 +31,7 @@ public class ErrorLogger {
         error(tag, message + (throwable == null ? "" : (" :: " + throwable)));
     }
 
-    // adds an error to the error log
+    // Adds an error to the error log
     private void add(ErrorEntry entry) {
         if (errorLogs.size() >= maxErrors) {
             errorLogs.remove(0);
@@ -39,12 +39,12 @@ public class ErrorLogger {
         errorLogs.add(entry);
     }
 
-    // returns the error log
+    // Returns the error log
     public List<ErrorEntry> getErrors() {
         return Collections.unmodifiableList(errorLogs);
     }
 
-    // sets the max errors
+    // Sets the max errors
     public void setMaxErrors(int maxErrors) {
         this.maxErrors = Math.max(1, maxErrors);
     }

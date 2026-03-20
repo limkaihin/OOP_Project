@@ -6,9 +6,6 @@ import com.example.app.engine.util.PairKey;
 
 import java.util.*;
 
-/**
- * Simple uniform-grid broadphase (non-contextual).
- */
 public final class SpatialHashGrid {
 
     private final float cellSize;
@@ -33,7 +30,7 @@ public final class SpatialHashGrid {
             maxX = px + c.radius;
             minY = py - c.radius;
             maxY = py + c.radius;
-        } else { // AABB
+        } else { // Half-extents
             minX = px - c.halfWidth;
             maxX = px + c.halfWidth;
             minY = py - c.halfHeight;

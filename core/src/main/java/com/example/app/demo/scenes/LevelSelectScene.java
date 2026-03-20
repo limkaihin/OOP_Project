@@ -22,7 +22,7 @@ public final class LevelSelectScene extends AbstractBaseScene {
     private final float gapX = 20f;
     private final int totalLevels = 5;
 
-    private static final EngineColor COL_BG = new EngineColor(0.06f, 0.06f, 0.10f, 1f);
+    private static final EngineColor COL_BG = new EngineColor(0.10f, 0.10f, 0.14f, 1f);
     private static final EngineColor COL_UNLOCKED = new EngineColor(0.20f, 0.55f, 0.30f, 1f);
     private static final EngineColor COL_LOCKED = new EngineColor(0.30f, 0.30f, 0.35f, 1f);
     private static final EngineColor COL_LOCKED_TEXT = new EngineColor(0.55f, 0.55f, 0.60f, 1f);
