@@ -76,7 +76,7 @@ public class GameMaster extends ApplicationAdapter {
         EntityFactory enemyFactory = new EnemyFactory(entityManager);
 
         ctx = new EngineContext(config, sceneManager, entityManager, movementManager,
-                collisionManager, ioManager, renderer, playerFactory, enemyFactory, progressTracker);
+                collisionManager, ioManager, renderer, progressTracker);
 
         ctx.addGlobalInputHandler(() -> {
             if (ctx.getIoManager().getInputHandler().getState().isJustPressed(InputAction.BACK)) {
@@ -96,6 +96,9 @@ public class GameMaster extends ApplicationAdapter {
                 }
             }
         });
+
+        ctx.addFactory("player", playerFactory);
+        ctx.addFactory("npc", enemyFactory);
 
         ctx.getSceneManager().push(new MenuScene(ctx));
         ctx.getIoManager().log("GameMaster", "Engine started");

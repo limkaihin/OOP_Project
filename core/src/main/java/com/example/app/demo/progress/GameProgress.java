@@ -14,4 +14,9 @@ public class GameProgress implements IProgress {
     public void unlockNextLevel(int currentLevel) {
         maxUnlockedLevel = Math.max(maxUnlockedLevel, currentLevel + 1);
     }
+
+    @Override
+    public void reset() {
+        maxUnlockedLevel = 1;
+    }
 }

@@ -136,7 +136,7 @@ public final class GameClearScene extends AbstractBaseScene {
     }
 
     private void restartGame() {
-        GameProgress.reset();
+        ctx.getProgress().reset();
         while (ctx.getSceneManager().size() > 1) {
             ctx.getSceneManager().pop();
         }

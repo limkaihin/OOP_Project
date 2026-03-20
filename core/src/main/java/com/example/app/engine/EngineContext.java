@@ -2,6 +2,8 @@ package com.example.app.engine;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import com.example.app.engine.progress.IProgress;
 import com.example.app.engine.collision.CollisionEvent;
@@ -27,8 +29,7 @@ public final class EngineContext {
     private final IOManager ioManager;
     private IRenderer renderer;
 
-    private final EntityFactory playerFactory;
-    private final EntityFactory enemyFactory;
+    private final Map<String, EntityFactory> registerFactory = new HashMap<>();
 
     private final EngineClock clock;
     private final EventBus<CollisionEvent> collisionEvents;
@@ -43,8 +44,6 @@ public final class EngineContext {
             CollisionManager collisionManager,
             IOManager ioManager,
             IRenderer renderer,
-            EntityFactory playerFactory,
-            EntityFactory enemyFactory,
             IProgress progressTracker) {
         this.config = config;
         this.sceneManager = sceneManager;
@@ -53,11 +52,13 @@ public final class EngineContext {
         this.collisionManager = collisionManager;
         this.ioManager = ioManager;
         this.renderer = renderer;
-        this.playerFactory = playerFactory;
-        this.enemyFactory = enemyFactory;
         this.progressTracker = progressTracker;
         this.clock = new EngineClock(config.fixedDt);
         this.collisionEvents = new EventBus<>();
+    }
+
+    public EntityFactory getFactory(String key) {
+        return registerFactory.get(key);
     }
 
     // ---- Getters ----
@@ -73,11 +74,13 @@ public final class EngineContext {
     public void setRenderer(IRenderer renderer) { this.renderer = renderer; }
     public EngineClock getClock() { return clock; }
     public EventBus<CollisionEvent> getCollisionEvents() { return collisionEvents; }
-    public EntityFactory getPlayerFactory() { return playerFactory; }
-    public EntityFactory getEnemyFactory() { return enemyFactory; }
     
     public void addGlobalInputHandler(Runnable handler) {
         if (handler != null) globalInputHandlers.add(handler);
+    }
+
+    public void addFactory(String key, EntityFactory factory) {
+        this.registerFactory.put(key, factory);
     }
 
     public void update(float realDt) {

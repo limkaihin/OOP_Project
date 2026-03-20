@@ -1,7 +1,6 @@
 package com.example.app.demo.scenes;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.example.app.demo.render.LibGdxFont;
@@ -21,13 +20,12 @@ public final class LevelSelectScene extends AbstractBaseScene {
     private float startX, startY;
     private final float boxSize = 80f;
     private final float gapX = 20f;
-    private final float gapY = 30f;
     private final int totalLevels = 5;
 
     private static final EngineColor COL_BG = new EngineColor(0.06f, 0.06f, 0.10f, 1f);
-    private static final EngineColor COL_UNLOCKED  = new EngineColor(0.20f, 0.55f, 0.30f, 1f);
+    private static final EngineColor COL_UNLOCKED = new EngineColor(0.20f, 0.55f, 0.30f, 1f);
     private static final EngineColor COL_LOCKED = new EngineColor(0.30f, 0.30f, 0.35f, 1f);
-    private static final EngineColor COL_LOCKED_TEXT  = new EngineColor(0.55f, 0.55f, 0.60f, 1f);
+    private static final EngineColor COL_LOCKED_TEXT = new EngineColor(0.55f, 0.55f, 0.60f, 1f);
 
     public LevelSelectScene(EngineContext ctx) {
         this.ctx = ctx;

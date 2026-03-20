@@ -1,7 +1,6 @@
 package com.example.app.engine.movement;
 
 import com.example.app.engine.entity.Entity;
-import com.example.app.engine.entity.EntityManager;
 
 public class MovementManager {
 

@@ -41,7 +41,7 @@ public class NPCController {
     }
 
     public void spawnOne(float x, float y) {
-        Entity npc = ctx.getEnemyFactory().create(x, y, "NPC");
+        Entity npc = ctx.getFactory("npc").create(x, y, "NPC");
         float angle = MathUtils.PI + (rng.nextFloat() - 0.5f) * MathUtils.PI;
         float speed = 60f + rng.nextFloat() * 40f;
         VelocityComponent v = npc.getComponent(VelocityComponent.class);

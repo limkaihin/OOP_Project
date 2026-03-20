@@ -38,7 +38,7 @@ public class PlayerController {
     }
 
     public void spawn() {
-        player = ctx.getPlayerFactory().create(320f, 80f, "player");
+        player = ctx.getFactory("player").create(320f, 80f, "player");
         won = false;
     }
 
