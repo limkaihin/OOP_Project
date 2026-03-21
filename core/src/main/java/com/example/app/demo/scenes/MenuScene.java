@@ -73,7 +73,7 @@ public final class MenuScene extends AbstractBaseScene {
                 "How to Play:",
                 "WASD - Move your character",
                 "3 Hits - Game over",
-                "E - Open music settings",
+                "Ecs - Open music settings",
                 "",
                 "Can you beat all the levels?",
                 "Press ENTER to Start!"
