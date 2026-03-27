@@ -1,19 +1,18 @@
-# OOP_Project --- Abstract Engine Demo (INF1009 Part 1)
+# OOP_Project --- INF1009 Part 2
 
 This project is a libGDX desktop application demonstrating a
-non-contextual Abstract Engine built using Object-Oriented Programming
-principles and a modular system architecture.
+game that is built upon an Abstract Engine. The engine is built 
+using Object-Oriented Programming principles and a modular system architecture.
 
-The engine provides reusable, simulation-agnostic systems such as: -
+The engine provides reusable, game-agnostic systems such as: -
 Scene Management - Entity Management - Movement Management - Collision
 Management (with spatial partitioning support) - Input / Output
 Management - Event Bus System - Render Queue (engine outputs render
-commands; application renders them)
+commands; application renders them) - Progress Tracker
 
-The included demo simulation is intentionally simple (basic shapes and
-interactions).\
-Its purpose is to showcase how the engine can be reused for other
-simulations without rewriting core systems.
+The game intends to  model the experience of boarding a train in a crowded environment
+in Singapore's context. The goal in mind is to engage kids and interest adults, and to
+teach them the importance of letting passengers alight first.
 
 ------------------------------------------------------------------------
 
@@ -41,14 +40,13 @@ the game window. This is normal behaviour.
   Action                     Key
   -------------------------- --------------
   Move Player                W A S D
-  Increase / Reduce Volume   Up / Down
-  Play or Stop Music         Right / Left
-  Spawn Obstacle             Space
-  Start / Step 1 frame       Enter
-  Pause / Resume             P
-  Quit Application           Esc
+  Increase / Reduce Volume   Left Click in Settings Menu
+  Play or Stop Music         Left Click in Settings Menu
+  Start Game                 Enter
+  Settings Menu / Pause      Esc
+  Quit Application           Left Click
 
-Key bindings are defined in the application / demo layer, not inside the
+Key bindings are defined in the demo layer, not inside the
 engine.
 
 ------------------------------------------------------------------------
@@ -58,7 +56,7 @@ engine.
 ### Scene Management
 
 -   Application starts in a MenuScene
--   Transitions into a SandboxScene
+-   Transitions into a LevelSelectScene
 -   Uses a TransitionScene to demonstrate controlled scene switching
 -   Scene lifecycle (load, update, dispose) is managed centrally by the
     engine
@@ -84,7 +82,7 @@ engine.
 -   Broad-phase optimization supported via spatial partitioning
     (SpatialHashGrid)
 -   Collision responses are triggered without embedding
-    simulation-specific behaviour in the engine
+    game -specific behaviour in the engine
 
 ### Input / Output Management
 
@@ -124,43 +122,24 @@ Main.java - Entry point for launcher compatibility - Extends GameMaster
 
     core/src/main/java/com/example/app/engine/
 
-Contains: - EngineImpl and EngineContext - Core managers (scene, entity,
+Contains: - EngineContext - Core managers (scene, entity,
 movement, collision, input, output) - ECS components - Event system -
 Spatial hash grid implementation - Render output abstractions
 (RenderCommand, RenderQueue)
 
-No simulation-specific logic exists in this layer.
+No game-specific logic exists in this layer.
 
 ------------------------------------------------------------------------
 
-### Demo / Simulation Layer
+### Demo / Game Layer
 
     core/src/main/java/com/example/app/demo/scenes/
 
 Contains: - MenuScene --- configuration and entry point -
-TransitionScene --- controlled scene switching - SandboxScene ---
-demonstrates entity spawning, movement, and collision interaction
+TransitionScene --- controlled scene switching - TrainScene ---
+game logic, entity spawning, movement, and collision interaction
 
 The demo can be replaced without modifying the engine layer.
-
-------------------------------------------------------------------------
-
-## UML Diagram
-
-The UML diagram provides an architecture-level overview of the engine
-design, showing:
-
--   Entity--Component--System structure\
--   Manager responsibilities\
--   Scene hierarchy\
--   Interface usage\
--   Low coupling and high cohesion design
-
-UML files are located in:
-
-    docs/uml/
-
-install plantuml plugin in vscode to view the diagram. 
 
 ------------------------------------------------------------------------
 
@@ -168,19 +147,10 @@ install plantuml plugin in vscode to view the diagram.
 
 -   The engine is reusable and extensible\
 -   Core systems are modular and decoupled\
--   New simulations can be built by replacing only the demo layer\
+-   New games can be built by replacing only the demo layer\
 -   The application layer adapts libGDX lifecycle and rendering to
     engine output\
 -   Architecture prioritizes scalability, maintainability, and
     separation of concerns
 
 ------------------------------------------------------------------------
-
-## Notes
-
--   Rendering and visuals are intentionally minimal\
--   Physics and collision behaviour are simplified for clarity\
--   Emphasis is placed on clean architecture, subsystem isolation, and
-    extensibility\
--   The project focuses on demonstrating architectural design rather
-    than graphical complexity
