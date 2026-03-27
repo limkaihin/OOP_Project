@@ -36,7 +36,7 @@ public final class MenuScene extends AbstractBaseScene {
         font = new LibGdxFont(generator.generateFont(smallParams));
 
         FreeTypeFontGenerator.FreeTypeFontParameter bigParams = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        bigParams.size = 72;
+        bigParams.size = 54;
         bigFont = new LibGdxFont(generator.generateFont(bigParams));
 
         generator.dispose();
@@ -62,8 +62,8 @@ public final class MenuScene extends AbstractBaseScene {
     public void renderHud() {
         // Title
         bigFont.setColor(EngineColor.WHITE);
-        layout.setText(bigFont.bitmapFont, "TRAIN RUSH!!!");
-        ctx.getRenderer().drawText(bigFont, "TRAIN RUSH!!!", W / 2f - layout.width / 2f, H - 50f);
+        layout.setText(bigFont.bitmapFont, "BOARD THE TRAIN!");
+        ctx.getRenderer().drawText(bigFont, "BOARD THE TRAIN!", W / 2f - layout.width / 2f, H - 50f);
 
         // Instructions
         String[] lines = {
